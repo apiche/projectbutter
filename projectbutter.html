@@ -31,14 +31,14 @@
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: 1.5rem;
+            font-weight: 600;
             color: #2d3748;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .controls {
@@ -80,6 +80,17 @@
         .timeline {
             min-width: 1400px;
             position: relative;
+        }
+
+        /* Separate overlay for Gantt bars */
+        .gantt-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none; /* Allow clicks to pass through to rows below */
+            z-index: 50;
         }
 
         .timeline-header {
@@ -145,6 +156,11 @@
             border-radius: 4px;
             overflow: hidden;
             position: relative;
+            pointer-events: none; /* Prevent row from being draggable */
+        }
+
+        .timeline-row-label, .timeline-row-weeks, .timeline-cell {
+            pointer-events: auto; /* Re-enable for interactive elements */
         }
 
         .timeline-row.chunk-row {
@@ -155,22 +171,47 @@
 
         .timeline-row.task-row {
             background: rgba(0, 0, 0, 0.02);
-            margin-left: 20px;
+            margin-left: 15px;
             border-radius: 2px;
             min-height: 40px;
         }
 
-        .timeline-row.task-row.inactive {
+        .timeline-row.task-row.incomplete {
             background: rgba(0, 0, 0, 0.01);
             margin-left: 40px;
-            opacity: 0.6;
-            border-left: 2px solid rgba(0, 0, 0, 0.1);
+            opacity: 0.7;
+            border-left: 2px dashed rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 2px dashed rgba(102, 126, 234, 0.4);
         }
 
-        .timeline-row.task-row.inactive .timeline-row-label {
+        .timeline-row.task-row.incomplete .timeline-row-label {
             background: rgba(255, 255, 255, 0.5);
             font-style: italic;
             color: #6b7280;
+            border-radius: 6px 0 0 6px;
+        }
+
+        .timeline-row.task-row.no-gantt {
+            margin-left: 25px;
+            opacity: 0.8;
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+        }
+
+        .timeline-row.task-row.no-gantt .timeline-row-label {
+            background: rgba(255, 255, 255, 0.7);
+            color: #4a5568;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .timeline-row.task-row.complete {
+            margin-left: 15px;
+            border-radius: 4px;
+        }
+
+        .timeline-row.task-row.complete .timeline-row-label {
+            border-radius: 2px 0 0 2px;
         }
 
         .timeline-row.task-row.hidden {
@@ -196,7 +237,7 @@
             font-weight: 600;
             color: #2d3748;
             font-size: 14px;
-            flex: 1; /* Take up available space */
+            flex: 1;
         }
 
         .task-label {
@@ -263,7 +304,7 @@
             z-index: 5;
             background: linear-gradient(135deg, rgba(203, 213, 224, 0.9), rgba(160, 174, 192, 0.9));
             border: 2px solid rgba(255, 255, 255, 0.3);
-            pointer-events: none; /* Make chunk progress bars non-interactive */
+            pointer-events: none;
         }
 
         .chunk-progress-bar.has-progress {
@@ -304,7 +345,7 @@
         }
 
         .task-label-text {
-            display: none; /* Remove text from Gantt bars */
+            display: none;
         }
 
         .task-weeks {
@@ -349,10 +390,12 @@
             animation: weekComplete 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .task.dragging-horizontal {
+        .task.dragging {
             z-index: 1000;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             transform: translateY(-2px);
+            cursor: grabbing !important;
+            opacity: 0.9;
         }
 
         .task-reset-btn {
@@ -391,18 +434,6 @@
             font-weight: bold;
         }
 
-        .timeline-row-weeks {
-            padding: 16px;
-            font-weight: 600;
-            color: #667eea;
-            background: rgba(255, 255, 255, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-right: 2px solid rgba(0, 0, 0, 0.1);
-            font-size: 16px;
-        }
-
         .timeline-row-label:hover .add-inline-btn {
             opacity: 1;
             transform: scale(1);
@@ -420,22 +451,12 @@
             font-weight: 600;
             opacity: 0;
             transform: scale(0.9);
-            margin-left: auto; /* Push to right side */
+            margin-left: auto;
         }
 
         .add-inline-btn:hover {
             background: rgba(102, 126, 234, 1);
             transform: scale(1.05);
-        }
-
-        .chunk-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            color: #2d3748;
-            font-size: 14px;
-            flex: 1; /* Take up available space */
         }
 
         .add-chunk-row {
@@ -544,14 +565,6 @@
             background: #4b5563;
         }
 
-        .chunk-progress-bar {
-            z-index: 20;
-        }
-
-        .task {
-            z-index: 30;
-        }
-
         .task-name-input {
             background: transparent !important;
             border: 1px dashed #ccc !important;
@@ -597,105 +610,32 @@
             box-shadow: inset 0 0 0 2px rgba(102, 126, 234, 0.3);
         }
 
-        .chunk {
-            position: absolute;
-            height: 40px;
-            top: 10px;
-            border-radius: 8px;
-            cursor: grab;
-            display: flex;
-            align-items: stretch;
-            font-weight: 600;
-            font-size: 12px;
-            color: white;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(10px);
-            user-select: none;
-            z-index: 10;
-            overflow: hidden;
+        /* Task States */
+        .task.not-started {
+            background: linear-gradient(135deg, rgba(203, 213, 224, 0.95), rgba(160, 174, 192, 0.95));
+            color: #4a5568;
         }
 
-        .chunk:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        .task.in-progress {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(249, 115, 22, 0.95));
         }
 
-        .chunk:active, .chunk.dragging {
-            cursor: grabbing;
-            transform: scale(1.05) translateY(-3px);
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        .task.overdue {
+            background: linear-gradient(135deg, rgba(248, 113, 113, 0.95), rgba(239, 68, 68, 0.95));
+            animation: pulse 2s infinite;
         }
 
-        .chunk.dropping {
-            animation: chunkDrop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        .task.completed {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.95), rgba(16, 185, 129, 0.95));
         }
 
-        @keyframes chunkDrop {
-            0% {
-                transform: scale(1.05) translateY(-3px);
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
             }
             50% {
-                transform: scale(0.98) translateY(2px);
+                transform: scale(1.02);
             }
-            100% {
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .chunk-label {
-            position: absolute;
-            left: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-weight: 600;
-            font-size: 11px;
-            z-index: 2;
-            pointer-events: none;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: calc(100% - 16px);
-        }
-
-        .chunk-weeks {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-
-        .chunk-week {
-            flex: 1;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .chunk-week:last-child {
-            border-right: none;
-        }
-
-        .chunk-week.completed {
-            background: rgba(255, 255, 255, 0.4);
-            position: relative;
-        }
-
-        .chunk-week.completed::after {
-            content: '✓';
-            position: absolute;
-            font-size: 14px;
-            font-weight: bold;
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-        }
-
-        .chunk-week.completing {
-            animation: weekComplete 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         @keyframes weekComplete {
@@ -713,212 +653,6 @@
             }
         }
 
-        .chunk-reset-btn {
-            position: absolute;
-            top: -12px;
-            right: -8px;
-            width: 20px;
-            height: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: white;
-            z-index: 20;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0;
-            transform: scale(0.8);
-        }
-
-        .chunk:hover .chunk-reset-btn {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .chunk-reset-btn:hover {
-            background: rgba(239, 68, 68, 0.9);
-            transform: scale(1.1);
-        }
-
-        .chunk-reset-btn::before {
-            content: '↶';
-            font-weight: bold;
-        }
-
-        /* Chunk States */
-        .chunk.not-started {
-            background: linear-gradient(135deg, rgba(203, 213, 224, 0.95), rgba(160, 174, 192, 0.95));
-            color: #4a5568;
-        }
-
-        .chunk.in-progress {
-            background: linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(249, 115, 22, 0.95));
-        }
-
-        .chunk.overdue {
-            background: linear-gradient(135deg, rgba(248, 113, 113, 0.95), rgba(239, 68, 68, 0.95));
-            animation: pulse 2s infinite;
-        }
-
-        .chunk.completed {
-            background: linear-gradient(135deg, rgba(52, 211, 153, 0.95), rgba(16, 185, 129, 0.95));
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.02);
-            }
-        }
-
-        .projects-area {
-            margin-top: 30px;
-        }
-
-        .projects-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 20px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .add-task-btn {
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-        }
-
-        .add-task-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .project-chunks {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.02);
-            border-radius: 16px;
-            min-height: 100px;
-            position: relative;
-        }
-
-        .project-chunks.drag-over {
-            background: rgba(102, 126, 234, 0.1);
-            border: 2px dashed #667eea;
-        }
-
-        .unscheduled-chunk {
-            height: 40px;
-            padding: 0 16px;
-            border-radius: 8px;
-            cursor: grab;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 13px;
-            color: white;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(10px);
-            user-select: none;
-            min-width: 120px;
-            position: relative;
-        }
-
-        .unscheduled-chunk .chunk-duration {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            z-index: 2000;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 400px;
-            width: 90%;
-            animation: slideUp 0.3s ease;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 8px;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .form-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
         .btn-secondary {
             background: rgba(0, 0, 0, 0.1);
             color: #2d3748;
@@ -926,22 +660,6 @@
 
         .btn-secondary:hover {
             background: rgba(0, 0, 0, 0.2);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from { 
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to { 
-                transform: translateY(0);
-                opacity: 1;
-            }
         }
 
         @media (max-width: 1200px) {
@@ -1014,7 +732,7 @@
                         <div class="month-weeks" id="sep-weeks">4w</div>
                     </div>
                     <div class="timeline-header-cell">
-                        <div class="month-header">Oct</div>
+                        <div class="timeline-header-cell">Oct</div>
                         <div class="month-weeks" id="oct-weeks">4w</div>
                     </div>
                     <div class="timeline-header-cell">
@@ -1032,56 +750,22 @@
                 </div>
             </div>
         </div>
-
-        <div class="projects-area" style="display: none;">
-            <!-- Hidden - all creation now happens inline -->
-        </div>
-    </div>
-
-    <!-- Modal for adding tasks -->
-    <div class="modal" id="chunkModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 20px; color: #2d3748;">Add Task</h3>
-            <form id="chunkForm">
-                <div class="form-group">
-                    <label for="chunkName">Task Name</label>
-                    <input type="text" id="chunkName" required>
-                </div>
-                <div class="form-group">
-                    <label for="chunkDuration">Duration (weeks)</label>
-                    <input type="number" id="chunkDuration" min="1" max="12" value="3">
-                </div>
-                <div class="form-group">
-                    <label for="chunkStatus">Status</label>
-                    <select id="chunkStatus">
-                        <option value="not-started">Not Started</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                        <option value="overdue">Overdue</option>
-                    </select>
-                </div>
-                <div class="form-buttons">
-                    <button type="button" class="btn btn-secondary" id="cancelChunkBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Task</button>
-                </div>
-            </form>
-        </div>
     </div>
 
     <!-- Modal for project settings -->
-    <div class="modal" id="projectSettingsModal">
-        <div class="modal-content">
+    <div class="modal" id="projectSettingsModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); max-width: 400px; width: 90%;">
             <h3 style="margin-bottom: 20px; color: #2d3748;">Project Settings</h3>
             <form id="projectSettingsForm">
-                <div class="form-group">
-                    <label for="projectName">Project Name</label>
-                    <input type="text" id="projectName" required>
+                <div style="margin-bottom: 20px;">
+                    <label for="projectName" style="display: block; font-weight: 600; color: #2d3748; margin-bottom: 8px;">Project Name</label>
+                    <input type="text" id="projectName" required style="width: 100%; padding: 12px; border: 2px solid rgba(0, 0, 0, 0.1); border-radius: 10px; font-size: 14px;">
                 </div>
-                <div class="form-group">
-                    <label for="newRowName">Add New Row</label>
-                    <input type="text" id="newRowName" placeholder="e.g., Development, Marketing">
+                <div style="margin-bottom: 20px;">
+                    <label for="newRowName" style="display: block; font-weight: 600; color: #2d3748; margin-bottom: 8px;">Add New Row</label>
+                    <input type="text" id="newRowName" placeholder="e.g., Development, Marketing" style="width: 100%; padding: 12px; border: 2px solid rgba(0, 0, 0, 0.1); border-radius: 10px; font-size: 14px;">
                 </div>
-                <div class="form-buttons">
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
                     <button type="button" class="btn btn-secondary" id="cancelSettingsBtn">Cancel</button>
                     <button type="button" class="btn btn-secondary" id="addRowBtn">Add Row</button>
                     <button type="submit" class="btn btn-primary">Save Settings</button>
@@ -1090,17 +774,17 @@
         </div>
     </div>
 
-    <!-- PROJECT DATA - This gets updated automatically -->
+    <!-- PROJECT DATA -->
     <script id="projectData" type="application/json">
     {
         "projectName": "My Project",
         "currentYear": 2025,
         "chunks": [],
         "tasks": [
-            {"id": 0, "name": "Task", "duration": 3, "status": "not-started", "completedWeeks": 0, "chunkId": 0, "startMonth": 0}
+            {"id": 0, "name": "Task", "duration": 3, "status": "not-started", "completedWeeks": 0, "chunkId": 0, "startWeek": 0}
         ],
         "rows": [
-            {"id": 0, "name": "Chunk", "collapsed": false, "tasks": [{"id": 0, "name": "Task", "duration": 3, "status": "not-started", "completedWeeks": 0, "chunkId": 0, "startMonth": 0}]}
+            {"id": 0, "name": "Chunk", "collapsed": false, "tasks": [{"id": 0, "name": "Task", "duration": 3, "status": "not-started", "completedWeeks": 0, "chunkId": 0, "startWeek": 0}]}
         ],
         "taskIdCounter": 1
     }
@@ -1116,13 +800,42 @@
 
         const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         
-        // Calculate weeks in each month for the current year
+        // Calculate weeks in each month for the current year (only count weeks where majority of days are in that month)
         function getWeeksInMonth(year, month) {
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
-            const firstWeek = Math.ceil(firstDay.getDate() / 7);
-            const totalDays = lastDay.getDate();
-            return Math.ceil((totalDays - (7 - firstDay.getDay())) / 7) + firstWeek;
+            let weekCount = 0;
+            
+            // Start from the first day of the month
+            let currentDate = new Date(firstDay);
+            
+            while (currentDate.getMonth() === month) {
+                // Find the start of this week (Sunday)
+                const weekStart = new Date(currentDate);
+                weekStart.setDate(currentDate.getDate() - currentDate.getDay());
+                
+                // Find the end of this week (Saturday)
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekStart.getDate() + 6);
+                
+                // Count days of this week that fall in this month
+                let daysInMonth = 0;
+                for (let d = new Date(weekStart); d <= weekEnd; d.setDate(d.getDate() + 1)) {
+                    if (d.getMonth() === month) {
+                        daysInMonth++;
+                    }
+                }
+                
+                // Only count the week if majority of days (4 or more) are in this month
+                if (daysInMonth >= 4) {
+                    weekCount++;
+                }
+                
+                // Move to the next week
+                currentDate.setDate(currentDate.getDate() + 7);
+            }
+            
+            return weekCount;
         }
         
         // Update month headers with actual week counts
@@ -1134,6 +847,91 @@
                     weekEl.textContent = `${weeks}w`;
                 }
             });
+        }
+
+        // Convert weeks to timeline position (cumulative weeks from start of year)
+        function weeksToTimelinePosition(weeks) {
+            // Simple approach: use the same calculation as our drag system
+            const timelineStart = 280; // Label columns width
+            const totalWeeks = getTotalWeeksInYear();
+            const timelineWidth = 12 * 100; // 1200px total
+            const pixelsPerWeek = timelineWidth / totalWeeks;
+            
+            const position = timelineStart + (weeks * pixelsPerWeek);
+            
+            console.log(`Week ${weeks} -> pixel ${position} (${pixelsPerWeek} pixels per week)`);
+            
+            return position;
+        }
+
+        // Convert timeline position back to weeks
+        function timelinePositionToWeeks(position) {
+            const relativePos = position - 280;
+            const monthWidth = 100;
+            
+            let totalWeeks = 0;
+            for (let month = 0; month < 12; month++) {
+                const weeksInMonth = getWeeksInMonth(currentYear, month);
+                const monthStart = month * monthWidth;
+                const monthEnd = (month + 1) * monthWidth;
+                
+                if (relativePos >= monthStart && relativePos < monthEnd) {
+                    const positionInMonth = relativePos - monthStart;
+                    const weekWidth = monthWidth / weeksInMonth;
+                    const weekInMonth = Math.floor(positionInMonth / weekWidth);
+                    return totalWeeks + weekInMonth;
+                }
+                totalWeeks += weeksInMonth;
+            }
+            return totalWeeks;
+        }
+
+        // Calculate next available start week for a task in a chunk  
+        function calculateNextAvailableSlot(chunkId, excludeTaskId = null) {
+            const chunk = rows.find(r => r.id === chunkId);
+            if (!chunk || !chunk.tasks) return 0;
+            
+            // Get all scheduled tasks in this chunk (excluding the current task if editing)
+            // Only include tasks that have both name and duration (complete tasks)
+            const scheduledTasks = chunk.tasks.filter(t => 
+                shouldShowGanttBar(t) &&
+                t.startWeek !== undefined && 
+                t.id !== excludeTaskId
+            );
+            
+            if (scheduledTasks.length === 0) return 0;
+            
+            // Sort tasks by start week
+            scheduledTasks.sort((a, b) => a.startWeek - b.startWeek);
+            
+            // Find the last task's end week
+            const lastTask = scheduledTasks[scheduledTasks.length - 1];
+            const lastTaskEndWeek = lastTask.startWeek + lastTask.duration;
+            
+            // Return the next available week
+            return lastTaskEndWeek;
+        }
+
+        // Calculate chunk span (start and end weeks)
+        function calculateChunkSpan(chunk) {
+            if (!chunk.tasks || chunk.tasks.length === 0) {
+                return { startWeek: 0, endWeek: 0, totalWeeks: 0 };
+            }
+            
+            const scheduledTasks = chunk.tasks.filter(t => shouldShowGanttBar(t) && t.startWeek !== undefined);
+            if (scheduledTasks.length === 0) {
+                return { startWeek: 0, endWeek: 0, totalWeeks: 0 };
+            }
+            
+            // Find earliest start and latest end
+            const startWeek = Math.min(...scheduledTasks.map(t => t.startWeek));
+            const endWeeks = scheduledTasks.map(t => t.startWeek + t.duration);
+            const endWeek = Math.max(...endWeeks);
+            
+            // Calculate total weeks
+            const totalWeeks = scheduledTasks.reduce((sum, task) => sum + task.duration, 0);
+            
+            return { startWeek, endWeek, totalWeeks };
         }
         
         // Load project data from embedded JSON
@@ -1165,7 +963,7 @@
                 }
                 
                 // Update page title and header
-                document.title = projectName + " - Project Planner";
+                document.title = projectName;
                 document.querySelector('.header h1').textContent = projectName;
                 
                 updateMonthHeaders();
@@ -1298,13 +1096,13 @@
                 
                 chunkLabelEl.appendChild(chunkLabelContent);
                 
-                // Add task button (positioned where +5 was)
+                // Add task button
                 const addTaskBtn = document.createElement('button');
                 addTaskBtn.className = 'add-inline-btn';
                 addTaskBtn.textContent = '+ Task';
                 addTaskBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    addBlankTask(chunk.id);
+                    addAutoScheduledTask(chunk.id);
                 });
                 chunkLabelEl.appendChild(addTaskBtn);
                 
@@ -1333,14 +1131,16 @@
                 
                 grid.appendChild(chunkRowEl);
                 
-                // Render chunk progress bar
+                // Render chunk progress bar (spans the full chunk duration)
                 renderChunkProgressBar(chunk, chunkRowEl);
                 
                 // Render task rows (children)
                 if (chunk.tasks && !chunk.collapsed) {
                     chunk.tasks.forEach(task => {
+                        const visualState = getTaskVisualState(task);
+                        
                         const taskRowEl = document.createElement('div');
-                        taskRowEl.className = 'timeline-row task-row';
+                        taskRowEl.className = `timeline-row task-row ${visualState}`;
                         taskRowEl.dataset.taskId = task.id;
                         
                         // Task label
@@ -1351,24 +1151,32 @@
                         const taskLabelContent = document.createElement('div');
                         taskLabelContent.className = 'task-label';
                         
-                        if (task.name.trim() === '' || task.name === 'Task') {
+                        if (!task.name || task.name.trim() === '' || task.name === 'Task') {
                             // Empty or default task - make it editable
                             const taskInput = document.createElement('input');
                             taskInput.className = 'task-name-input';
                             taskInput.type = 'text';
                             taskInput.value = task.name === 'Task' ? '' : task.name;
                             taskInput.placeholder = 'Task name...';
-                            taskInput.style.background = 'transparent';
-                            taskInput.style.border = '1px dashed #ccc';
-                            taskInput.style.padding = '2px 6px';
-                            taskInput.style.fontSize = '13px';
-                            taskInput.style.width = '140px';
                             
                             taskInput.addEventListener('blur', () => {
                                 if (taskInput.value.trim()) {
                                     task.name = taskInput.value.trim();
+                                    scheduleTaskIfComplete(task);
                                     renderTimeline();
                                     autoSave();
+                                }
+                            });
+                            
+                            taskInput.addEventListener('input', () => {
+                                // Update visual state immediately as user types
+                                if (taskInput.value.trim()) {
+                                    // Name entered - remove dotted border immediately
+                                    const taskRow = taskInput.closest('.timeline-row');
+                                    if (taskRow && taskRow.classList.contains('incomplete')) {
+                                        taskRow.classList.remove('incomplete');
+                                        taskRow.classList.add('no-gantt');
+                                    }
                                 }
                             });
                             
@@ -1385,47 +1193,88 @@
                         }
                         
                         taskLabelEl.appendChild(taskLabelContent);
-                        
                         taskRowEl.appendChild(taskLabelEl);
                         
                         // Task weeks with editable input
                         const taskWeeksEl = document.createElement('div');
                         taskWeeksEl.className = 'timeline-row-weeks';
                         
-                        const weeksInput = document.createElement('input');
-                        weeksInput.type = 'number';
-                        weeksInput.value = task.duration;
-                        weeksInput.min = '1';
-                        weeksInput.max = '12';
-                        weeksInput.style.width = '40px';
-                        weeksInput.style.textAlign = 'center';
-                        weeksInput.style.border = 'none';
-                        weeksInput.style.background = 'transparent';
-                        weeksInput.style.fontSize = '14px';
-                        weeksInput.style.fontWeight = '600';
-                        weeksInput.style.color = '#667eea';
-                        
-                        weeksInput.addEventListener('change', () => {
-                            const newDuration = parseInt(weeksInput.value) || 1;
-                            if (newDuration !== task.duration) {
-                                task.duration = newDuration;
-                                // Reset completed weeks if new duration is shorter
-                                if (task.completedWeeks > newDuration) {
-                                    task.completedWeeks = newDuration;
+                        if (task.duration === null || task.duration === undefined) {
+                            // Show input for setting initial duration
+                            const weeksInput = document.createElement('input');
+                            weeksInput.type = 'number';
+                            weeksInput.value = '';
+                            weeksInput.placeholder = '#';
+                            weeksInput.min = '1';
+                            weeksInput.max = '12';
+                            weeksInput.style.width = '40px';
+                            weeksInput.style.textAlign = 'center';
+                            weeksInput.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                            weeksInput.style.border = '1px dashed #ccc';
+                            
+                            weeksInput.addEventListener('change', () => {
+                                const newDuration = parseInt(weeksInput.value) || null;
+                                if (newDuration && newDuration > 0) {
+                                    task.duration = newDuration;
+                                    scheduleTaskIfComplete(task);
+                                    updateTaskStatus(task);
+                                    renderTimeline();
+                                    autoSave();
                                 }
-                                updateTaskStatus(task);
-                                renderTimeline();
-                                autoSave();
-                            }
-                        });
+                            });
+                            
+                            weeksInput.addEventListener('input', () => {
+                                // Update visual state immediately as user types
+                                const newDuration = parseInt(weeksInput.value) || null;
+                                if (newDuration && newDuration > 0) {
+                                    // Duration entered - update visual state immediately
+                                    const taskRow = weeksInput.closest('.timeline-row');
+                                    if (taskRow && (taskRow.classList.contains('incomplete') || taskRow.classList.contains('no-gantt'))) {
+                                        taskRow.classList.remove('incomplete', 'no-gantt');
+                                        taskRow.classList.add('complete');
+                                    }
+                                }
+                            });
+                            
+                            weeksInput.addEventListener('keydown', (e) => {
+                                if (e.key === 'Enter') {
+                                    weeksInput.blur();
+                                }
+                            });
+                            
+                            taskWeeksEl.appendChild(weeksInput);
+                        } else {
+                            // Show regular duration input
+                            const weeksInput = document.createElement('input');
+                            weeksInput.type = 'number';
+                            weeksInput.value = task.duration;
+                            weeksInput.min = '1';
+                            weeksInput.max = '12';
+                            
+                            weeksInput.addEventListener('change', () => {
+                                const newDuration = parseInt(weeksInput.value) || 1;
+                                if (newDuration !== task.duration) {
+                                    task.duration = newDuration;
+                                    // Reset completed weeks if new duration is shorter
+                                    if (task.completedWeeks > newDuration) {
+                                        task.completedWeeks = newDuration;
+                                    }
+                                    scheduleTaskIfComplete(task);
+                                    updateTaskStatus(task);
+                                    renderTimeline();
+                                    autoSave();
+                                }
+                            });
+                            
+                            weeksInput.addEventListener('keydown', (e) => {
+                                if (e.key === 'Enter') {
+                                    weeksInput.blur();
+                                }
+                            });
+                            
+                            taskWeeksEl.appendChild(weeksInput);
+                        }
                         
-                        weeksInput.addEventListener('keydown', (e) => {
-                            if (e.key === 'Enter') {
-                                weeksInput.blur();
-                            }
-                        });
-                        
-                        taskWeeksEl.appendChild(weeksInput);
                         taskRowEl.appendChild(taskWeeksEl);
                         
                         // Timeline cells for task
@@ -1443,8 +1292,8 @@
                         
                         grid.appendChild(taskRowEl);
                         
-                        // Render task if it's scheduled
-                        if (task.startMonth !== undefined) {
+                        // Render task gantt bar only if it should show
+                        if (shouldShowGanttBar(task) && task.startWeek !== undefined) {
                             renderTask(task, taskRowEl);
                         }
                     });
@@ -1475,44 +1324,38 @@
             grid.appendChild(addChunkRowEl);
         }
 
-        // Render chunk progress bar (non-clickable, shows overall progress)
+        // Render chunk progress bar (extends to cover all tasks in chunk)
         function renderChunkProgressBar(chunk, chunkRowEl) {
             if (!chunk.tasks || chunk.tasks.length === 0) return;
             
-            const totalTasks = chunk.tasks.length;
-            const scheduledTasks = chunk.tasks.filter(t => t.startMonth !== undefined);
-            
-            if (scheduledTasks.length === 0) return;
+            const chunkSpan = calculateChunkSpan(chunk);
+            if (chunkSpan.totalWeeks === 0) return;
             
             // Calculate overall progress
-            let totalWeeks = 0;
             let completedWeeks = 0;
-            
-            scheduledTasks.forEach(task => {
-                totalWeeks += task.duration;
-                completedWeeks += task.completedWeeks || 0;
+            chunk.tasks.forEach(task => {
+                if (shouldShowGanttBar(task) && task.startWeek !== undefined) {
+                    completedWeeks += task.completedWeeks || 0;
+                }
             });
-            
-            // Find the span of all tasks
-            const minMonth = Math.min(...scheduledTasks.map(t => t.startMonth));
-            const maxMonth = Math.max(...scheduledTasks.map(t => t.startMonth + (t.duration / 4.33)));
             
             const progressBar = document.createElement('div');
             progressBar.className = 'chunk-progress-bar';
             
             if (completedWeeks > 0) {
                 progressBar.classList.add('has-progress');
-                if (completedWeeks === totalWeeks) {
+                if (completedWeeks === chunkSpan.totalWeeks) {
                     progressBar.classList.add('completed');
                 }
             }
             
-            progressBar.textContent = `${Math.round((completedWeeks / totalWeeks) * 100)}%`;
+            const progressPercentage = Math.round((completedWeeks / chunkSpan.totalWeeks) * 100);
+            progressBar.textContent = `${progressPercentage}%`;
             
-            // Position the progress bar
-            const monthWidth = 100;
-            const left = 280 + (minMonth * monthWidth);
-            const width = (maxMonth - minMonth) * monthWidth;
+            // Position the progress bar based on week positions
+            const left = weeksToTimelinePosition(chunkSpan.startWeek);
+            const endPosition = weeksToTimelinePosition(chunkSpan.endWeek);
+            const width = endPosition - left;
             
             progressBar.style.left = `${left}px`;
             progressBar.style.width = `${Math.max(60, width)}px`;
@@ -1520,12 +1363,69 @@
             chunkRowEl.appendChild(progressBar);
         }
 
-        // Render individual task
-        function renderTask(task, taskRowEl) {
+        // Add auto-scheduled task (automatically positions after the last task)
+        function addAutoScheduledTask(chunkId) {
+            const chunk = rows.find(r => r.id === chunkId);
+            if (!chunk) return;
+            
+            // Create a blank task with no weeks initially
+            const task = {
+                id: taskIdCounter++,
+                name: '', // Blank name
+                duration: null, // No weeks initially
+                status: 'not-started',
+                completedWeeks: 0,
+                chunkId: chunkId
+                // No startMonth - won't show Gantt bar until name and weeks are set
+            };
+            
+            tasks.push(task);
+            
+            if (!chunk.tasks) chunk.tasks = [];
+            chunk.tasks.push(task);
+            
+            renderTimeline();
+            autoSave();
+        }
+
+        // Check if task should show gantt bar
+        function shouldShowGanttBar(task) {
+            return task.name && task.name.trim() !== '' && task.duration && task.duration > 0;
+        }
+
+        // Get task visual state for styling
+        function getTaskVisualState(task) {
+            if (!task.name || task.name.trim() === '') {
+                return 'incomplete'; // No name, no weeks - very indented
+            } else if (!task.duration || task.duration <= 0) {
+                return 'no-gantt'; // Has name but no weeks - slight indent, no gantt
+            } else {
+                return 'complete'; // Has name and weeks - slight indent, show gantt
+            }
+        }
+
+        // Auto-schedule task when it becomes complete
+        function scheduleTaskIfComplete(task) {
+            if (shouldShowGanttBar(task) && task.startWeek === undefined) {
+                task.startWeek = calculateNextAvailableSlot(task.chunkId, task.id);
+                // Remove old startMonth property if it exists
+                delete task.startMonth;
+            } else if (!shouldShowGanttBar(task)) {
+                // Remove from timeline if incomplete
+                task.startWeek = undefined;
+                delete task.startMonth;
+            }
+        }
+
+        // Render individual task in the overlay (completely separate from rows)
+        function renderTask(task, overlayContainer, topPosition) {
             const taskEl = document.createElement('div');
             taskEl.className = `task ${task.status}`;
             taskEl.dataset.taskId = task.id;
-            taskEl.draggable = true;
+            taskEl.style.pointerEvents = 'auto';
+            
+            // Position the task in the overlay
+            taskEl.style.top = `${topPosition}px`;
             
             // Create task label
             const labelEl = document.createElement('div');
@@ -1535,7 +1435,7 @@
             
             // Create week divisions
             const weeksEl = document.createElement('div');
-            weeksEl.className = 'chunk-weeks';
+            weeksEl.className = 'task-weeks';
             
             for (let i = 0; i < task.duration; i++) {
                 const weekEl = document.createElement('div');
@@ -1554,6 +1454,7 @@
             if (task.completedWeeks && task.completedWeeks > 0) {
                 const resetBtn = document.createElement('button');
                 resetBtn.className = 'task-reset-btn';
+                resetBtn.style.pointerEvents = 'auto';
                 resetBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     e.preventDefault();
@@ -1562,148 +1463,123 @@
                 taskEl.appendChild(resetBtn);
             }
             
-            // Add click handler to advance progress
+            // Add click handler to advance progress (only when not dragging)
             taskEl.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (!e.target.closest('.task-reset-btn')) {
+                if (!isDragging && !e.target.closest('.task-reset-btn')) {
+                    e.stopPropagation();
                     advanceTaskProgress(task);
                 }
             });
             
-            // Add drag event listeners
-            taskEl.addEventListener('dragstart', handleTaskDragStart);
-            taskEl.addEventListener('dragend', handleTaskDragEnd);
+            // Mouse-based dragging - ONLY on the task element itself
+            taskEl.addEventListener('mousedown', function(e) {
+                // Only handle if click is directly on the task bar
+                if (e.target === taskEl || e.target.closest('.task-weeks') || e.target.closest('.task-week')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    startDrag(e, taskEl);
+                }
+            });
+            
+            // Position task horizontally
+            positionTask(taskEl, task);
+            
+            overlayContainer.appendChild(taskEl);
+        }
+
+        // Render chunk progress bar in overlay
+        function renderChunkProgressBar(chunk, overlayContainer, topPosition) {
+            if (!chunk.tasks || chunk.tasks.length === 0) return;
+            
+            const chunkSpan = calculateChunkSpan(chunk);
+            if (chunkSpan.totalWeeks === 0) return;
+            
+            // Calculate overall progress
+            let completedWeeks = 0;
+            chunk.tasks.forEach(task => {
+                if (shouldShowGanttBar(task) && task.startWeek !== undefined) {
+                    completedWeeks += task.completedWeeks || 0;
+                }
+            });
+            
+            const progressBar = document.createElement('div');
+            progressBar.className = 'chunk-progress-bar';
+            progressBar.style.top = `${topPosition}px`;
+            
+            if (completedWeeks > 0) {
+                progressBar.classList.add('has-progress');
+                if (completedWeeks === chunkSpan.totalWeeks) {
+                    progressBar.classList.add('completed');
+                }
+            }
+            
+            const progressPercentage = Math.round((completedWeeks / chunkSpan.totalWeeks) * 100);
+            progressBar.textContent = `${progressPercentage}%`;
+            
+            // Position the progress bar based on week positions
+            const left = weeksToTimelinePosition(chunkSpan.startWeek);
+            const endPosition = weeksToTimelinePosition(chunkSpan.endWeek);
+            const width = endPosition - left;
+            
+            progressBar.style.left = `${left}px`;
+            progressBar.style.width = `${Math.max(60, width)}px`;
+            
+            overlayContainer.appendChild(progressBar);
+        }
+            
+            
+            taskEl.appendChild(weeksEl);
+            
+            if (task.completedWeeks && task.completedWeeks > 0) {
+                const resetBtn = document.createElement('button');
+                resetBtn.className = 'task-reset-btn';
+                resetBtn.style.pointerEvents = 'auto';
+                resetBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    regressTaskProgress(task);
+                });
+                taskEl.appendChild(resetBtn);
+            }
+            
+            // Add click handler to advance progress (only when not dragging)
+            taskEl.addEventListener('click', function(e) {
+                if (!isDragging && !e.target.closest('.task-reset-btn')) {
+                    e.stopPropagation();
+                    advanceTaskProgress(task);
+                }
+            });
+            
+            // Mouse-based dragging - ONLY on the task element itself
+            taskEl.addEventListener('mousedown', function(e) {
+                // Only handle if click is directly on the task bar
+                if (e.target === taskEl || e.target.closest('.task-weeks') || e.target.closest('.task-week')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    startDrag(e, taskEl);
+                }
+            });
             
             // Position task
             positionTask(taskEl, task);
             
             taskRowEl.appendChild(taskEl);
-        }
+        
 
-        // Position task based on start month and duration
+        // Position task based on start week and duration
         function positionTask(taskEl, task) {
-            if (task.startMonth === undefined) return;
+            if (task.startWeek === undefined) return;
             
-            const monthWidth = 100;
-            const left = 280 + (task.startMonth * monthWidth);
-            const weeksPerMonth = 4.33;
-            const monthsSpanned = task.duration / weeksPerMonth;
-            const width = monthsSpanned * monthWidth;
+            const left = weeksToTimelinePosition(task.startWeek);
+            const endPosition = weeksToTimelinePosition(task.startWeek + task.duration);
+            const width = endPosition - left;
+            
+            console.log(`Positioning task "${task.name}": week ${task.startWeek} -> pixel ${left}, width ${width}`);
             
             taskEl.style.left = `${left}px`;
             taskEl.style.width = `${Math.max(60, width)}px`;
-        }        // Create inline task creation row
-        function createInlineTaskRow(chunkId, afterElement) {
-            // Remove any existing inline inputs
-            document.querySelectorAll('.inline-task-row, .inline-chunk-row').forEach(el => el.remove());
-            
-            const taskRowEl = document.createElement('div');
-            taskRowEl.className = 'timeline-row task-row inline-task-row';
-            
-            // Task input area
-            const taskLabelEl = document.createElement('div');
-            taskLabelEl.className = 'timeline-row-label';
-            
-            const input = document.createElement('input');
-            input.className = 'inline-input';
-            input.type = 'text';
-            input.placeholder = 'Task name...';
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    const weeksInput = taskRowEl.querySelector('.weeks-input');
-                    saveInlineTask(chunkId, input.value, parseInt(weeksInput.value) || 3, taskRowEl);
-                } else if (e.key === 'Escape') {
-                    taskRowEl.remove();
-                }
-            });
-            
-            const weeksInput = document.createElement('input');
-            weeksInput.className = 'inline-input weeks-input';
-            weeksInput.type = 'number';
-            weeksInput.value = '3';
-            weeksInput.min = '1';
-            weeksInput.max = '12';
-            weeksInput.placeholder = 'weeks';
-            
-            const actions = document.createElement('div');
-            actions.className = 'inline-actions';
-            
-            const saveBtn = document.createElement('button');
-            saveBtn.className = 'inline-btn save';
-            saveBtn.textContent = '✓';
-            saveBtn.addEventListener('click', () => {
-                saveInlineTask(chunkId, input.value, parseInt(weeksInput.value) || 3, taskRowEl);
-            });
-            
-            const cancelBtn = document.createElement('button');
-            cancelBtn.className = 'inline-btn cancel';
-            cancelBtn.textContent = '✕';
-            cancelBtn.addEventListener('click', () => taskRowEl.remove());
-            
-            actions.appendChild(saveBtn);
-            actions.appendChild(cancelBtn);
-            
-            taskLabelEl.appendChild(input);
-            taskLabelEl.appendChild(weeksInput);
-            taskLabelEl.appendChild(actions);
-            taskRowEl.appendChild(taskLabelEl);
-            
-            // Weeks display
-            const weeksEl = document.createElement('div');
-            weeksEl.className = 'timeline-row-weeks';
-            weeksEl.style.display = 'flex';
-            weeksEl.style.alignItems = 'center';
-            weeksEl.style.justifyContent = 'center';
-            weeksEl.style.background = 'white';
-            weeksEl.textContent = '3';
-            taskRowEl.appendChild(weeksEl);
-            
-            // Update weeks display when input changes
-            weeksInput.addEventListener('input', () => {
-                weeksEl.textContent = weeksInput.value || '3';
-            });
-            
-            // Timeline cells
-            for (let month = 0; month < 12; month++) {
-                const cellEl = document.createElement('div');
-                cellEl.className = 'timeline-cell';
-                cellEl.style.background = 'white';
-                taskRowEl.appendChild(cellEl);
-            }
-            
-            // Insert after the chunk row
-            afterElement.parentNode.insertBefore(taskRowEl, afterElement.nextSibling);
-            
-            // Focus the input
-            setTimeout(() => input.focus(), 100);
-        }
-
-        // Save inline task - simplified parameters
-        function saveInlineTask(chunkId, taskName, duration, rowElement) {
-            if (!taskName.trim()) return;
-            
-            const task = {
-                id: taskIdCounter++,
-                name: taskName.trim(),
-                duration: duration,
-                status: 'not-started',
-                completedWeeks: 0,
-                chunkId: chunkId,
-                startMonth: 0 // Default to January
-            };
-            
-            tasks.push(task);
-            
-            // Add to chunk
-            const chunk = rows.find(r => r.id === chunkId);
-            if (chunk) {
-                if (!chunk.tasks) chunk.tasks = [];
-                chunk.tasks.push(task);
-            }
-            
-            rowElement.remove();
-            renderTimeline();
-            autoSave();
         }
 
         // Create inline chunk creation
@@ -1786,30 +1662,6 @@
             autoSave();
         }
 
-        // Add a single blank task
-        function addBlankTask(chunkId) {
-            const chunk = rows.find(r => r.id === chunkId);
-            if (!chunk) return;
-            
-            const task = {
-                id: taskIdCounter++,
-                name: '', // Blank name - will be inactive until filled
-                duration: 3,
-                status: 'not-started',
-                completedWeeks: 0,
-                chunkId: chunkId
-                // No startMonth - won't show Gantt bar until activated
-            };
-            
-            tasks.push(task);
-            
-            if (!chunk.tasks) chunk.tasks = [];
-            chunk.tasks.push(task);
-            
-            renderTimeline();
-            autoSave();
-        }
-
         // Replace inline input with add button
         function replaceInlineWithAdd(inlineElement, originalElement) {
             if (inlineElement.parentNode) {
@@ -1883,81 +1735,130 @@
             }
         }
 
-        // Drag and drop handlers for tasks
-        function handleTaskDragStart(e) {
-            draggedTask = {
-                id: parseInt(e.target.dataset.taskId),
-                element: e.target
-            };
-            e.target.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        }
+        // Simple drag system - completely avoid HTML drag events
+        let isDragging = false;
+        let dragTask = null;
+        let dragStartX = 0;
+        let dragStartWeek = 0;
 
-        function handleTaskDragEnd(e) {
-            e.target.classList.remove('dragging');
-            e.target.classList.add('dropping');
+        function startDrag(e, taskElement) {
+            if (e.button !== 0) return; // Left click only
             
-            setTimeout(() => {
-                e.target.classList.remove('dropping');
-            }, 600);
+            // Only allow dragging if the click is specifically on the Gantt bar
+            if (!e.target.classList.contains('task') && 
+                !e.target.classList.contains('task-week') && 
+                !e.target.classList.contains('task-weeks')) {
+                return;
+            }
             
-            draggedTask = null;
-        }
-
-        function handleTaskRowDragOver(e) {
+            const taskId = parseInt(taskElement.dataset.taskId);
+            dragTask = tasks.find(t => t.id === taskId);
+            if (!dragTask) return;
+            
+            isDragging = true;
+            dragStartX = e.clientX;
+            dragStartWeek = dragTask.startWeek;
+            
+            taskElement.classList.add('dragging');
+            
+            // Prevent all default behaviors and bubbling
             e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            // Disable selection on the whole document during drag
+            document.body.style.userSelect = 'none';
+            document.body.style.webkitUserSelect = 'none';
+            
+            console.log(`Starting drag: Task "${dragTask.name}" at week ${dragStartWeek}`);
         }
 
-        function handleTaskRowDrop(e) {
-            e.preventDefault();
+        function updateDrag(e) {
+            if (!isDragging || !dragTask) return;
             
-            if (!draggedTask) return;
+            // Calculate how many pixels we've moved
+            const deltaX = e.clientX - dragStartX;
             
-            const taskRowEl = e.currentTarget;
-            const existingTaskId = parseInt(taskRowEl.dataset.taskId);
+            // Convert to weeks
+            const totalWeeks = getTotalWeeksInYear();
+            const timelineWidth = 12 * 100; // 1200px
+            const pixelsPerWeek = timelineWidth / totalWeeks;
+            const weeksMoved = deltaX / pixelsPerWeek;
             
-            // Find the task and its chunk
-            const task = tasks.find(t => t.id === draggedTask.id);
-            if (!task) return;
+            // Calculate new week position
+            let newWeek = Math.round(dragStartWeek + weeksMoved);
+            newWeek = Math.max(0, newWeek); // Don't go negative
+            newWeek = Math.min(newWeek, totalWeeks - dragTask.duration); // Don't go past end
             
-            // Calculate drop position in months
-            const rect = taskRowEl.getBoundingClientRect();
-            const x = e.clientX - rect.left - 280;
-            const monthWidth = 100;
-            const month = Math.max(0, Math.min(11, Math.floor(x / monthWidth)));
+            // Update the task data
+            dragTask.startWeek = newWeek;
             
-            // Remove task from previous location
-            if (task.chunkId !== undefined) {
-                const oldChunk = rows.find(r => r.id === task.chunkId);
-                if (oldChunk && oldChunk.tasks) {
-                    oldChunk.tasks = oldChunk.tasks.filter(t => t.id !== task.id);
-                }
+            // Update visual position immediately using our position function
+            const taskElement = document.querySelector(`[data-task-id="${dragTask.id}"]`);
+            if (taskElement) {
+                const newLeft = weeksToTimelinePosition(newWeek);
+                taskElement.style.left = `${newLeft}px`;
+            }
+        }
+
+        function endDrag(e) {
+            if (!isDragging || !dragTask) return;
+            
+            const taskElement = document.querySelector(`[data-task-id="${dragTask.id}"]`);
+            if (taskElement) {
+                taskElement.classList.remove('dragging');
             }
             
-            // If dropping on an existing task row, get the chunk from that task
-            if (existingTaskId) {
-                const existingTask = tasks.find(t => t.id === existingTaskId);
-                if (existingTask && existingTask.chunkId !== undefined) {
-                    const chunk = rows.find(r => r.id === existingTask.chunkId);
-                    if (chunk) {
-                        task.chunkId = chunk.id;
-                        task.startMonth = month;
-                        chunk.tasks.push(task);
-                    }
-                }
-            }
+            // Re-enable text selection
+            document.body.style.userSelect = '';
+            document.body.style.webkitUserSelect = '';
             
-            // Re-render timeline
-            renderTimeline();
+            console.log(`Drag ended: Task "${dragTask.name}" at week ${dragTask.startWeek}`);
             
-            // Remove from unscheduled area
-            const unscheduledEl = document.querySelector(`#projectChunks [data-task-id="${task.id}"]`);
-            if (unscheduledEl) {
-                unscheduledEl.remove();
-            }
-            
+            // Save immediately without re-rendering
             autoSave();
+            
+            isDragging = false;
+            dragTask = null;
+        }
+
+        // Get total weeks in the year
+        function getTotalWeeksInYear() {
+            let totalWeeks = 0;
+            for (let month = 0; month < 12; month++) {
+                totalWeeks += getWeeksInMonth(currentYear, month);
+            }
+            return totalWeeks;
+        }
+
+        function endDrag(e) {
+            if (!isDragging || !dragTask) return;
+            
+            const taskElement = document.querySelector(`[data-task-id="${dragTask.id}"]`);
+            if (taskElement) {
+                taskElement.classList.remove('dragging');
+            }
+            
+            // Re-enable text selection
+            document.body.style.userSelect = '';
+            document.body.style.webkitUserSelect = '';
+            
+            console.log(`Drag ended: Task "${dragTask.name}" at week ${dragTask.startWeek}`);
+            
+            // Save immediately without re-rendering
+            autoSave();
+            
+            isDragging = false;
+            dragTask = null;
+        }
+
+        // Get total weeks in the year
+        function getTotalWeeksInYear() {
+            let totalWeeks = 0;
+            for (let month = 0; month < 12; month++) {
+                totalWeeks += getWeeksInMonth(currentYear, month);
+            }
+            return totalWeeks;
         }
 
         // Auto-save (silent save without download)
@@ -1982,22 +1883,13 @@
         }
 
         // Modal functions
-        function showAddTaskModal() {
-            document.getElementById('chunkModal').classList.add('show');
-        }
-
-        function hideChunkModal() {
-            document.getElementById('chunkModal').classList.remove('show');
-            document.getElementById('chunkForm').reset();
-        }
-
         function showProjectSettingsModal() {
             document.getElementById('projectName').value = document.querySelector('.header h1').textContent;
-            document.getElementById('projectSettingsModal').classList.add('show');
+            document.getElementById('projectSettingsModal').style.display = 'flex';
         }
 
         function hideProjectSettingsModal() {
-            document.getElementById('projectSettingsModal').classList.remove('show');
+            document.getElementById('projectSettingsModal').style.display = 'none';
             document.getElementById('projectSettingsForm').reset();
         }
 
@@ -2011,44 +1903,12 @@
         }
 
         // Handle form submissions
-        function handleChunkFormSubmit(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('chunkName').value;
-            const duration = parseInt(document.getElementById('chunkDuration').value);
-            const status = document.getElementById('chunkStatus').value;
-            
-            const task = {
-                id: taskIdCounter++,
-                name: name,
-                duration: duration,
-                status: status,
-                completedWeeks: 0
-            };
-            
-            tasks.push(task);
-            addUnscheduledTask(task);
-            hideChunkModal();
-            autoSave();
-        }
-
         function handleProjectSettingsSubmit(e) {
             e.preventDefault();
             
             const newProjectName = document.getElementById('projectName').value;
             document.querySelector('.header h1').textContent = newProjectName;
-            document.title = newProjectName + " - Project Planner";
-            
-            hideProjectSettingsModal();
-            autoSave();
-        }
-
-        function handleProjectSettingsSubmit(e) {
-            e.preventDefault();
-            
-            const newProjectName = document.getElementById('projectName').value;
-            document.querySelector('.header h1').textContent = newProjectName;
-            document.title = newProjectName + " - Project Planner";
+            document.title = newProjectName;
             
             hideProjectSettingsModal();
             autoSave();
@@ -2070,43 +1930,40 @@
                 }
             });
             
-            // Add sample tasks
+            // Add sample tasks with auto-scheduling
             const sampleTasks = [
-                { name: 'User Research', duration: 2, status: 'completed', startMonth: 0, chunkId: 0, completedWeeks: 2 },
-                { name: 'Wireframes', duration: 3, status: 'completed', startMonth: 1, chunkId: 0, completedWeeks: 3 },
-                { name: 'UI Design', duration: 4, status: 'in-progress', startMonth: 2, chunkId: 0, completedWeeks: 2 },
+                { name: 'User Research', duration: 2, status: 'completed', chunkId: 0, completedWeeks: 2 },
+                { name: 'Wireframes', duration: 3, status: 'completed', chunkId: 0, completedWeeks: 3 },
+                { name: 'UI Design', duration: 4, status: 'in-progress', chunkId: 0, completedWeeks: 2 },
                 
-                { name: 'Backend API', duration: 6, status: 'in-progress', startMonth: 3, chunkId: 1, completedWeeks: 2 },
-                { name: 'Frontend Components', duration: 5, status: 'not-started', startMonth: 4, chunkId: 1, completedWeeks: 0 },
-                { name: 'Database Setup', duration: 2, status: 'overdue', startMonth: 1, chunkId: 1, completedWeeks: 0 },
+                { name: 'Backend API', duration: 6, status: 'in-progress', chunkId: 1, completedWeeks: 2 },
+                { name: 'Frontend Components', duration: 5, status: 'not-started', chunkId: 1, completedWeeks: 0 },
+                { name: 'Database Setup', duration: 2, status: 'not-started', chunkId: 1, completedWeeks: 0 },
                 
-                { name: 'Unit Tests', duration: 3, status: 'not-started', startMonth: 6, chunkId: 2, completedWeeks: 0 },
-                { name: 'Integration Tests', duration: 2, status: 'not-started', startMonth: 7, chunkId: 2, completedWeeks: 0 },
-                
-                { name: 'Performance Optimization', duration: 3, status: 'not-started', completedWeeks: 0 }
+                { name: 'Unit Tests', duration: 3, status: 'not-started', chunkId: 2, completedWeeks: 0 },
+                { name: 'Integration Tests', duration: 2, status: 'not-started', chunkId: 2, completedWeeks: 0 }
             ];
             
+            // Auto-schedule tasks within each chunk using week-based positioning
             sampleTasks.forEach(sample => {
+                const startWeek = calculateNextAvailableSlot(sample.chunkId);
+                
                 const task = {
                     id: taskIdCounter++,
                     name: sample.name,
                     duration: sample.duration,
                     status: sample.status,
-                    startMonth: sample.startMonth,
+                    startWeek: startWeek,
                     chunkId: sample.chunkId,
                     completedWeeks: sample.completedWeeks
                 };
                 
                 tasks.push(task);
                 
-                if (task.chunkId !== undefined) {
-                    const chunk = rows.find(r => r.id === task.chunkId);
-                    if (chunk) {
-                        if (!chunk.tasks) chunk.tasks = [];
-                        chunk.tasks.push(task);
-                    }
-                } else {
-                    addUnscheduledTask(task);
+                const chunk = rows.find(r => r.id === sample.chunkId);
+                if (chunk) {
+                    if (!chunk.tasks) chunk.tasks = [];
+                    chunk.tasks.push(task);
                 }
             });
             
@@ -2159,10 +2016,14 @@
 
             // Modal close on outside click
             document.getElementById('projectSettingsModal').addEventListener('click', function(e) {
-                if (e.target === this) {
+                if (e.target === e.currentTarget) {
                     hideProjectSettingsModal();
                 }
             });
+
+            // Add global mouse event listeners for simple dragging
+            document.addEventListener('mousemove', updateDrag);
+            document.addEventListener('mouseup', endDrag);
 
             // Load data and render
             loadProjectData();
