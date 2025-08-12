@@ -156,11 +156,6 @@
             border-radius: 4px;
             overflow: hidden;
             position: relative;
-            pointer-events: none; /* Prevent row from being draggable */
-        }
-
-        .timeline-row-label, .timeline-row-weeks, .timeline-cell {
-            pointer-events: auto; /* Re-enable for interactive elements */
         }
 
         .timeline-row.chunk-row {
@@ -320,7 +315,7 @@
             height: 30px;
             top: 5px;
             border-radius: 6px;
-            cursor: pointer;
+            cursor: grab;
             display: flex;
             align-items: stretch;
             font-weight: 600;
@@ -333,6 +328,7 @@
             user-select: none;
             z-index: 10;
             overflow: hidden;
+            pointer-events: auto; /* Ensure tasks are draggable */
         }
 
         .task:hover {
@@ -362,7 +358,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            cursor: grab;
+            pointer-events: auto;
         }
 
         .task-week:last-child {
@@ -732,7 +729,7 @@
                         <div class="month-weeks" id="sep-weeks">4w</div>
                     </div>
                     <div class="timeline-header-cell">
-                        <div class="timeline-header-cell">Oct</div>
+                        <div class="month-header">Oct</div>
                         <div class="month-weeks" id="oct-weeks">4w</div>
                     </div>
                     <div class="timeline-header-cell">
@@ -1068,6 +1065,11 @@
             const grid = document.getElementById('timelineGrid');
             grid.innerHTML = '';
 
+            // Create overlay container for all Gantt bars
+            const ganttOverlay = document.createElement('div');
+            ganttOverlay.className = 'gantt-overlay';
+            ganttOverlay.id = 'ganttOverlay';
+
             rows.forEach((chunk, chunkIndex) => {
                 // Render chunk row (parent)
                 const chunkRowEl = document.createElement('div');
@@ -1132,11 +1134,11 @@
                 grid.appendChild(chunkRowEl);
                 
                 // Render chunk progress bar (spans the full chunk duration)
-                renderChunkProgressBar(chunk, chunkRowEl);
+                renderChunkProgressBar(chunk, ganttOverlay, chunkIndex);
                 
                 // Render task rows (children)
                 if (chunk.tasks && !chunk.collapsed) {
-                    chunk.tasks.forEach(task => {
+                    chunk.tasks.forEach((task, taskIndex) => {
                         const visualState = getTaskVisualState(task);
                         
                         const taskRowEl = document.createElement('div');
@@ -1292,9 +1294,11 @@
                         
                         grid.appendChild(taskRowEl);
                         
-                        // Render task gantt bar only if it should show
+                        // Render task gantt bar in overlay only if it should show
                         if (shouldShowGanttBar(task) && task.startWeek !== undefined) {
-                            renderTask(task, taskRowEl);
+                            // Calculate row position for this task
+                            const taskRowIndex = calculateTaskRowIndex(chunk, task, chunkIndex);
+                            renderTask(task, ganttOverlay, taskRowIndex);
                         }
                     });
                 }
@@ -1322,10 +1326,39 @@
             }
             
             grid.appendChild(addChunkRowEl);
+            
+            // Add the Gantt overlay on top
+            grid.appendChild(ganttOverlay);
+        }
+
+        // Calculate which row index a task should appear on (for overlay positioning)
+        function calculateTaskRowIndex(chunk, targetTask, chunkIndex) {
+            let rowIndex = 0;
+            
+            // Count all rows before this chunk
+            for (let i = 0; i < chunkIndex; i++) {
+                rowIndex++; // Chunk row itself
+                if (rows[i].tasks && !rows[i].collapsed) {
+                    rowIndex += rows[i].tasks.length; // Task rows
+                }
+            }
+            
+            // Add this chunk's row
+            rowIndex++;
+            
+            // Find position within this chunk's tasks
+            if (chunk.tasks && !chunk.collapsed) {
+                const taskIndex = chunk.tasks.findIndex(t => t.id === targetTask.id);
+                if (taskIndex >= 0) {
+                    rowIndex += taskIndex;
+                }
+            }
+            
+            return rowIndex;
         }
 
         // Render chunk progress bar (extends to cover all tasks in chunk)
-        function renderChunkProgressBar(chunk, chunkRowEl) {
+        function renderChunkProgressBar(chunk, overlayContainer, chunkIndex) {
             if (!chunk.tasks || chunk.tasks.length === 0) return;
             
             const chunkSpan = calculateChunkSpan(chunk);
@@ -1360,7 +1393,23 @@
             progressBar.style.left = `${left}px`;
             progressBar.style.width = `${Math.max(60, width)}px`;
             
-            chunkRowEl.appendChild(progressBar);
+            // Calculate the top position for this chunk row
+            const rowHeight = 51; // Row height + margin
+            const topPosition = chunkIndex * rowHeight + (chunkIndex > 0 ? calculatePreviousTaskRowsCount(chunkIndex) * rowHeight : 0);
+            progressBar.style.top = `${topPosition + 5}px`; // +5 for the top margin
+            
+            overlayContainer.appendChild(progressBar);
+        }
+
+        // Calculate how many task rows appear before a given chunk index
+        function calculatePreviousTaskRowsCount(chunkIndex) {
+            let taskRowCount = 0;
+            for (let i = 0; i < chunkIndex; i++) {
+                if (rows[i].tasks && !rows[i].collapsed) {
+                    taskRowCount += rows[i].tasks.length;
+                }
+            }
+            return taskRowCount;
         }
 
         // Add auto-scheduled task (automatically positions after the last task)
@@ -1418,20 +1467,15 @@
         }
 
         // Render individual task in the overlay (completely separate from rows)
-        function renderTask(task, overlayContainer, topPosition) {
+        function renderTask(task, overlayContainer, rowIndex) {
             const taskEl = document.createElement('div');
             taskEl.className = `task ${task.status}`;
             taskEl.dataset.taskId = task.id;
-            taskEl.style.pointerEvents = 'auto';
             
-            // Position the task in the overlay
+            // Position the task in the overlay based on row index
+            const rowHeight = 51; // Row height + margin
+            const topPosition = rowIndex * rowHeight + 5; // +5 for top margin
             taskEl.style.top = `${topPosition}px`;
-            
-            // Create task label
-            const labelEl = document.createElement('div');
-            labelEl.className = 'task-label-text';
-            labelEl.textContent = task.name;
-            taskEl.appendChild(labelEl);
             
             // Create week divisions
             const weeksEl = document.createElement('div');
@@ -1454,32 +1498,63 @@
             if (task.completedWeeks && task.completedWeeks > 0) {
                 const resetBtn = document.createElement('button');
                 resetBtn.className = 'task-reset-btn';
-                resetBtn.style.pointerEvents = 'auto';
                 resetBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    e.preventDefault();
                     regressTaskProgress(task);
                 });
                 taskEl.appendChild(resetBtn);
             }
             
-            // Add click handler to advance progress (only when not dragging)
+            // Click to advance progress
             taskEl.addEventListener('click', function(e) {
-                if (!isDragging && !e.target.closest('.task-reset-btn')) {
-                    e.stopPropagation();
+                if (!e.target.closest('.task-reset-btn') && !taskEl.dragging) {
                     advanceTaskProgress(task);
                 }
             });
             
-            // Mouse-based dragging - ONLY on the task element itself
+            // Drag functionality
+            let startX = 0;
+            let startWeek = 0;
+            let dragging = false;
+            
             taskEl.addEventListener('mousedown', function(e) {
-                // Only handle if click is directly on the task bar
-                if (e.target === taskEl || e.target.closest('.task-weeks') || e.target.closest('.task-week')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    startDrag(e, taskEl);
+                e.preventDefault();
+                dragging = true;
+                taskEl.dragging = true;
+                startX = e.clientX;
+                startWeek = task.startWeek;
+                taskEl.style.cursor = 'grabbing';
+                taskEl.style.zIndex = '1000';
+                
+                function onMouseMove(e) {
+                    if (!dragging) return;
+                    
+                    const deltaX = e.clientX - startX;
+                    const totalWeeks = getTotalWeeksInYear();
+                    const pixelsPerWeek = (12 * 100) / totalWeeks;
+                    const weeksMoved = deltaX / pixelsPerWeek;
+                    
+                    let newWeek = Math.round(startWeek + weeksMoved);
+                    newWeek = Math.max(0, newWeek);
+                    newWeek = Math.min(newWeek, totalWeeks - task.duration);
+                    
+                    task.startWeek = newWeek;
+                    const newLeft = weeksToTimelinePosition(newWeek);
+                    taskEl.style.left = `${newLeft}px`;
                 }
+                
+                function onMouseUp() {
+                    dragging = false;
+                    taskEl.dragging = false;
+                    taskEl.style.cursor = '';
+                    taskEl.style.zIndex = '';
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                    autoSave();
+                }
+                
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
             });
             
             // Position task horizontally
@@ -1487,86 +1562,6 @@
             
             overlayContainer.appendChild(taskEl);
         }
-
-        // Render chunk progress bar in overlay
-        function renderChunkProgressBar(chunk, overlayContainer, topPosition) {
-            if (!chunk.tasks || chunk.tasks.length === 0) return;
-            
-            const chunkSpan = calculateChunkSpan(chunk);
-            if (chunkSpan.totalWeeks === 0) return;
-            
-            // Calculate overall progress
-            let completedWeeks = 0;
-            chunk.tasks.forEach(task => {
-                if (shouldShowGanttBar(task) && task.startWeek !== undefined) {
-                    completedWeeks += task.completedWeeks || 0;
-                }
-            });
-            
-            const progressBar = document.createElement('div');
-            progressBar.className = 'chunk-progress-bar';
-            progressBar.style.top = `${topPosition}px`;
-            
-            if (completedWeeks > 0) {
-                progressBar.classList.add('has-progress');
-                if (completedWeeks === chunkSpan.totalWeeks) {
-                    progressBar.classList.add('completed');
-                }
-            }
-            
-            const progressPercentage = Math.round((completedWeeks / chunkSpan.totalWeeks) * 100);
-            progressBar.textContent = `${progressPercentage}%`;
-            
-            // Position the progress bar based on week positions
-            const left = weeksToTimelinePosition(chunkSpan.startWeek);
-            const endPosition = weeksToTimelinePosition(chunkSpan.endWeek);
-            const width = endPosition - left;
-            
-            progressBar.style.left = `${left}px`;
-            progressBar.style.width = `${Math.max(60, width)}px`;
-            
-            overlayContainer.appendChild(progressBar);
-        }
-            
-            
-            taskEl.appendChild(weeksEl);
-            
-            if (task.completedWeeks && task.completedWeeks > 0) {
-                const resetBtn = document.createElement('button');
-                resetBtn.className = 'task-reset-btn';
-                resetBtn.style.pointerEvents = 'auto';
-                resetBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    regressTaskProgress(task);
-                });
-                taskEl.appendChild(resetBtn);
-            }
-            
-            // Add click handler to advance progress (only when not dragging)
-            taskEl.addEventListener('click', function(e) {
-                if (!isDragging && !e.target.closest('.task-reset-btn')) {
-                    e.stopPropagation();
-                    advanceTaskProgress(task);
-                }
-            });
-            
-            // Mouse-based dragging - ONLY on the task element itself
-            taskEl.addEventListener('mousedown', function(e) {
-                // Only handle if click is directly on the task bar
-                if (e.target === taskEl || e.target.closest('.task-weeks') || e.target.closest('.task-week')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    startDrag(e, taskEl);
-                }
-            });
-            
-            // Position task
-            positionTask(taskEl, task);
-            
-            taskRowEl.appendChild(taskEl);
-        
 
         // Position task based on start week and duration
         function positionTask(taskEl, task) {
@@ -1733,123 +1728,6 @@
             } else {
                 task.status = 'in-progress';
             }
-        }
-
-        // Simple drag system - completely avoid HTML drag events
-        let isDragging = false;
-        let dragTask = null;
-        let dragStartX = 0;
-        let dragStartWeek = 0;
-
-        function startDrag(e, taskElement) {
-            if (e.button !== 0) return; // Left click only
-            
-            // Only allow dragging if the click is specifically on the Gantt bar
-            if (!e.target.classList.contains('task') && 
-                !e.target.classList.contains('task-week') && 
-                !e.target.classList.contains('task-weeks')) {
-                return;
-            }
-            
-            const taskId = parseInt(taskElement.dataset.taskId);
-            dragTask = tasks.find(t => t.id === taskId);
-            if (!dragTask) return;
-            
-            isDragging = true;
-            dragStartX = e.clientX;
-            dragStartWeek = dragTask.startWeek;
-            
-            taskElement.classList.add('dragging');
-            
-            // Prevent all default behaviors and bubbling
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            
-            // Disable selection on the whole document during drag
-            document.body.style.userSelect = 'none';
-            document.body.style.webkitUserSelect = 'none';
-            
-            console.log(`Starting drag: Task "${dragTask.name}" at week ${dragStartWeek}`);
-        }
-
-        function updateDrag(e) {
-            if (!isDragging || !dragTask) return;
-            
-            // Calculate how many pixels we've moved
-            const deltaX = e.clientX - dragStartX;
-            
-            // Convert to weeks
-            const totalWeeks = getTotalWeeksInYear();
-            const timelineWidth = 12 * 100; // 1200px
-            const pixelsPerWeek = timelineWidth / totalWeeks;
-            const weeksMoved = deltaX / pixelsPerWeek;
-            
-            // Calculate new week position
-            let newWeek = Math.round(dragStartWeek + weeksMoved);
-            newWeek = Math.max(0, newWeek); // Don't go negative
-            newWeek = Math.min(newWeek, totalWeeks - dragTask.duration); // Don't go past end
-            
-            // Update the task data
-            dragTask.startWeek = newWeek;
-            
-            // Update visual position immediately using our position function
-            const taskElement = document.querySelector(`[data-task-id="${dragTask.id}"]`);
-            if (taskElement) {
-                const newLeft = weeksToTimelinePosition(newWeek);
-                taskElement.style.left = `${newLeft}px`;
-            }
-        }
-
-        function endDrag(e) {
-            if (!isDragging || !dragTask) return;
-            
-            const taskElement = document.querySelector(`[data-task-id="${dragTask.id}"]`);
-            if (taskElement) {
-                taskElement.classList.remove('dragging');
-            }
-            
-            // Re-enable text selection
-            document.body.style.userSelect = '';
-            document.body.style.webkitUserSelect = '';
-            
-            console.log(`Drag ended: Task "${dragTask.name}" at week ${dragTask.startWeek}`);
-            
-            // Save immediately without re-rendering
-            autoSave();
-            
-            isDragging = false;
-            dragTask = null;
-        }
-
-        // Get total weeks in the year
-        function getTotalWeeksInYear() {
-            let totalWeeks = 0;
-            for (let month = 0; month < 12; month++) {
-                totalWeeks += getWeeksInMonth(currentYear, month);
-            }
-            return totalWeeks;
-        }
-
-        function endDrag(e) {
-            if (!isDragging || !dragTask) return;
-            
-            const taskElement = document.querySelector(`[data-task-id="${dragTask.id}"]`);
-            if (taskElement) {
-                taskElement.classList.remove('dragging');
-            }
-            
-            // Re-enable text selection
-            document.body.style.userSelect = '';
-            document.body.style.webkitUserSelect = '';
-            
-            console.log(`Drag ended: Task "${dragTask.name}" at week ${dragTask.startWeek}`);
-            
-            // Save immediately without re-rendering
-            autoSave();
-            
-            isDragging = false;
-            dragTask = null;
         }
 
         // Get total weeks in the year
@@ -2022,6 +1900,35 @@
             });
 
             // Add global mouse event listeners for simple dragging
+        function attachGlobalDragListeners() {
+            // Remove any existing listeners first
+            document.removeEventListener('mousemove', updateDrag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('mousedown', preventRowDragging);
+            
+            // Add drag listeners
+            document.addEventListener('mousemove', updateDrag);
+            document.addEventListener('mouseup', endDrag);
+            
+            // Add listener to prevent dragging on non-task elements
+            document.addEventListener('mousedown', preventRowDragging);
+        }
+        
+        // Prevent dragging on everything except Gantt bars
+        function preventRowDragging(e) {
+            // If the click is not on a Gantt bar, prevent any dragging behavior
+            const clickedElement = e.target;
+            const isTaskBar = clickedElement.classList.contains('task') || 
+                             clickedElement.classList.contains('task-week') || 
+                             clickedElement.classList.contains('task-weeks') ||
+                             clickedElement.closest('.task');
+            
+            if (!isTaskBar) {
+                // This is a click on a row or other element - make sure dragging is disabled
+                isDragging = false;
+                dragTask = null;
+            }
+        }
             document.addEventListener('mousemove', updateDrag);
             document.addEventListener('mouseup', endDrag);
 
