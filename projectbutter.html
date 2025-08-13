@@ -3,8 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Planner</title>
+    <title>My Project</title>
     <style>
+        :root {
+            /* Primary Colors */
+            --primary-navy: #2C4A6B;
+            --primary-sky: #5DADE2;
+            --primary-blue: #85C1E0;
+            --primary-cream: #F4E4BC;
+            --primary-peach: #F7B267;
+            --primary-orange: #E07A39;
+            
+            /* Gradient Combinations */
+            --gradient-cool: linear-gradient(135deg, #5DADE2, #2C4A6B);
+            --gradient-warm: linear-gradient(135deg, #F7B267, #E07A39);
+            --gradient-full: linear-gradient(135deg, #5DADE2, #F7B267);
+            --gradient-neutral: linear-gradient(135deg, #F4E4BC, #85C1E0);
+            
+            /* Semantic Colors */
+            --background-primary: var(--gradient-cool);
+            --surface-primary: rgba(244, 228, 188, 0.9);
+            --surface-secondary: rgba(255, 255, 255, 0.8);
+            --text-primary: var(--primary-navy);
+            --text-secondary: rgba(44, 74, 107, 0.7);
+            --accent-warm: var(--primary-peach);
+            --accent-cool: var(--primary-sky);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,7 +38,7 @@
 
         body {
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--background-primary);
             min-height: 100vh;
             padding: 20px;
             overflow-x: auto;
@@ -22,31 +47,81 @@
         .container {
             max-width: 1600px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--surface-primary);
             backdrop-filter: blur(20px);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
-        .header h1 {
-            font-size: 1.5rem;
+        .project-title {
+            font-size: 2rem;
             font-weight: 600;
-            color: #2d3748;
+            color: var(--text-primary);
             margin-bottom: 15px;
+            cursor: pointer;
+            border-radius: 8px;
+            padding: 8px 16px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .project-title:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .project-title[contenteditable="true"] {
+            background: rgba(255, 255, 255, 0.9);
+            outline: 2px solid var(--primary-sky);
         }
 
         .controls {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             justify-content: center;
             margin-bottom: 30px;
             flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .date-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface-secondary);
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .date-control label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .date-select {
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .date-select:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .date-select:focus {
+            outline: 2px solid var(--primary-sky);
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .btn {
@@ -60,14 +135,19 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--gradient-warm);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(247, 178, 103, 0.4);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 8px 25px rgba(247, 178, 103, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            transition-duration: 0.1s;
         }
 
         .timeline-container {
@@ -82,62 +162,43 @@
             position: relative;
         }
 
-        .gantt-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            z-index: 50;
-        }
-
         .timeline-header {
             display: grid;
-            grid-template-columns: 200px 80px repeat(12, 1fr);
+            grid-template-columns: 360px repeat(var(--month-count, 12), 1fr);
             gap: 1px;
-            margin-bottom: 10px;
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-            overflow: hidden;
+            margin-bottom: 20px;
         }
 
         .timeline-header-cell {
-            padding: 8px 4px;
+            padding: 16px 12px;
             text-align: center;
             font-weight: 600;
-            color: #2d3748;
-            background: white;
+            color: var(--text-primary);
+            background: var(--surface-secondary);
             font-size: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
         }
 
-        .timeline-header-cell.label {
-            text-align: left;
-            padding-left: 16px;
-            background: rgba(102, 126, 234, 0.1);
-            font-size: 14px;
-            flex-direction: row;
-            justify-content: flex-start;
-        }
-
-        .timeline-header-cell.weeks {
-            background: rgba(102, 126, 234, 0.05);
-            font-size: 14px;
+        .timeline-header-spacer {
+            background: transparent;
         }
 
         .month-header {
             font-size: 13px;
             font-weight: 700;
             margin-bottom: 2px;
+            color: var(--text-primary);
         }
 
         .month-weeks {
             font-size: 10px;
-            color: #667eea;
+            color: var(--primary-sky);
             font-weight: 500;
         }
 
@@ -147,442 +208,207 @@
 
         .timeline-row {
             display: grid;
-            grid-template-columns: 200px 80px repeat(12, 1fr);
+            grid-template-columns: 200px 80px 80px repeat(var(--month-count, 12), 1fr);
             gap: 1px;
-            margin-bottom: 1px;
+            margin-bottom: 2px;
             min-height: 50px;
             background: rgba(0, 0, 0, 0.05);
-            border-radius: 4px;
+            border-radius: 12px;
             overflow: hidden;
             position: relative;
         }
 
-        .timeline-row-label, .timeline-row-weeks, .timeline-cell {
-            /* Remove pointer-events override - let them be normal */
-        }
-
-        .timeline-row.chunk-row {
-            background: rgba(102, 126, 234, 0.08);
-            border-left: 4px solid rgba(102, 126, 234, 0.3);
-            min-height: 40px;
-        }
-
-        .timeline-row.task-row {
-            background: rgba(0, 0, 0, 0.02);
-            margin-left: 15px;
-            border-radius: 2px;
-            min-height: 40px;
-        }
-
-        .timeline-row.task-row.incomplete {
-            background: rgba(0, 0, 0, 0.01);
-            margin-left: 40px;
-            opacity: 0.7;
-            border-left: 2px dashed rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            border: 2px dashed rgba(102, 126, 234, 0.4);
-        }
-
-        .timeline-row.task-row.incomplete .timeline-row-label {
-            background: rgba(255, 255, 255, 0.5);
-            font-style: italic;
-            color: #6b7280;
-            border-radius: 6px 0 0 6px;
-        }
-
-        .timeline-row.task-row.no-gantt {
-            margin-left: 25px;
-            opacity: 0.8;
-            border-left: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 6px;
-        }
-
-        .timeline-row.task-row.no-gantt .timeline-row-label {
-            background: rgba(255, 255, 255, 0.7);
-            color: #4a5568;
-            border-radius: 4px 0 0 4px;
-        }
-
-        .timeline-row.task-row.complete {
-            margin-left: 15px;
-            border-radius: 4px;
-        }
-
-        .timeline-row.task-row.complete .timeline-row-label {
-            border-radius: 2px 0 0 2px;
-        }
-
-        .timeline-row-label {
-            padding: 8px 12px;
-            font-weight: 500;
-            color: #2d3748;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-right: 2px solid rgba(0, 0, 0, 0.1);
-            font-size: 13px;
-        }
-
-        .chunk-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            color: #2d3748;
-            font-size: 14px;
-            flex: 1;
-        }
-
-        .task-label {
-            font-weight: 400;
-            color: #4a5568;
-            padding-left: 16px;
-            font-size: 13px;
-        }
-
-        .collapse-btn {
-            width: 16px;
-            height: 16px;
-            border: none;
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 3px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: #667eea;
-            transition: all 0.2s ease;
-        }
-
-        .collapse-btn:hover {
-            background: rgba(102, 126, 234, 0.2);
-        }
-
-        .collapse-btn.collapsed::before {
-            content: '▶';
-        }
-
-        .collapse-btn:not(.collapsed)::before {
-            content: '▼';
-        }
-
-        .timeline-row-weeks {
-            padding: 8px 12px;
-            font-weight: 600;
-            color: #667eea;
-            background: rgba(255, 255, 255, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-right: 2px solid rgba(0, 0, 0, 0.1);
-            font-size: 14px;
-        }
-
-        .chunk-progress-bar {
-            position: absolute;
-            height: 30px;
-            top: 5px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 11px;
-            color: white;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            user-select: none;
-            z-index: 5;
-            background: linear-gradient(135deg, rgba(203, 213, 224, 0.9), rgba(160, 174, 192, 0.9));
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            pointer-events: none;
-        }
-
-        .chunk-progress-bar.has-progress {
-            background: linear-gradient(135deg, rgba(251, 146, 60, 0.9), rgba(249, 115, 22, 0.9));
-        }
-
-        .chunk-progress-bar.completed {
-            background: linear-gradient(135deg, rgba(52, 211, 153, 0.9), rgba(16, 185, 129, 0.9));
-        }
-
-        .task {
-            position: absolute;
-            height: 30px;
-            top: 5px;
-            border-radius: 6px;
-            cursor: grab;
-            display: flex;
-            align-items: stretch;
-            font-weight: 600;
-            font-size: 11px;
-            color: white;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            user-select: none;
-            z-index: 10;
-            overflow: hidden;
-            pointer-events: auto;
-        }
-
-        .task:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .task:active {
-            transform: scale(1.02);
-        }
-
-        .task-label-text {
-            display: none;
-        }
-
-        .task-weeks {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-
-        .task-week {
-            flex: 1;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .task-week:last-child {
-            border-right: none;
-        }
-
-        .task-week:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .task-week.completed {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        .task-week.completed::after {
-            content: '✓';
-            position: absolute;
-            font-size: 12px;
-            font-weight: bold;
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-        }
-
-        .task-week.completing {
-            animation: weekComplete 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .task.dragging {
-            z-index: 1000;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            transform: translateY(-2px);
-            cursor: grabbing !important;
-            opacity: 0.9;
-            pointer-events: auto;
-        }
-
-        .task-reset-btn {
-            position: absolute;
-            top: -8px;
-            right: -6px;
-            width: 16px;
-            height: 16px;
-            background: rgba(0, 0, 0, 0.8);
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: white;
-            z-index: 20;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0;
-            transform: scale(0.8);
-        }
-
-        .task:hover .task-reset-btn {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .task-reset-btn:hover {
-            background: rgba(239, 68, 68, 0.9);
-            transform: scale(1.1);
-        }
-
-        .task-reset-btn::before {
-            content: '↶';
-            font-weight: bold;
-        }
-
-        .timeline-row-label:hover .add-inline-btn {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .add-inline-btn {
-            padding: 4px 8px;
-            background: rgba(102, 126, 234, 0.8);
-            border: none;
-            border-radius: 4px;
-            font-size: 11px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 600;
-            opacity: 0;
-            transform: scale(0.9);
-            margin-left: auto;
-        }
-
-        .add-inline-btn:hover {
-            background: rgba(102, 126, 234, 1);
-            transform: scale(1.05);
-        }
-
-        .add-chunk-row {
-            min-height: 35px;
-            background: rgba(102, 126, 234, 0.05);
-            border: 2px dashed rgba(102, 126, 234, 0.3);
-            border-radius: 6px;
+        .timeline-row.phase-row {
+            background: var(--surface-primary);
+            border-left: 4px solid var(--primary-sky);
             margin-bottom: 2px;
+            border-radius: 12px;
         }
 
-        .add-chunk-row .timeline-row-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+        .timeline-row.action-row {
+            background: var(--surface-secondary);
+            margin-bottom: 1px;
+            border-radius: 8px;
+            border-left: 2px solid var(--primary-blue);
+            opacity: 0.95;
+        }
+
+        .timeline-row.add-action-row {
+            background: transparent;
+            border: 2px dashed var(--primary-blue);
+            margin-bottom: 2px;
+            opacity: 0.7;
             transition: all 0.2s ease;
-            color: #667eea;
-            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
         }
 
-        .add-chunk-row:hover {
-            background: rgba(102, 126, 234, 0.1);
-            border-color: rgba(102, 126, 234, 0.5);
+        .timeline-row.add-action-row:hover {
+            background: rgba(93, 173, 226, 0.1);
+            opacity: 1;
+            border-color: var(--primary-sky);
         }
 
-        .add-chunk-row:hover .timeline-row-label {
-            color: #5a67d8;
+        .timeline-row.add-phase-row {
+            background: transparent;
+            border: 2px dashed var(--primary-peach);
+            margin-top: 8px;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-radius: 12px;
         }
 
-        .timeline-row.inline-chunk-row {
-            z-index: 100;
+        .timeline-row.add-phase-row:hover {
+            background: rgba(247, 178, 103, 0.1);
+            opacity: 1;
+            border-color: var(--primary-orange);
+        }
+
+        .timeline-row.inline-edit {
             background: white;
-            border: 2px solid #667eea;
-            border-radius: 6px;
-            margin: 2px 0;
+            border: 2px solid var(--primary-sky);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .inline-chunk-row .timeline-row-label {
-            display: flex;
-            align-items: center;
-            padding: 8px 12px;
-            background: white;
-            gap: 8px;
-        }
-
-        .inline-input {
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            padding: 6px 8px;
-            font-size: 13px;
-            font-weight: 500;
-            outline: none;
-            width: 120px;
-        }
-
-        .inline-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
-        }
-
-        .inline-actions {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .inline-btn {
-            padding: 4px 6px;
-            border: none;
-            border-radius: 3px;
-            font-size: 12px;
+        .timeline-row-label {
+            padding: 12px 16px;
             font-weight: 600;
+            color: var(--text-primary);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+
+        .phase-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .collapse-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: rgba(93, 173, 226, 0.2);
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            width: 22px;
-            height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 12px;
+            color: var(--primary-sky);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
         }
 
-        .inline-btn.save {
-            background: #10b981;
-            color: white;
+        .collapse-btn:hover {
+            background: rgba(93, 173, 226, 0.3);
+            transform: scale(1.1);
         }
 
-        .inline-btn.save:hover {
-            background: #059669;
+        .collapse-btn.collapsed {
+            transform: rotate(-90deg);
         }
 
-        .inline-btn.cancel {
-            background: #6b7280;
-            color: white;
+        .collapse-btn::before {
+            content: '▼';
         }
 
-        .inline-btn.cancel:hover {
-            background: #4b5563;
+        .phase-name, .action-name {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            flex: 1;
         }
 
-        .task-name-input {
-            background: transparent !important;
-            border: 1px dashed #ccc !important;
-            padding: 2px 6px !important;
-            font-size: 13px !important;
-            width: 140px !important;
-            outline: none !important;
+        .phase-name:hover, .action-name:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
 
-        .task-name-input:focus {
-            border-color: #667eea !important;
-            background: rgba(255, 255, 255, 0.9) !important;
+        .action-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 13px;
         }
 
-        .timeline-row-weeks input[type="number"] {
-            width: 40px;
-            text-align: center;
+        .stepper-control {
+            display: flex;
+            align-items: center;
+            background: var(--surface-secondary);
+            border-radius: 8px;
+            border: 1px solid rgba(44, 74, 107, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            min-width: 70px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stepper-btn {
+            padding: 4px 8px;
             border: none;
-            background: transparent;
-            font-size: 14px;
+            background: var(--primary-cream);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
-            color: #667eea;
-            outline: none;
+            color: var(--primary-navy);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 24px;
+            border-radius: 4px;
         }
 
-        .timeline-row-weeks input[type="number"]:focus {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #667eea;
-            border-radius: 3px;
+        .stepper-btn:hover {
+            background: var(--primary-peach);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .stepper-btn:active {
+            transform: scale(0.95);
+        }
+
+        .stepper-input {
+            border: none;
+            text-align: center;
+            background: transparent;
+            font-weight: 600;
+            color: var(--text-primary);
+            width: 30px;
+            outline: none;
+            font-size: 13px;
+            padding: 4px 2px;
+        }
+
+        .stepper-input:focus {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 4px;
+        }
+
+        .duration-display {
+            padding: 12px 16px;
+            font-weight: 600;
+            color: var(--primary-sky);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+        }
+
+        .duration-display.updating {
+            color: var(--accent-warm);
+            transform: scale(1.05);
         }
 
         .timeline-cell {
@@ -592,143 +418,230 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 4px;
         }
 
         .timeline-cell.current-month {
-            background: rgba(102, 126, 234, 0.15);
-            box-shadow: inset 0 0 0 2px rgba(102, 126, 234, 0.3);
+            background: rgba(93, 173, 226, 0.2);
+            box-shadow: inset 0 0 0 2px rgba(93, 173, 226, 0.4);
         }
 
-        /* Task States */
-        .task.not-started {
-            background: linear-gradient(135deg, rgba(203, 213, 224, 0.95), rgba(160, 174, 192, 0.95));
-            color: #4a5568;
+        .gantt-bar {
+            position: absolute;
+            height: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 11px;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            user-select: none;
+            z-index: 10;
+            will-change: transform, box-shadow;
         }
 
-        .task.in-progress {
-            background: linear-gradient(135deg, rgba(251, 146, 60, 0.95), rgba(249, 115, 22, 0.95));
+        .gantt-bar:hover {
+            transform: translateY(-50%) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            filter: saturate(1.1) brightness(1.05);
         }
 
-        .task.overdue {
-            background: linear-gradient(135deg, rgba(248, 113, 113, 0.95), rgba(239, 68, 68, 0.95));
-            animation: pulse 2s infinite;
+        .gantt-bar.phase-bar {
+            background: var(--gradient-cool);
+            height: 20px;
+            bottom: 5px;
+            top: auto;
+            transform: none;
         }
 
-        .task.completed {
-            background: linear-gradient(135deg, rgba(52, 211, 153, 0.95), rgba(16, 185, 129, 0.95));
+        .gantt-bar.action-bar {
+            background: var(--gradient-warm);
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
+        .add-row-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .inline-input {
+            background: white;
+            border: 2px solid var(--primary-sky);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            outline: none;
+            color: var(--text-primary);
+            flex: 1;
+            margin-right: 8px;
+        }
+
+        .inline-input:focus {
+            box-shadow: 0 0 0 2px rgba(93, 173, 226, 0.2);
+        }
+
+        .inline-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .inline-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .inline-btn.save {
+            background: var(--primary-sky);
+            color: white;
+        }
+
+        .inline-btn.save:hover {
+            background: var(--primary-navy);
+            transform: scale(1.05);
+        }
+
+        .inline-btn.cancel {
+            background: #6b7280;
+            color: white;
+        }
+
+        .inline-btn.cancel:hover {
+            background: #4b5563;
+            transform: scale(1.05);
+        }
+
+        /* Collapse/Expand Animations */
+        .phase-actions-container {
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-row {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-row.expanding {
+            animation: slideInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation-fill-mode: both;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
             }
-            50% {
-                transform: scale(1.02);
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        @keyframes weekComplete {
-            0% {
-                transform: scale(1);
-                background: rgba(255, 255, 255, 0.1);
-            }
-            50% {
-                transform: scale(1.15);
-                background: rgba(255, 255, 255, 0.6);
-            }
-            100% {
-                transform: scale(1);
-                background: rgba(255, 255, 255, 0.4);
-            }
-        }
-
+        /* Responsive Design */
         @media (max-width: 1200px) {
             .timeline {
                 min-width: 1000px;
             }
             
             .timeline-header {
-                grid-template-columns: 150px 60px repeat(12, 1fr);
+                grid-template-columns: 150px 60px 60px repeat(var(--month-count, 12), 1fr);
             }
             
             .timeline-row {
-                grid-template-columns: 150px 60px repeat(12, 1fr);
+                grid-template-columns: 150px 60px 60px repeat(var(--month-count, 12), 1fr);
             }
+        }
+
+        /* Hide default stepper arrows */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>My Project</h1>
+            <h1 class="project-title" onclick="editProjectTitle(this)">My Project</h1>
         </div>
 
         <div class="controls">
-            <button class="btn btn-primary" id="saveProjectBtn">💾 Save Project</button>
+            <div class="date-control">
+                <label>Start:</label>
+                <select class="date-select" id="startMonth" onchange="updateTimeline()">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+                <select class="date-select" id="startYear" onchange="updateTimeline()"></select>
+            </div>
+            
+            <div class="date-control">
+                <label>End:</label>
+                <select class="date-select" id="endMonth" onchange="updateTimeline()">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+                <select class="date-select" id="endYear" onchange="updateTimeline()"></select>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveProject()">💾 Save Project</button>
         </div>
 
         <div class="timeline-container">
             <div class="timeline">
-                <div class="timeline-header">
-                    <div class="timeline-header-cell label">Task Name</div>
-                    <div class="timeline-header-cell weeks">Weeks</div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">Jan</div>
-                        <div class="month-weeks" id="jan-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">Feb</div>
-                        <div class="month-weeks" id="feb-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">Mar</div>
-                        <div class="month-weeks" id="mar-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">Apr</div>
-                        <div class="month-weeks" id="apr-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">May</div>
-                        <div class="month-weeks" id="may-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">Jun</div>
-                        <div class="month-weeks" id="jun-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">Jul</div>
-                        <div class="month-weeks" id="jul-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">Aug</div>
-                        <div class="month-weeks" id="aug-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">Sep</div>
-                        <div class="month-weeks" id="sep-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="timeline-header-cell">Oct</div>
-                        <div class="month-weeks" id="oct-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">Nov</div>
-                        <div class="month-weeks" id="nov-weeks">4w</div>
-                    </div>
-                    <div class="timeline-header-cell">
-                        <div class="month-header">Dec</div>
-                        <div class="month-weeks" id="dec-weeks">4w</div>
-                    </div>
+                <div class="timeline-header" id="timelineHeader">
+                    <!-- Generated by JavaScript -->
                 </div>
                 
                 <div class="timeline-grid" id="timelineGrid">
-                    <!-- Timeline rows will be generated by JavaScript -->
-                </div>
-                
-                <!-- Separate overlay for Gantt bars -->
-                <div class="gantt-overlay" id="ganttOverlay">
-                    <!-- Gantt bars will be positioned here -->
+                    <!-- Generated by JavaScript -->
                 </div>
             </div>
         </div>
@@ -738,32 +651,126 @@
     <script id="projectData" type="application/json">
     {
         "projectName": "My Project",
-        "currentYear": 2025,
-        "tasks": [
-            {"id": 0, "name": "Task", "duration": 3, "status": "not-started", "completedWeeks": 0, "chunkId": 0, "startWeek": 0}
+        "startMonth": 0,
+        "startYear": 2025,
+        "endMonth": 11,
+        "endYear": 2025,
+        "phases": [
+            {
+                "id": 0,
+                "name": "Phase 1",
+                "startWeek": 1,
+                "collapsed": false,
+                "actions": [
+                    {
+                        "id": 0,
+                        "name": "Action 1",
+                        "duration": 4,
+                        "startWeek": 1,
+                        "phaseId": 0,
+                        "completedWeeks": 0,
+                        "status": "not-started"
+                    },
+                    {
+                        "id": 1,
+                        "name": "Action 2", 
+                        "duration": 3,
+                        "startWeek": 5,
+                        "phaseId": 0,
+                        "completedWeeks": 0,
+                        "status": "not-started"
+                    }
+                ]
+            }
         ],
-        "rows": [
-            {"id": 0, "name": "Chunk", "collapsed": false, "tasks": [{"id": 0, "name": "Task", "duration": 3, "status": "not-started", "completedWeeks": 0, "chunkId": 0, "startWeek": 0}]}
-        ],
-        "taskIdCounter": 1
+        "totalWeeks": 52,
+        "phaseIdCounter": 1,
+        "actionIdCounter": 2
     }
     </script>
 
     <script>
-        let tasks = [];
-        let taskIdCounter = 0;
-        let rows = [];
-        let currentYear = new Date().getFullYear();
+        let projectData = {};
+        let monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                         'July', 'August', 'September', 'October', 'November', 'December'];
 
-        const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        // Simple drag system
-        let isDragging = false;
-        let dragTask = null;
-        let dragStartX = 0;
-        let dragStartWeek = 0;
+        // Initialize the application
+        function init() {
+            loadProjectData();
+            initializeDateSelectors();
+            initializeProjectName();
+            updateTimeline();
+        }
 
-        // Calculate weeks in each month for the current year
+        // Load project data from embedded JSON
+        function loadProjectData() {
+            try {
+                const dataScript = document.getElementById('projectData');
+                projectData = JSON.parse(dataScript.textContent);
+                console.log('Project data loaded successfully');
+            } catch (error) {
+                console.log('No saved data found, using defaults');
+                projectData = {
+                    projectName: "My Project",
+                    startMonth: 0,
+                    startYear: 2025,
+                    endMonth: 11,
+                    endYear: 2025,
+                    phases: [],
+                    totalWeeks: 52,
+                    phaseIdCounter: 0,
+                    actionIdCounter: 0
+                };
+            }
+        }
+
+        // Initialize project name from filename
+        function initializeProjectName() {
+            let projectName = projectData.projectName || 'My Project';
+            
+            if (typeof window !== 'undefined' && window.location) {
+                const filename = window.location.pathname.split('/').pop();
+                if (filename && filename.includes('.html')) {
+                    const baseName = filename.replace('.html', '');
+                    projectName = baseName
+                        .split('_')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                        .join(' ');
+                }
+            }
+            
+            document.querySelector('.project-title').textContent = projectName;
+            document.title = projectName;
+            projectData.projectName = projectName;
+        }
+
+        // Initialize date selectors
+        function initializeDateSelectors() {
+            const currentYear = new Date().getFullYear();
+            const startYearSelect = document.getElementById('startYear');
+            const endYearSelect = document.getElementById('endYear');
+            
+            // Populate year options (current year ± 5 years)
+            for (let year = currentYear - 5; year <= currentYear + 10; year++) {
+                const startOption = document.createElement('option');
+                startOption.value = year;
+                startOption.textContent = year;
+                startYearSelect.appendChild(startOption);
+                
+                const endOption = document.createElement('option');
+                endOption.value = year;
+                endOption.textContent = year;
+                endYearSelect.appendChild(endOption);
+            }
+            
+            // Set current values
+            document.getElementById('startMonth').value = projectData.startMonth;
+            document.getElementById('startYear').value = projectData.startYear;
+            document.getElementById('endMonth').value = projectData.endMonth;
+            document.getElementById('endYear').value = projectData.endYear;
+        }
+
+        // Calculate weeks in a month
         function getWeeksInMonth(year, month) {
             const firstDay = new Date(year, month, 1);
             let weekCount = 0;
@@ -792,874 +799,587 @@
             
             return weekCount;
         }
-        
-        // Update month headers with actual week counts
-        function updateMonthHeaders() {
-            MONTHS.forEach((month, index) => {
-                const weeks = getWeeksInMonth(currentYear, index);
-                const weekEl = document.getElementById(`${month.toLowerCase()}-weeks`);
-                if (weekEl) {
-                    weekEl.textContent = `${weeks}w`;
-                }
-            });
-        }
 
-        // Convert weeks to timeline position
-        function weeksToTimelinePosition(weeks) {
-            const timelineStart = 280; // Label columns width
-            const totalWeeks = getTotalWeeksInYear();
-            const timelineWidth = 12 * 100; // 1200px total
-            const pixelsPerWeek = timelineWidth / totalWeeks;
-            
-            return timelineStart + (weeks * pixelsPerWeek);
-        }
-
-        // Calculate next available start week for a task in a chunk  
-        function calculateNextAvailableSlot(chunkId, excludeTaskId = null) {
-            const chunk = rows.find(r => r.id === chunkId);
-            if (!chunk || !chunk.tasks) return 0;
-            
-            const scheduledTasks = chunk.tasks.filter(t => 
-                shouldShowGanttBar(t) &&
-                t.startWeek !== undefined && 
-                t.id !== excludeTaskId
-            );
-            
-            if (scheduledTasks.length === 0) return 0;
-            
-            scheduledTasks.sort((a, b) => a.startWeek - b.startWeek);
-            
-            const lastTask = scheduledTasks[scheduledTasks.length - 1];
-            const lastTaskEndWeek = lastTask.startWeek + lastTask.duration;
-            
-            return lastTaskEndWeek;
-        }
-
-        // Calculate chunk span (start and end weeks)
-        function calculateChunkSpan(chunk) {
-            if (!chunk.tasks || chunk.tasks.length === 0) {
-                return { startWeek: 0, endWeek: 0, totalWeeks: 0 };
-            }
-            
-            const scheduledTasks = chunk.tasks.filter(t => shouldShowGanttBar(t) && t.startWeek !== undefined);
-            if (scheduledTasks.length === 0) {
-                return { startWeek: 0, endWeek: 0, totalWeeks: 0 };
-            }
-            
-            const startWeek = Math.min(...scheduledTasks.map(t => t.startWeek));
-            const endWeeks = scheduledTasks.map(t => t.startWeek + t.duration);
-            const endWeek = Math.max(...endWeeks);
-            
-            const totalWeeks = scheduledTasks.reduce((sum, task) => sum + task.duration, 0);
-            
-            return { startWeek, endWeek, totalWeeks };
-        }
-        
-        // Load project data from embedded JSON
-        function loadProjectData() {
-            try {
-                const dataScript = document.getElementById('projectData');
-                const data = JSON.parse(dataScript.textContent);
-                
-                tasks = data.tasks || [];
-                rows = data.rows || [];
-                taskIdCounter = data.taskIdCounter || 0;
-                currentYear = data.currentYear || new Date().getFullYear();
-                
-                // Smart project name from filename
-                let projectName = data.projectName || 'My Project';
-                
-                if (typeof window !== 'undefined' && window.location) {
-                    const filename = window.location.pathname.split('/').pop();
-                    if (filename && filename.includes('.html')) {
-                        const baseName = filename.replace('.html', '');
-                        projectName = baseName
-                            .split('_')
-                            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                            .join(' ');
-                    }
-                }
-                
-                // Update page title and header
-                document.title = projectName;
-                document.querySelector('.header h1').textContent = projectName;
-                
-                updateMonthHeaders();
-                console.log('Project data loaded successfully');
-            } catch (error) {
-                console.log('No saved data found, starting fresh');
-                updateMonthHeaders();
-                initTimeline();
-            }
-        }
-        
-        // Save project data to embedded JSON
-        function saveProjectData() {
-            try {
-                const data = {
-                    projectName: document.querySelector('.header h1').textContent,
-                    currentYear: currentYear,
-                    tasks: tasks,
-                    rows: rows,
-                    taskIdCounter: taskIdCounter
-                };
-                
-                const dataScript = document.getElementById('projectData');
-                dataScript.textContent = '\n    ' + JSON.stringify(data, null, 4) + '\n    ';
-                
-                // Trigger download of updated HTML file
-                downloadUpdatedFile();
-                
-                console.log('Project data saved successfully');
-            } catch (error) {
-                console.error('Error saving project data:', error);
-            }
-        }
-        
-        // Download the updated HTML file
-        function downloadUpdatedFile() {
-            const htmlContent = document.documentElement.outerHTML;
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = (document.querySelector('.header h1').textContent.replace(/[^a-z0-9]/gi, '_') || 'project') + '_planner.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // Initialize timeline
-        function initTimeline() {
-            if (rows.length === 0) {
-                const chunk = {
-                    id: 0,
-                    name: 'Chunk',
-                    collapsed: false,
-                    tasks: []
-                };
-                rows.push(chunk);
-                
-                const task = {
-                    id: 0,
-                    name: 'Task',
-                    duration: 3,
-                    status: 'not-started',
-                    completedWeeks: 0,
-                    chunkId: 0,
-                    startWeek: 0
-                };
-                tasks.push(task);
-                chunk.tasks.push(task);
-                taskIdCounter = 1;
-            }
-            renderTimeline();
-        }
-
-        // Toggle chunk collapse
-        function toggleChunkCollapse(chunkId) {
-            const chunk = rows.find(r => r.id === chunkId);
-            if (chunk) {
-                chunk.collapsed = !chunk.collapsed;
-                renderTimeline();
-                autoSave();
-            }
-        }
-
-        // Render the entire timeline
-        function renderTimeline() {
-            const grid = document.getElementById('timelineGrid');
-            const overlay = document.getElementById('ganttOverlay');
-            grid.innerHTML = '';
-            overlay.innerHTML = '';
-            
-            // Start after the header (which is 60px tall including margins)
-            let currentRowTop = 70;
-
-            rows.forEach((chunk, chunkIndex) => {
-                // Render chunk row (parent)
-                const chunkRowEl = document.createElement('div');
-                chunkRowEl.className = 'timeline-row chunk-row';
-                chunkRowEl.dataset.chunkId = chunk.id;
-                
-                // Chunk label with collapse button
-                const chunkLabelEl = document.createElement('div');
-                chunkLabelEl.className = 'timeline-row-label';
-                
-                const chunkLabelContent = document.createElement('div');
-                chunkLabelContent.className = 'chunk-label';
-                
-                const collapseBtn = document.createElement('button');
-                collapseBtn.className = `collapse-btn ${chunk.collapsed ? 'collapsed' : ''}`;
-                collapseBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    toggleChunkCollapse(chunk.id);
-                });
-                chunkLabelContent.appendChild(collapseBtn);
-                
-                const chunkNameSpan = document.createElement('span');
-                chunkNameSpan.className = 'chunk-name';
-                chunkNameSpan.textContent = chunk.name;
-                chunkLabelContent.appendChild(chunkNameSpan);
-                
-                chunkLabelEl.appendChild(chunkLabelContent);
-                
-                // Add task button
-                const addTaskBtn = document.createElement('button');
-                addTaskBtn.className = 'add-inline-btn';
-                addTaskBtn.textContent = '+ Task';
-                addTaskBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    addAutoScheduledTask(chunk.id);
-                });
-                chunkLabelEl.appendChild(addTaskBtn);
-                
-                chunkRowEl.appendChild(chunkLabelEl);
-                
-                // Total tasks count
-                const totalTasksEl = document.createElement('div');
-                totalTasksEl.className = 'timeline-row-weeks';
-                totalTasksEl.textContent = chunk.tasks ? chunk.tasks.length : 0;
-                chunkRowEl.appendChild(totalTasksEl);
-                
-                // Timeline cells (12 months) for chunk
-                for (let month = 0; month < 12; month++) {
-                    const cellEl = document.createElement('div');
-                    cellEl.className = 'timeline-cell';
-                    cellEl.dataset.month = month;
-                    
-                    // Highlight current month
-                    const currentMonth = new Date().getMonth();
-                    if (month === currentMonth) {
-                        cellEl.classList.add('current-month');
-                    }
-                    
-                    chunkRowEl.appendChild(cellEl);
-                }
-                
-                grid.appendChild(chunkRowEl);
-                
-                // Render chunk progress bar in overlay
-                renderChunkProgressBar(chunk, overlay, currentRowTop);
-                
-                currentRowTop += 51; // Height of chunk row (50px) + margin (1px)
-                
-                // Render task rows (children)
-                if (chunk.tasks && !chunk.collapsed) {
-                    chunk.tasks.forEach(task => {
-                        const visualState = getTaskVisualState(task);
-                        
-                        const taskRowEl = document.createElement('div');
-                        taskRowEl.className = `timeline-row task-row ${visualState}`;
-                        taskRowEl.dataset.taskId = task.id;
-                        
-                        // Task label
-                        const taskLabelEl = document.createElement('div');
-                        taskLabelEl.className = 'timeline-row-label';
-                        
-                        // Task label with editable name
-                        const taskLabelContent = document.createElement('div');
-                        taskLabelContent.className = 'task-label';
-                        
-                        if (!task.name || task.name.trim() === '' || task.name === 'Task') {
-                            // Empty or default task - make it editable
-                            const taskInput = document.createElement('input');
-                            taskInput.className = 'task-name-input';
-                            taskInput.type = 'text';
-                            taskInput.value = task.name === 'Task' ? '' : task.name;
-                            taskInput.placeholder = 'Task name...';
-                            
-                            taskInput.addEventListener('blur', () => {
-                                if (taskInput.value.trim()) {
-                                    task.name = taskInput.value.trim();
-                                    scheduleTaskIfComplete(task);
-                                    renderTimeline();
-                                    autoSave();
-                                }
-                            });
-                            
-                            taskInput.addEventListener('input', () => {
-                                if (taskInput.value.trim()) {
-                                    const taskRow = taskInput.closest('.timeline-row');
-                                    if (taskRow && taskRow.classList.contains('incomplete')) {
-                                        taskRow.classList.remove('incomplete');
-                                        taskRow.classList.add('no-gantt');
-                                    }
-                                }
-                            });
-                            
-                            taskInput.addEventListener('keydown', (e) => {
-                                if (e.key === 'Enter') {
-                                    taskInput.blur();
-                                }
-                            });
-                            
-                            taskLabelContent.appendChild(taskInput);
-                        } else {
-                            // Regular task name
-                            taskLabelContent.textContent = task.name;
-                        }
-                        
-                        taskLabelEl.appendChild(taskLabelContent);
-                        taskRowEl.appendChild(taskLabelEl);
-                        
-                        // Task weeks with editable input
-                        const taskWeeksEl = document.createElement('div');
-                        taskWeeksEl.className = 'timeline-row-weeks';
-                        
-                        if (task.duration === null || task.duration === undefined) {
-                            // Show input for setting initial duration
-                            const weeksInput = document.createElement('input');
-                            weeksInput.type = 'number';
-                            weeksInput.value = '';
-                            weeksInput.placeholder = '#';
-                            weeksInput.min = '1';
-                            weeksInput.max = '12';
-                            weeksInput.style.width = '40px';
-                            weeksInput.style.textAlign = 'center';
-                            weeksInput.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
-                            weeksInput.style.border = '1px dashed #ccc';
-                            
-                            weeksInput.addEventListener('change', () => {
-                                const newDuration = parseInt(weeksInput.value) || null;
-                                if (newDuration && newDuration > 0) {
-                                    task.duration = newDuration;
-                                    scheduleTaskIfComplete(task);
-                                    updateTaskStatus(task);
-                                    renderTimeline();
-                                    autoSave();
-                                }
-                            });
-                            
-                            weeksInput.addEventListener('input', () => {
-                                const newDuration = parseInt(weeksInput.value) || null;
-                                if (newDuration && newDuration > 0) {
-                                    const taskRow = weeksInput.closest('.timeline-row');
-                                    if (taskRow && (taskRow.classList.contains('incomplete') || taskRow.classList.contains('no-gantt'))) {
-                                        taskRow.classList.remove('incomplete', 'no-gantt');
-                                        taskRow.classList.add('complete');
-                                    }
-                                }
-                            });
-                            
-                            weeksInput.addEventListener('keydown', (e) => {
-                                if (e.key === 'Enter') {
-                                    weeksInput.blur();
-                                }
-                            });
-                            
-                            taskWeeksEl.appendChild(weeksInput);
-                        } else {
-                            // Show regular duration input
-                            const weeksInput = document.createElement('input');
-                            weeksInput.type = 'number';
-                            weeksInput.value = task.duration;
-                            weeksInput.min = '1';
-                            weeksInput.max = '12';
-                            
-                            weeksInput.addEventListener('change', () => {
-                                const newDuration = parseInt(weeksInput.value) || 1;
-                                if (newDuration !== task.duration) {
-                                    task.duration = newDuration;
-                                    if (task.completedWeeks > newDuration) {
-                                        task.completedWeeks = newDuration;
-                                    }
-                                    scheduleTaskIfComplete(task);
-                                    updateTaskStatus(task);
-                                    renderTimeline();
-                                    autoSave();
-                                }
-                            });
-                            
-                            weeksInput.addEventListener('keydown', (e) => {
-                                if (e.key === 'Enter') {
-                                    weeksInput.blur();
-                                }
-                            });
-                            
-                            taskWeeksEl.appendChild(weeksInput);
-                        }
-                        
-                        taskRowEl.appendChild(taskWeeksEl);
-                        
-                        // Timeline cells for task
-                        for (let month = 0; month < 12; month++) {
-                            const cellEl = document.createElement('div');
-                            cellEl.className = 'timeline-cell';
-                            cellEl.dataset.month = month;
-                            
-                            if (month === new Date().getMonth()) {
-                                cellEl.classList.add('current-month');
-                            }
-                            
-                            taskRowEl.appendChild(cellEl);
-                        }
-                        
-                        grid.appendChild(taskRowEl);
-                        
-                        // Render task gantt bar in overlay if it should show
-                        if (shouldShowGanttBar(task) && task.startWeek !== undefined) {
-                            renderTask(task, overlay, currentRowTop);
-                        }
-                        
-                        currentRowTop += 41; // Height of task row (40px) + margin (1px)
-                    });
-                }
-            });
-            
-            // Add "Add Chunk" row at the bottom
-            const addChunkRowEl = document.createElement('div');
-            addChunkRowEl.className = 'timeline-row add-chunk-row';
-            addChunkRowEl.addEventListener('click', () => createInlineChunkRow(addChunkRowEl));
-            
-            const addChunkLabelEl = document.createElement('div');
-            addChunkLabelEl.className = 'timeline-row-label';
-            addChunkLabelEl.textContent = '+ Add Chunk';
-            addChunkRowEl.appendChild(addChunkLabelEl);
-            
-            // Empty cells for months
-            const emptyWeeksEl = document.createElement('div');
-            emptyWeeksEl.className = 'timeline-row-weeks';
-            addChunkRowEl.appendChild(emptyWeeksEl);
-            
-            for (let month = 0; month < 12; month++) {
-                const emptyCellEl = document.createElement('div');
-                emptyCellEl.className = 'timeline-cell';
-                addChunkRowEl.appendChild(emptyCellEl);
-            }
-            
-            grid.appendChild(addChunkRowEl);
-        }
-
-        // Render chunk progress bar in overlay
-        function renderChunkProgressBar(chunk, overlayContainer, topPosition) {
-            if (!chunk.tasks || chunk.tasks.length === 0) return;
-            
-            const chunkSpan = calculateChunkSpan(chunk);
-            if (chunkSpan.totalWeeks === 0) return;
-            
-            // Calculate overall progress
-            let completedWeeks = 0;
-            chunk.tasks.forEach(task => {
-                if (shouldShowGanttBar(task) && task.startWeek !== undefined) {
-                    completedWeeks += task.completedWeeks || 0;
-                }
-            });
-            
-            const progressBar = document.createElement('div');
-            progressBar.className = 'chunk-progress-bar';
-            
-            // Better alignment - center the progress bar in the chunk row
-            progressBar.style.top = `${topPosition + 10}px`; // 10px from top of 50px row = centered
-            
-            if (completedWeeks > 0) {
-                progressBar.classList.add('has-progress');
-                if (completedWeeks === chunkSpan.totalWeeks) {
-                    progressBar.classList.add('completed');
-                }
-            }
-            
-            const progressPercentage = Math.round((completedWeeks / chunkSpan.totalWeeks) * 100);
-            progressBar.textContent = `${progressPercentage}%`;
-            
-            // Position the progress bar based on week positions
-            const left = weeksToTimelinePosition(chunkSpan.startWeek);
-            const endPosition = weeksToTimelinePosition(chunkSpan.endWeek);
-            const width = endPosition - left;
-            
-            progressBar.style.left = `${left}px`;
-            progressBar.style.width = `${Math.max(60, width)}px`;
-            
-            overlayContainer.appendChild(progressBar);
-        }
-
-        // Add auto-scheduled task
-        function addAutoScheduledTask(chunkId) {
-            const chunk = rows.find(r => r.id === chunkId);
-            if (!chunk) return;
-            
-            const task = {
-                id: taskIdCounter++,
-                name: '',
-                duration: null,
-                status: 'not-started',
-                completedWeeks: 0,
-                chunkId: chunkId
-            };
-            
-            tasks.push(task);
-            
-            if (!chunk.tasks) chunk.tasks = [];
-            chunk.tasks.push(task);
-            
-            renderTimeline();
-            autoSave();
-        }
-
-        // Check if task should show gantt bar
-        function shouldShowGanttBar(task) {
-            return task.name && task.name.trim() !== '' && task.duration && task.duration > 0;
-        }
-
-        // Get task visual state for styling
-        function getTaskVisualState(task) {
-            if (!task.name || task.name.trim() === '') {
-                return 'incomplete';
-            } else if (!task.duration || task.duration <= 0) {
-                return 'no-gantt';
-            } else {
-                return 'complete';
-            }
-        }
-
-        // Auto-schedule task when it becomes complete
-        function scheduleTaskIfComplete(task) {
-            if (shouldShowGanttBar(task) && task.startWeek === undefined) {
-                task.startWeek = calculateNextAvailableSlot(task.chunkId, task.id);
-            } else if (!shouldShowGanttBar(task)) {
-                task.startWeek = undefined;
-            }
-        }
-
-        // Render individual task in overlay
-        function renderTask(task, overlayContainer, topPosition) {
-            const taskEl = document.createElement('div');
-            taskEl.className = `task ${task.status}`;
-            taskEl.dataset.taskId = task.id;
-            taskEl.style.pointerEvents = 'auto';
-            
-            // Better alignment - center the gantt bar in the row
-            taskEl.style.top = `${topPosition + 10}px`; // 10px from top of 40px row = centered
-            
-            // Create week divisions
-            const weeksEl = document.createElement('div');
-            weeksEl.className = 'task-weeks';
-            
-            for (let i = 0; i < task.duration; i++) {
-                const weekEl = document.createElement('div');
-                weekEl.className = 'task-week';
-                weekEl.dataset.weekIndex = i;
-                
-                if (task.completedWeeks && task.completedWeeks >= i + 1) {
-                    weekEl.classList.add('completed');
-                }
-                
-                weeksEl.appendChild(weekEl);
-            }
-            
-            taskEl.appendChild(weeksEl);
-            
-            if (task.completedWeeks && task.completedWeeks > 0) {
-                const resetBtn = document.createElement('button');
-                resetBtn.className = 'task-reset-btn';
-                resetBtn.style.pointerEvents = 'auto';
-                resetBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    regressTaskProgress(task);
-                });
-                taskEl.appendChild(resetBtn);
-            }
-            
-            // Add click handler to advance progress
-            taskEl.addEventListener('click', function(e) {
-                if (!isDragging && !e.target.closest('.task-reset-btn')) {
-                    e.stopPropagation();
-                    advanceTaskProgress(task);
-                }
-            });
-            
-            // Mouse-based dragging - ONLY on the gantt bar
-            taskEl.addEventListener('mousedown', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                startDrag(e, taskEl);
-            });
-            
-            // Position task horizontally
-            positionTask(taskEl, task);
-            
-            overlayContainer.appendChild(taskEl);
-        }
-
-        // Position task based on start week and duration
-        function positionTask(taskEl, task) {
-            if (task.startWeek === undefined) return;
-            
-            const left = weeksToTimelinePosition(task.startWeek);
-            const endPosition = weeksToTimelinePosition(task.startWeek + task.duration);
-            const width = endPosition - left;
-            
-            taskEl.style.left = `${left}px`;
-            taskEl.style.width = `${Math.max(60, width)}px`;
-        }
-
-        // Create inline chunk creation
-        function createInlineChunkRow(replaceElement) {
-            const chunkRowEl = document.createElement('div');
-            chunkRowEl.className = 'timeline-row chunk-row inline-chunk-row';
-            
-            const chunkLabelEl = document.createElement('div');
-            chunkLabelEl.className = 'timeline-row-label';
-            
-            const input = document.createElement('input');
-            input.className = 'inline-input';
-            input.type = 'text';
-            input.placeholder = 'Chunk name...';
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    saveInlineChunk(input.value, chunkRowEl, replaceElement);
-                } else if (e.key === 'Escape') {
-                    replaceInlineWithAdd(chunkRowEl, replaceElement);
-                }
-            });
-            
-            const actions = document.createElement('div');
-            actions.className = 'inline-actions';
-            
-            const saveBtn = document.createElement('button');
-            saveBtn.className = 'inline-btn save';
-            saveBtn.textContent = '✓';
-            saveBtn.addEventListener('click', () => saveInlineChunk(input.value, chunkRowEl, replaceElement));
-            
-            const cancelBtn = document.createElement('button');
-            cancelBtn.className = 'inline-btn cancel';
-            cancelBtn.textContent = '✕';
-            cancelBtn.addEventListener('click', () => replaceInlineWithAdd(chunkRowEl, replaceElement));
-            
-            actions.appendChild(saveBtn);
-            actions.appendChild(cancelBtn);
-            
-            chunkLabelEl.appendChild(input);
-            chunkLabelEl.appendChild(actions);
-            chunkRowEl.appendChild(chunkLabelEl);
-            
-            const emptyWeeksEl = document.createElement('div');
-            emptyWeeksEl.className = 'timeline-row-weeks';
-            emptyWeeksEl.textContent = '0';
-            chunkRowEl.appendChild(emptyWeeksEl);
-            
-            for (let month = 0; month < 12; month++) {
-                const cellEl = document.createElement('div');
-                cellEl.className = 'timeline-cell';
-                chunkRowEl.appendChild(cellEl);
-            }
-            
-            replaceElement.parentNode.replaceChild(chunkRowEl, replaceElement);
-            setTimeout(() => input.focus(), 100);
-        }
-
-        // Save inline chunk
-        function saveInlineChunk(chunkName, rowElement, originalElement) {
-            if (!chunkName.trim()) {
-                replaceInlineWithAdd(rowElement, originalElement);
-                return;
-            }
-            
-            const chunk = {
-                id: rows.length,
-                name: chunkName.trim(),
-                collapsed: false,
-                tasks: []
-            };
-            
-            rows.push(chunk);
-            renderTimeline();
-            autoSave();
-        }
-
-        // Replace inline input with add button
-        function replaceInlineWithAdd(inlineElement, originalElement) {
-            if (inlineElement.parentNode) {
-                inlineElement.parentNode.replaceChild(originalElement, inlineElement);
-            }
-        }
-
-        // Advance task progress by one week
-        function advanceTaskProgress(task) {
-            if (!task.completedWeeks) {
-                task.completedWeeks = 0;
-            }
-            
-            if (task.completedWeeks < task.duration) {
-                task.completedWeeks++;
-                
-                const taskEl = document.querySelector(`[data-task-id="${task.id}"]`);
-                if (taskEl) {
-                    const weekEl = taskEl.querySelector(`[data-week-index="${task.completedWeeks - 1}"]`);
-                    if (weekEl) {
-                        weekEl.classList.add('completing');
-                        
-                        setTimeout(() => {
-                            weekEl.classList.remove('completing');
-                            weekEl.classList.add('completed');
-                        }, 600);
-                    }
-                }
-                
-                updateTaskStatus(task);
-                
-                setTimeout(() => {
-                    renderTimeline();
-                    autoSave();
-                }, 100);
-            }
-        }
-
-        // Regress task progress by one week
-        function regressTaskProgress(task) {
-            if (task.completedWeeks && task.completedWeeks > 0) {
-                task.completedWeeks--;
-                updateTaskStatus(task);
-                renderTimeline();
-                autoSave();
-            }
-        }
-
-        // Update task status based on completed weeks
-        function updateTaskStatus(task) {
-            if (!task.completedWeeks) {
-                task.completedWeeks = 0;
-            }
-            
-            const completedCount = task.completedWeeks;
-            const totalWeeks = task.duration;
-            
-            if (completedCount === 0) {
-                task.status = 'not-started';
-            } else if (completedCount === totalWeeks) {
-                task.status = 'completed';
-            } else {
-                task.status = 'in-progress';
-            }
-        }
-
-        // Drag functions - only work on gantt bars in overlay
-        function startDrag(e, taskElement) {
-            if (e.button !== 0) return; // Left click only
-            
-            // Make sure we're dragging a gantt bar, not a row
-            if (!taskElement.classList.contains('task')) return;
-            
-            const taskId = parseInt(taskElement.dataset.taskId);
-            dragTask = tasks.find(t => t.id === taskId);
-            if (!dragTask) return;
-            
-            isDragging = true;
-            dragStartX = e.clientX;
-            dragStartWeek = dragTask.startWeek;
-            
-            taskElement.classList.add('dragging');
-            
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            
-            document.body.style.userSelect = 'none';
-            document.body.style.webkitUserSelect = 'none';
-            
-            console.log(`Starting drag: Task "${dragTask.name}" at week ${dragStartWeek}`);
-        }
-
-        function updateDrag(e) {
-            if (!isDragging || !dragTask) return;
-            
-            const deltaX = e.clientX - dragStartX;
-            
-            // Smoother dragging - update position directly based on pixels moved
-            const timelineStart = 280; // Label columns width
-            const originalLeft = weeksToTimelinePosition(dragStartWeek);
-            let newLeft = originalLeft + deltaX;
-            
-            // Calculate boundaries
-            const minLeft = timelineStart; // Start of timeline
-            const maxLeft = timelineStart + (12 * 100) - (dragTask.duration * (12 * 100) / getTotalWeeksInYear());
-            
-            // Constrain to boundaries
-            newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
-            
-            // Convert back to weeks for data storage
-            const totalWeeks = getTotalWeeksInYear();
-            const timelineWidth = 12 * 100;
-            const relativePosition = newLeft - timelineStart;
-            const newWeek = Math.round((relativePosition / timelineWidth) * totalWeeks);
-            
-            // Update task data
-            dragTask.startWeek = Math.max(0, Math.min(newWeek, totalWeeks - dragTask.duration));
-            
-            // Update visual position immediately
-            const overlay = document.getElementById('ganttOverlay');
-            const taskElement = overlay.querySelector(`[data-task-id="${dragTask.id}"]`);
-            if (taskElement) {
-                taskElement.style.left = `${newLeft}px`;
-            }
-        }
-
-        function endDrag(e) {
-            if (!isDragging || !dragTask) return;
-            
-            // Find the gantt bar in the overlay
-            const overlay = document.getElementById('ganttOverlay');
-            const taskElement = overlay.querySelector(`[data-task-id="${dragTask.id}"]`);
-            if (taskElement) {
-                taskElement.classList.remove('dragging');
-            }
-            
-            document.body.style.userSelect = '';
-            document.body.style.webkitUserSelect = '';
-            
-            console.log(`Drag ended: Task "${dragTask.name}" at week ${dragTask.startWeek}`);
-            
-            autoSave();
-            
-            isDragging = false;
-            dragTask = null;
-        }
-
-        // Get total weeks in the year
-        function getTotalWeeksInYear() {
+        // Calculate total weeks in project
+        function calculateTotalWeeks() {
             let totalWeeks = 0;
-            for (let month = 0; month < 12; month++) {
-                totalWeeks += getWeeksInMonth(currentYear, month);
+            let currentMonth = projectData.startMonth;
+            let currentYear = projectData.startYear;
+            
+            while (currentYear < projectData.endYear || 
+                   (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
+                totalWeeks += getWeeksInMonth(currentYear, currentMonth);
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
             }
+            
             return totalWeeks;
         }
 
-        // Auto-save
+        // Generate timeline months array
+        function generateTimelineMonths() {
+            const months = [];
+            let currentMonth = projectData.startMonth;
+            let currentYear = projectData.startYear;
+            
+            while (currentYear < projectData.endYear || 
+                   (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
+                months.push({
+                    month: currentMonth,
+                    year: currentYear,
+                    name: monthNames[currentMonth],
+                    weeks: getWeeksInMonth(currentYear, currentMonth)
+                });
+                
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+            }
+            
+            return months;
+        }
+
+        // Update timeline when dates change
+        function updateTimeline() {
+            projectData.startMonth = parseInt(document.getElementById('startMonth').value);
+            projectData.startYear = parseInt(document.getElementById('startYear').value);
+            projectData.endMonth = parseInt(document.getElementById('endMonth').value);
+            projectData.endYear = parseInt(document.getElementById('endYear').value);
+            
+            projectData.totalWeeks = calculateTotalWeeks();
+            
+            renderTimelineHeader();
+            renderTimelineGrid();
+            autoSave();
+        }
+
+        // Render timeline header
+        function renderTimelineHeader() {
+            const header = document.getElementById('timelineHeader');
+            const months = generateTimelineMonths();
+            
+            // Update CSS custom property for month count
+            document.documentElement.style.setProperty('--month-count', months.length);
+            
+            header.innerHTML = `
+                <div class="timeline-header-spacer"></div>
+                ${months.map(month => `
+                    <div class="timeline-header-cell">
+                        <div class="month-header">${month.name}${month.year !== new Date().getFullYear() ? month.year.toString().slice(-2) : ''}</div>
+                        <div class="month-weeks">${month.weeks}w</div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Render timeline grid
+        function renderTimelineGrid() {
+            const grid = document.getElementById('timelineGrid');
+            const months = generateTimelineMonths();
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            let html = '';
+            
+            // Render phases
+            projectData.phases.forEach(phase => {
+                html += renderPhaseRow(phase, months, currentMonth, currentYear);
+                
+                if (!phase.collapsed) {
+                    // Render actions
+                    phase.actions.forEach((action, index) => {
+                        setTimeout(() => {
+                            const actionRow = document.querySelector(`[data-action-id="${action.id}"]`);
+                            if (actionRow) {
+                                actionRow.classList.add('expanding');
+                            }
+                        }, index * 50);
+                        
+                        html += renderActionRow(action, months, currentMonth, currentYear);
+                    });
+                    
+                    // Add action row
+                    html += renderAddActionRow(phase.id, months);
+                }
+            });
+            
+            // Add phase row
+            html += renderAddPhaseRow(months);
+            
+            grid.innerHTML = html;
+            
+            // Render gantt bars
+            renderGanttBars();
+        }
+
+        // Render phase row
+        function renderPhaseRow(phase, months, currentMonth, currentYear) {
+            const duration = calculatePhaseDuration(phase);
+            
+            return `
+                <div class="timeline-row phase-row" data-phase-id="${phase.id}">
+                    <div class="timeline-row-label">
+                        <div class="phase-label">
+                            <button class="collapse-btn ${phase.collapsed ? 'collapsed' : ''}" 
+                                    onclick="togglePhaseCollapse(${phase.id})"></button>
+                            <span class="phase-name" onclick="editPhaseName(${phase.id})">${phase.name}</span>
+                        </div>
+                    </div>
+                    <div class="stepper-control">
+                        <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, -1)">‹</button>
+                        <input type="number" class="stepper-input" value="${phase.startWeek}" 
+                               onchange="setPhaseStartWeek(${phase.id}, this.value)" min="1" max="${projectData.totalWeeks}">
+                        <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
+                    </div>
+                    <div class="duration-display">${duration}w</div>
+                    ${months.map(month => `
+                        <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
+                             data-month="${month.month}" data-year="${month.year}"></div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Render action row
+        function renderActionRow(action, months, currentMonth, currentYear) {
+            return `
+                <div class="timeline-row action-row" data-action-id="${action.id}">
+                    <div class="timeline-row-label action-label">
+                        <span class="action-name" onclick="editActionName(${action.id})">${action.name}</span>
+                    </div>
+                    <div></div>
+                    <div class="stepper-control">
+                        <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, -1)">‹</button>
+                        <input type="number" class="stepper-input" value="${action.duration}" 
+                               onchange="setActionDuration(${action.id}, this.value)" min="1" max="12">
+                        <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, 1)">›</button>
+                    </div>
+                    ${months.map(month => `
+                        <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
+                             data-month="${month.month}" data-year="${month.year}"></div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Render add action row
+        function renderAddActionRow(phaseId, months) {
+            return `
+                <div class="timeline-row add-action-row" onclick="createAction(${phaseId})">
+                    <div class="timeline-row-label">
+                        <div class="add-row-content">+ Add Action</div>
+                    </div>
+                    <div></div>
+                    <div></div>
+                    ${months.map(() => '<div class="timeline-cell"></div>').join('')}
+                </div>
+            `;
+        }
+
+        // Render add phase row
+        function renderAddPhaseRow(months) {
+            return `
+                <div class="timeline-row add-phase-row" onclick="createPhase()">
+                    <div class="timeline-row-label">
+                        <div class="add-row-content">+ Add Phase</div>
+                    </div>
+                    <div></div>
+                    <div></div>
+                    ${months.map(() => '<div class="timeline-cell"></div>').join('')}
+                </div>
+            `;
+        }
+
+        // Render gantt bars
+        function renderGanttBars() {
+            // Clear existing gantt bars
+            document.querySelectorAll('.gantt-bar').forEach(bar => bar.remove());
+            
+            const months = generateTimelineMonths();
+            let weekOffset = 0;
+            
+            // Calculate week offsets for each month
+            const monthOffsets = {};
+            months.forEach((month, index) => {
+                monthOffsets[`${month.year}-${month.month}`] = weekOffset;
+                weekOffset += month.weeks;
+            });
+            
+            // Render phase gantt bars
+            projectData.phases.forEach(phase => {
+                const phaseRow = document.querySelector(`[data-phase-id="${phase.id}"]`);
+                if (phaseRow) {
+                    const duration = calculatePhaseDuration(phase);
+                    if (duration > 0) {
+                        renderGanttBar(phaseRow, phase.startWeek, duration, 'phase-bar', months, monthOffsets);
+                    }
+                }
+            });
+
+            // Render action gantt bars
+            projectData.phases.forEach(phase => {
+                if (!phase.collapsed) {
+                    phase.actions.forEach(action => {
+                        const actionRow = document.querySelector(`[data-action-id="${action.id}"]`);
+                        if (actionRow) {
+                            renderGanttBar(actionRow, action.startWeek, action.duration, 'action-bar', months, monthOffsets);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Render individual gantt bar
+        function renderGanttBar(row, startWeek, duration, className, months, monthOffsets) {
+            const bar = document.createElement('div');
+            bar.className = `gantt-bar ${className}`;
+            
+            // Calculate position and width
+            const timelineStart = 360; // Width of fixed columns (200 + 80 + 80)
+            const monthCells = row.querySelectorAll('.timeline-cell');
+            
+            if (monthCells.length === 0) return;
+            
+            const cellWidth = monthCells[0].offsetWidth;
+            const totalTimelineWidth = cellWidth * months.length;
+            const weekWidth = totalTimelineWidth / projectData.totalWeeks;
+            
+            const left = timelineStart + ((startWeek - 1) * weekWidth);
+            const width = duration * weekWidth;
+            
+            bar.style.left = `${left}px`;
+            bar.style.width = `${width}px`;
+            
+            // Add duration text for longer bars
+            if (duration >= 2) {
+                bar.textContent = `${duration}w`;
+            }
+            
+            row.style.position = 'relative';
+            row.appendChild(bar);
+        }
+
+        // Calculate phase duration
+        function calculatePhaseDuration(phase) {
+            if (!phase.actions || phase.actions.length === 0) {
+                return 0;
+            }
+            
+            const endWeeks = phase.actions.map(action => action.startWeek + action.duration);
+            const phaseEndWeek = Math.max(...endWeeks);
+            return Math.max(0, phaseEndWeek - phase.startWeek);
+        }
+
+        // Calculate next available start week for action
+        function calculateActionStartWeek(phase, actionId = null) {
+            if (!phase.actions || phase.actions.length === 0) {
+                return phase.startWeek;
+            }
+            
+            // Sort actions by their current position in the array (creation order)
+            const actionsBeforeThis = [];
+            for (let i = 0; i < phase.actions.length; i++) {
+                if (phase.actions[i].id === actionId) break;
+                actionsBeforeThis.push(phase.actions[i]);
+            }
+            
+            if (actionsBeforeThis.length === 0) {
+                return phase.startWeek;
+            }
+            
+            // Calculate cumulative duration of previous actions
+            let cumulativeDuration = 0;
+            actionsBeforeThis.forEach(action => {
+                cumulativeDuration += action.duration;
+            });
+            
+            return phase.startWeek + cumulativeDuration;
+        }
+
+        // Recalculate all action start weeks in a phase
+        function recalculatePhaseActionWeeks(phaseId) {
+            const phase = projectData.phases.find(p => p.id === phaseId);
+            if (!phase || !phase.actions) return;
+            
+            let currentWeek = phase.startWeek;
+            phase.actions.forEach(action => {
+                action.startWeek = currentWeek;
+                currentWeek += action.duration;
+            });
+        }
+
+        // Phase management functions
+        function togglePhaseCollapse(phaseId) {
+            const phase = projectData.phases.find(p => p.id === phaseId);
+            if (phase) {
+                phase.collapsed = !phase.collapsed;
+                updateTimeline();
+                autoSave();
+            }
+        }
+
+        function editPhaseName(phaseId) {
+            const phase = projectData.phases.find(p => p.id === phaseId);
+            const phaseNameEl = document.querySelector(`[data-phase-id="${phaseId}"] .phase-name`);
+            
+            if (phase && phaseNameEl) {
+                const currentName = phase.name;
+                phaseNameEl.innerHTML = `<input type="text" class="inline-input" value="${currentName}" 
+                    onblur="savePhaseName(${phaseId}, this.value)" 
+                    onkeydown="handleInlineEdit(event, ${phaseId}, this.value, 'phase')"
+                    style="width: 100%; margin: 0;">`;
+                
+                const input = phaseNameEl.querySelector('input');
+                input.focus();
+                input.select();
+            }
+        }
+
+        function savePhaseName(phaseId, newName) {
+            const phase = projectData.phases.find(p => p.id === phaseId);
+            if (phase && newName.trim()) {
+                phase.name = newName.trim();
+                updateTimeline();
+                autoSave();
+            }
+        }
+
+        function adjustPhaseStartWeek(phaseId, delta) {
+            const phase = projectData.phases.find(p => p.id === phaseId);
+            if (phase) {
+                const newStartWeek = Math.max(1, Math.min(projectData.totalWeeks, phase.startWeek + delta));
+                if (newStartWeek !== phase.startWeek) {
+                    phase.startWeek = newStartWeek;
+                    
+                    // Recalculate all action start weeks in this phase
+                    recalculatePhaseActionWeeks(phaseId);
+                    
+                    updateTimeline();
+                    autoSave();
+                }
+            }
+        }
+
+        function setPhaseStartWeek(phaseId, value) {
+            const phase = projectData.phases.find(p => p.id === phaseId);
+            const newStartWeek = parseInt(value) || 1;
+            
+            if (phase && newStartWeek !== phase.startWeek) {
+                phase.startWeek = Math.max(1, Math.min(projectData.totalWeeks, newStartWeek));
+                
+                // Recalculate all action start weeks in this phase
+                recalculatePhaseActionWeeks(phaseId);
+                
+                updateTimeline();
+                autoSave();
+            }
+        }
+
+        function createPhase() {
+            const nextStartWeek = projectData.phases.length > 0 
+                ? Math.max(...projectData.phases.map(p => p.startWeek + calculatePhaseDuration(p)))
+                : 1;
+            
+            const newPhase = {
+                id: projectData.phaseIdCounter++,
+                name: `Phase ${projectData.phases.length + 1}`,
+                startWeek: Math.min(nextStartWeek, projectData.totalWeeks),
+                collapsed: false,
+                actions: []
+            };
+            
+            projectData.phases.push(newPhase);
+            updateTimeline();
+            autoSave();
+            
+            // Auto-edit the new phase name
+            setTimeout(() => editPhaseName(newPhase.id), 100);
+        }
+
+        // Action management functions
+        function editActionName(actionId) {
+            const action = findActionById(actionId);
+            const actionNameEl = document.querySelector(`[data-action-id="${actionId}"] .action-name`);
+            
+            if (action && actionNameEl) {
+                const currentName = action.name;
+                actionNameEl.innerHTML = `<input type="text" class="inline-input" value="${currentName}" 
+                    onblur="saveActionName(${actionId}, this.value)" 
+                    onkeydown="handleInlineEdit(event, ${actionId}, this.value, 'action')"
+                    style="width: 100%; margin: 0;">`;
+                
+                const input = actionNameEl.querySelector('input');
+                input.focus();
+                input.select();
+            }
+        }
+
+        function saveActionName(actionId, newName) {
+            const action = findActionById(actionId);
+            if (action && newName.trim()) {
+                action.name = newName.trim();
+                updateTimeline();
+                autoSave();
+            }
+        }
+
+        function adjustActionDuration(actionId, delta) {
+            const action = findActionById(actionId);
+            if (action) {
+                const newDuration = Math.max(1, Math.min(12, action.duration + delta));
+                if (newDuration !== action.duration) {
+                    action.duration = newDuration;
+                    
+                    // Recalculate start weeks for all actions in this phase
+                    recalculatePhaseActionWeeks(action.phaseId);
+                    
+                    updateTimeline();
+                    autoSave();
+                }
+            }
+        }
+
+        function setActionDuration(actionId, value) {
+            const action = findActionById(actionId);
+            const newDuration = Math.max(1, Math.min(12, parseInt(value) || 1));
+            
+            if (action && newDuration !== action.duration) {
+                action.duration = newDuration;
+                
+                // Recalculate start weeks for all actions in this phase
+                recalculatePhaseActionWeeks(action.phaseId);
+                
+                updateTimeline();
+                autoSave();
+            }
+        }
+
+        function createAction(phaseId) {
+            const phase = projectData.phases.find(p => p.id === phaseId);
+            if (!phase) return;
+            
+            const newAction = {
+                id: projectData.actionIdCounter++,
+                name: `Action ${(phase.actions?.length || 0) + 1}`,
+                duration: 2,
+                startWeek: 1, // Will be recalculated
+                phaseId: phaseId,
+                completedWeeks: 0,
+                status: 'not-started'
+            };
+            
+            if (!phase.actions) phase.actions = [];
+            phase.actions.push(newAction);
+            
+            // Recalculate start weeks for all actions in this phase
+            recalculatePhaseActionWeeks(phaseId);
+            
+            updateTimeline();
+            autoSave();
+            
+            // Auto-edit the new action name
+            setTimeout(() => editActionName(newAction.id), 100);
+        }
+
+        // Utility functions
+        function findActionById(actionId) {
+            for (const phase of projectData.phases) {
+                if (phase.actions) {
+                    const action = phase.actions.find(a => a.id === actionId);
+                    if (action) return action;
+                }
+            }
+            return null;
+        }
+
+        function handleInlineEdit(event, id, value, type) {
+            if (event.key === 'Enter') {
+                event.target.blur();
+            } else if (event.key === 'Escape') {
+                updateTimeline(); // Cancel edit
+            }
+        }
+
+        function editProjectTitle(titleEl) {
+            titleEl.contentEditable = true;
+            titleEl.focus();
+            
+            // Select all text
+            const range = document.createRange();
+            range.selectNodeContents(titleEl);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            titleEl.addEventListener('blur', function() {
+                titleEl.contentEditable = false;
+                const newTitle = titleEl.textContent.trim() || 'My Project';
+                titleEl.textContent = newTitle;
+                document.title = newTitle;
+                projectData.projectName = newTitle;
+                autoSave();
+            }, { once: true });
+            
+            titleEl.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    titleEl.blur();
+                }
+            });
+        }
+
+        // Auto-save functionality
         function autoSave() {
             try {
-                const data = {
-                    projectName: document.querySelector('.header h1').textContent,
-                    currentYear: currentYear,
-                    tasks: tasks,
-                    rows: rows,
-                    taskIdCounter: taskIdCounter
-                };
-                
                 const dataScript = document.getElementById('projectData');
-                dataScript.textContent = '\n    ' + JSON.stringify(data, null, 4) + '\n    ';
-                
+                dataScript.textContent = '\n    ' + JSON.stringify(projectData, null, 4) + '\n    ';
                 console.log('Auto-saved project data');
             } catch (error) {
                 console.error('Error auto-saving:', error);
             }
         }
 
-        // Initialize the app
-        function init() {
-            document.getElementById('saveProjectBtn').addEventListener('click', saveProjectData);
-            
-            document.addEventListener('mousemove', updateDrag);
-            document.addEventListener('mouseup', endDrag);
-
-            loadProjectData();
-            renderTimeline();
+        // Save project to file
+        function saveProject() {
+            try {
+                const htmlContent = document.documentElement.outerHTML;
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                const projectName = projectData.projectName || 'My Project';
+                const filename = generateFileName(projectName);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                console.log('Project saved successfully');
+            } catch (error) {
+                console.error('Error saving project:', error);
+            }
         }
 
-        // Wait for DOM to be ready
+        function generateFileName(projectName) {
+            const sanitized = projectName
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, '')
+                .replace(/\s+/g, '_')
+                .replace(/_{2,}/g, '_')
+                .replace(/^_|_$/g, '');
+            
+            return `${sanitized}_planner.html`;
+        }
+
+        // Initialize when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
