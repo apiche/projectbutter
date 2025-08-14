@@ -125,13 +125,16 @@
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 12px 16px; /* Reduced horizontal padding for icon-only button */
             border: none;
             border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 14px;
+            font-size: 16px; /* Slightly larger for the emoji icon */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-primary {
@@ -164,7 +167,7 @@
 
         .timeline-header {
             display: grid;
-            grid-template-columns: 360px repeat(var(--month-count, 12), 1fr);
+            grid-template-columns: 200px 80px 80px repeat(var(--month-count, 12), 1fr);
             gap: 1px;
             margin-bottom: 20px;
         }
@@ -216,6 +219,22 @@
             border-radius: 12px;
             overflow: hidden;
             position: relative;
+            /* Clip gantt bars so they don't appear in the fixed columns */
+            --timeline-start: 360px;
+        }
+
+        .timeline-row::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: var(--timeline-start);
+            height: 100%;
+            background: transparent;
+            pointer-events: none;
+            z-index: 20;
+            /* This creates an invisible barrier to clip gantt bars */
+            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.8);
         }
 
         .timeline-row.phase-row {
@@ -335,6 +354,8 @@
             font-weight: 500;
             color: var(--text-secondary);
             font-size: 13px;
+            display: flex;
+            align-items: center; /* Center the action name vertically */
         }
 
         .stepper-control {
@@ -347,10 +368,12 @@
             overflow: hidden;
             min-width: 70px;
             backdrop-filter: blur(10px);
+            height: 28px; /* Fixed height to make container tighter */
+            align-self: center; /* Center the stepper control in its grid cell */
         }
 
         .stepper-btn {
-            padding: 4px 8px;
+            padding: 2px 8px; /* Reduced vertical padding */
             border: none;
             background: var(--primary-cream);
             cursor: pointer;
@@ -362,7 +385,7 @@
             align-items: center;
             justify-content: center;
             min-width: 20px;
-            height: 24px;
+            height: 100%; /* Fill the container height */
             border-radius: 4px;
         }
 
@@ -385,7 +408,8 @@
             width: 30px;
             outline: none;
             font-size: 13px;
-            padding: 4px 2px;
+            padding: 2px; /* Reduced padding */
+            height: 100%; /* Fill the container height */
         }
 
         .stepper-input:focus {
@@ -612,6 +636,8 @@
                 <select class="date-select" id="startYear" onchange="updateTimeline()"></select>
             </div>
             
+            <button class="btn btn-primary" onclick="saveProject()" title="Save Project">💾</button>
+            
             <div class="date-control">
                 <label>End:</label>
                 <select class="date-select" id="endMonth" onchange="updateTimeline()">
@@ -630,8 +656,6 @@
                 </select>
                 <select class="date-select" id="endYear" onchange="updateTimeline()"></select>
             </div>
-
-            <button class="btn btn-primary" onclick="saveProject()">💾 Save Project</button>
         </div>
 
         <div class="timeline-container">
@@ -770,30 +794,36 @@
             document.getElementById('endYear').value = projectData.endYear;
         }
 
-        // Calculate weeks in a month
+        // Calculate weeks in a month - count weeks where majority of days fall in this month
         function getWeeksInMonth(year, month) {
-            const firstDay = new Date(year, month, 1);
             let weekCount = 0;
-            let currentDate = new Date(firstDay);
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
             
-            while (currentDate.getMonth() === month) {
-                const weekStart = new Date(currentDate);
-                weekStart.setDate(currentDate.getDate() - currentDate.getDay());
+            // Start from the first Sunday on or before the first day of the month
+            let currentDate = new Date(firstDay);
+            currentDate.setDate(currentDate.getDate() - currentDate.getDay());
+            
+            while (currentDate <= lastDay) {
+                // Count days of this week that fall within the month
+                let daysInThisMonth = 0;
+                let weekStart = new Date(currentDate);
                 
-                const weekEnd = new Date(weekStart);
-                weekEnd.setDate(weekStart.getDate() + 6);
-                
-                let daysInMonth = 0;
-                for (let d = new Date(weekStart); d <= weekEnd; d.setDate(d.getDate() + 1)) {
-                    if (d.getMonth() === month) {
-                        daysInMonth++;
+                for (let i = 0; i < 7; i++) {
+                    let checkDate = new Date(weekStart);
+                    checkDate.setDate(weekStart.getDate() + i);
+                    
+                    if (checkDate.getMonth() === month) {
+                        daysInThisMonth++;
                     }
                 }
                 
-                if (daysInMonth >= 4) {
+                // Only count this week if majority of days (4+) are in this month
+                if (daysInThisMonth >= 4) {
                     weekCount++;
                 }
                 
+                // Move to next week
                 currentDate.setDate(currentDate.getDate() + 7);
             }
             
@@ -806,9 +836,13 @@
             let currentMonth = projectData.startMonth;
             let currentYear = projectData.startYear;
             
+            console.log(`Calculating weeks from ${currentYear}-${currentMonth + 1}:`);
+            
             while (currentYear < projectData.endYear || 
                    (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
-                totalWeeks += getWeeksInMonth(currentYear, currentMonth);
+                const monthWeeks = getWeeksInMonth(currentYear, currentMonth);
+                console.log(`  ${currentYear}-${currentMonth + 1}: ${monthWeeks} weeks (cumulative: ${totalWeeks + monthWeeks})`);
+                totalWeeks += monthWeeks;
                 currentMonth++;
                 if (currentMonth > 11) {
                     currentMonth = 0;
@@ -816,6 +850,8 @@
                 }
             }
             
+            console.log(`Total weeks: ${totalWeeks}`);
+            console.log(`Week 1 should be at the start of ${projectData.startYear}-${projectData.startMonth + 1}`);
             return totalWeeks;
         }
 
@@ -862,18 +898,30 @@
         function renderTimelineHeader() {
             const header = document.getElementById('timelineHeader');
             const months = generateTimelineMonths();
+            const currentYear = new Date().getFullYear();
             
             // Update CSS custom property for month count
             document.documentElement.style.setProperty('--month-count', months.length);
             
+            const monthAbbreviations = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
             header.innerHTML = `
                 <div class="timeline-header-spacer"></div>
-                ${months.map(month => `
-                    <div class="timeline-header-cell">
-                        <div class="month-header">${month.name}${month.year !== new Date().getFullYear() ? month.year.toString().slice(-2) : ''}</div>
-                        <div class="month-weeks">${month.weeks}w</div>
-                    </div>
-                `).join('')}
+                <div class="timeline-header-spacer"></div>
+                <div class="timeline-header-spacer"></div>
+                ${months.map(month => {
+                    const monthAbbr = monthAbbreviations[month.month];
+                    const yearSuffix = month.year !== currentYear ? month.year.toString().slice(-2) : '';
+                    const displayName = monthAbbr + yearSuffix;
+                    
+                    return `
+                        <div class="timeline-header-cell">
+                            <div class="month-header">${displayName}</div>
+                            <div class="month-weeks">${month.weeks}w</div>
+                        </div>
+                    `;
+                }).join('')}
             `;
         }
 
@@ -919,8 +967,6 @@
 
         // Render phase row
         function renderPhaseRow(phase, months, currentMonth, currentYear) {
-            const duration = calculatePhaseDuration(phase);
-            
             return `
                 <div class="timeline-row phase-row" data-phase-id="${phase.id}">
                     <div class="timeline-row-label">
@@ -936,7 +982,7 @@
                                onchange="setPhaseStartWeek(${phase.id}, this.value)" min="1" max="${projectData.totalWeeks}">
                         <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
                     </div>
-                    <div class="duration-display">${duration}w</div>
+                    <div></div>
                     ${months.map(month => `
                         <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
                              data-month="${month.month}" data-year="${month.year}"></div>
@@ -1034,7 +1080,7 @@
             });
         }
 
-        // Render individual gantt bar
+        // Render individual gantt bar - simple and direct
         function renderGanttBar(row, startWeek, duration, className, months, monthOffsets) {
             const bar = document.createElement('div');
             bar.className = `gantt-bar ${className}`;
@@ -1049,6 +1095,7 @@
             const totalTimelineWidth = cellWidth * months.length;
             const weekWidth = totalTimelineWidth / projectData.totalWeeks;
             
+            // Simple positioning: week 1 starts at the beginning of timeline
             const left = timelineStart + ((startWeek - 1) * weekWidth);
             const width = duration * weekWidth;
             
@@ -1107,8 +1154,12 @@
             if (!phase || !phase.actions) return;
             
             let currentWeek = phase.startWeek;
-            phase.actions.forEach(action => {
+            console.log(`Recalculating action weeks for phase ${phaseId}, starting at week ${currentWeek}`);
+            
+            phase.actions.forEach((action, index) => {
+                const oldStartWeek = action.startWeek;
                 action.startWeek = currentWeek;
+                console.log(`  Action ${action.id}: ${oldStartWeek} -> ${action.startWeek}`);
                 currentWeek += action.duration;
             });
         }
@@ -1152,7 +1203,10 @@
         function adjustPhaseStartWeek(phaseId, delta) {
             const phase = projectData.phases.find(p => p.id === phaseId);
             if (phase) {
+                const oldStartWeek = phase.startWeek;
+                // Week 1 is the first week, simple as that
                 const newStartWeek = Math.max(1, Math.min(projectData.totalWeeks, phase.startWeek + delta));
+                
                 if (newStartWeek !== phase.startWeek) {
                     phase.startWeek = newStartWeek;
                     
