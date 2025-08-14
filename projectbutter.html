@@ -165,7 +165,7 @@
         .timeline-header {
             display: grid;
             grid-template-columns: 200px 80px 80px repeat(var(--month-count, 12), 1fr);
-            gap: 1px;
+            gap: 0.25rem;
             margin-bottom: 20px;
         }
 
@@ -209,7 +209,7 @@
         .timeline-row {
             display: grid;
             grid-template-columns: 200px 80px 80px repeat(var(--month-count, 12), 1fr);
-            gap: 1px;
+            gap: 0.25rem;
             margin-bottom: 2px;
             min-height: 50px;
             background: rgba(0, 0, 0, 0.05);
@@ -340,19 +340,18 @@
         .stepper-control {
             display: flex;
             align-items: center;
-            justify-content: center;
             background: var(--surface-secondary);
             border-radius: 8px;
             border: 1px solid rgba(44, 74, 107, 0.1);
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             min-width: 70px;
-            height: 32px;
             backdrop-filter: blur(10px);
+            margin-right: 0.5rem;
         }
 
         .stepper-btn {
-            padding: 4px 8px;
+            padding: 2px 6px;
             border: none;
             background: var(--primary-cream);
             cursor: pointer;
@@ -363,9 +362,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 20px;
-            height: 28px;
+            min-width: 18px;
             border-radius: 4px;
+            line-height: 1;
         }
 
         .stepper-btn:hover {
@@ -387,7 +386,8 @@
             width: 30px;
             outline: none;
             font-size: 13px;
-            padding: 4px 2px;
+            padding: 2px;
+            line-height: 1.2;
         }
 
         .stepper-input:focus {
@@ -408,11 +408,9 @@
             border-radius: 8px;
         }
 
-        .stepper-cell {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
+        .duration-display.updating {
+            color: var(--accent-warm);
+            transform: scale(1.05);
         }
 
         .timeline-cell {
@@ -535,6 +533,51 @@
             transform: scale(1.05);
         }
 
+        /* Delete button styles */
+        .delete-btn {
+            width: 18px;
+            height: 18px;
+            border: none;
+            background: #ef4444;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-right: 6px;
+            min-width: 18px;
+        }
+
+        .delete-btn:hover:not(:disabled) {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .delete-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .delete-btn::before {
+            content: '×';
+        }
+
+        /* Edit mode styles */
+        .edit-mode {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .edit-mode .inline-input {
+            margin-right: 0;
+        }
+
         /* Collapse/Expand Animations */
         .phase-actions-container {
             overflow: hidden;
@@ -600,18 +643,18 @@
             <div class="date-control">
                 <label>Start:</label>
                 <select class="date-select" id="startMonth" onchange="updateTimeline()">
-                    <option value="0">January</option>
-                    <option value="1">February</option>
-                    <option value="2">March</option>
-                    <option value="3">April</option>
+                    <option value="0">Jan</option>
+                    <option value="1">Feb</option>
+                    <option value="2">Mar</option>
+                    <option value="3">Apr</option>
                     <option value="4">May</option>
-                    <option value="5">June</option>
-                    <option value="6">July</option>
-                    <option value="7">August</option>
-                    <option value="8">September</option>
-                    <option value="9">October</option>
-                    <option value="10">November</option>
-                    <option value="11">December</option>
+                    <option value="5">Jun</option>
+                    <option value="6">Jul</option>
+                    <option value="7">Aug</option>
+                    <option value="8">Sep</option>
+                    <option value="9">Oct</option>
+                    <option value="10">Nov</option>
+                    <option value="11">Dec</option>
                 </select>
                 <select class="date-select" id="startYear" onchange="updateTimeline()"></select>
             </div>
@@ -619,21 +662,23 @@
             <div class="date-control">
                 <label>End:</label>
                 <select class="date-select" id="endMonth" onchange="updateTimeline()">
-                    <option value="0">January</option>
-                    <option value="1">February</option>
-                    <option value="2">March</option>
-                    <option value="3">April</option>
+                    <option value="0">Jan</option>
+                    <option value="1">Feb</option>
+                    <option value="2">Mar</option>
+                    <option value="3">Apr</option>
                     <option value="4">May</option>
-                    <option value="5">June</option>
-                    <option value="6">July</option>
-                    <option value="7">August</option>
-                    <option value="8">September</option>
-                    <option value="9">October</option>
-                    <option value="10">November</option>
-                    <option value="11">December</option>
+                    <option value="5">Jun</option>
+                    <option value="6">Jul</option>
+                    <option value="7">Aug</option>
+                    <option value="8">Sep</option>
+                    <option value="9">Oct</option>
+                    <option value="10">Nov</option>
+                    <option value="11">Dec</option>
                 </select>
                 <select class="date-select" id="endYear" onchange="updateTimeline()"></select>
             </div>
+
+            <button class="btn btn-primary" onclick="saveProject()">💾 Save Project</button>
         </div>
 
         <div class="timeline-container">
@@ -697,7 +742,7 @@
                          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
         // Initialize the application
-        function initializeApp() {
+        function init() {
             loadProjectData();
             initializeDateSelectors();
             initializeProjectName();
@@ -773,7 +818,7 @@
         }
 
         // Calculate weeks in a month
-        function calculateWeeksInMonth(year, month) {
+        function getWeeksInMonth(year, month) {
             const firstDay = new Date(year, month, 1);
             let weekCount = 0;
             let currentDate = new Date(firstDay);
@@ -810,7 +855,7 @@
             
             while (currentYear < projectData.endYear || 
                    (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
-                totalWeeks += calculateWeeksInMonth(currentYear, currentMonth);
+                totalWeeks += getWeeksInMonth(currentYear, currentMonth);
                 currentMonth++;
                 if (currentMonth > 11) {
                     currentMonth = 0;
@@ -833,7 +878,7 @@
                     month: currentMonth,
                     year: currentYear,
                     name: monthNames[currentMonth],
-                    weeks: calculateWeeksInMonth(currentYear, currentMonth)
+                    weeks: getWeeksInMonth(currentYear, currentMonth)
                 });
                 
                 currentMonth++;
@@ -857,7 +902,7 @@
             
             renderTimelineHeader();
             renderTimelineGrid();
-            autoSaveProject();
+            autoSave();
         }
 
         // Render timeline header
@@ -869,14 +914,12 @@
             document.documentElement.style.setProperty('--month-count', months.length);
             
             header.innerHTML = `
-                <div class="timeline-header-spacer" style="display: flex; align-items: center; justify-content: center;">
-                    <button class="btn btn-primary" onclick="saveProject()" style="font-size: 12px; padding: 8px 16px;">💾 Save</button>
-                </div>
+                <div class="timeline-header-spacer"></div>
                 <div class="timeline-header-spacer"></div>
                 <div class="timeline-header-spacer"></div>
                 ${months.map(month => `
                     <div class="timeline-header-cell">
-                        <div class="month-header">${month.name}${month.year !== new Date().getFullYear() ? "'" + month.year.toString().slice(-2) : ''}</div>
+                        <div class="month-header">${month.name}${month.year !== new Date().getFullYear() ? month.year.toString().slice(-2) : ''}</div>
                         <div class="month-weeks">${month.weeks}w</div>
                     </div>
                 `).join('')}
@@ -936,13 +979,11 @@
                             <span class="phase-name" onclick="editPhaseName(${phase.id})">${phase.name}</span>
                         </div>
                     </div>
-                    <div class="stepper-cell">
-                        <div class="stepper-control">
-                            <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, -1)">‹</button>
-                            <input type="number" class="stepper-input" value="${phase.startWeek}" 
-                                   onchange="setPhaseStartWeek(${phase.id}, this.value)" min="1" max="${projectData.totalWeeks}">
-                            <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
-                        </div>
+                    <div class="stepper-control">
+                        <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, -1)">‹</button>
+                        <input type="number" class="stepper-input" value="${phase.startWeek}" 
+                               onchange="setPhaseStartWeek(${phase.id}, this.value)" min="1" max="${projectData.totalWeeks}">
+                        <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
                     </div>
                     <div class="duration-display">${duration}w</div>
                     ${months.map(month => `
@@ -960,15 +1001,13 @@
                     <div class="timeline-row-label action-label">
                         <span class="action-name" onclick="editActionName(${action.id})">${action.name}</span>
                     </div>
-                    <div class="stepper-cell">
-                        <div class="stepper-control">
-                            <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, -1)">‹</button>
-                            <input type="number" class="stepper-input" value="${action.duration}" 
-                                   onchange="setActionDuration(${action.id}, this.value)" min="1" max="12">
-                            <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, 1)">›</button>
-                        </div>
-                    </div>
                     <div></div>
+                    <div class="stepper-control">
+                        <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, -1)">‹</button>
+                        <input type="number" class="stepper-input" value="${action.duration}" 
+                               onchange="setActionDuration(${action.id}, this.value)" min="1" max="12">
+                        <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, 1)">›</button>
+                    </div>
                     ${months.map(month => `
                         <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
                              data-month="${month.month}" data-year="${month.year}"></div>
@@ -1010,38 +1049,41 @@
             // Clear existing gantt bars
             document.querySelectorAll('.gantt-bar').forEach(bar => bar.remove());
             
-            const months = generateTimelineMonths();
-            let weekOffset = 0;
-            
-            // Calculate week offsets for each month
-            const monthOffsets = {};
-            months.forEach((month, index) => {
-                monthOffsets[`${month.year}-${month.month}`] = weekOffset;
-                weekOffset += month.weeks;
-            });
-            
-            // Render phase gantt bars
-            projectData.phases.forEach(phase => {
-                const phaseRow = document.querySelector(`[data-phase-id="${phase.id}"]`);
-                if (phaseRow) {
-                    const duration = calculatePhaseDuration(phase);
-                    if (duration > 0) {
-                        renderGanttBar(phaseRow, phase.startWeek, duration, 'phase-bar', months, monthOffsets);
-                    }
-                }
-            });
-
-            // Render action gantt bars
-            projectData.phases.forEach(phase => {
-                if (!phase.collapsed) {
-                    phase.actions.forEach(action => {
-                        const actionRow = document.querySelector(`[data-action-id="${action.id}"]`);
-                        if (actionRow) {
-                            renderGanttBar(actionRow, action.startWeek, action.duration, 'action-bar', months, monthOffsets);
+            // Add a small delay to ensure DOM is fully rendered
+            setTimeout(() => {
+                const months = generateTimelineMonths();
+                let weekOffset = 0;
+                
+                // Calculate week offsets for each month
+                const monthOffsets = {};
+                months.forEach((month, index) => {
+                    monthOffsets[`${month.year}-${month.month}`] = weekOffset;
+                    weekOffset += month.weeks;
+                });
+                
+                // Render phase gantt bars
+                projectData.phases.forEach(phase => {
+                    const phaseRow = document.querySelector(`[data-phase-id="${phase.id}"]`);
+                    if (phaseRow) {
+                        const duration = calculatePhaseDuration(phase);
+                        if (duration > 0) {
+                            renderGanttBar(phaseRow, phase.startWeek, duration, 'phase-bar', months, monthOffsets);
                         }
-                    });
-                }
-            });
+                    }
+                });
+
+                // Render action gantt bars
+                projectData.phases.forEach(phase => {
+                    if (!phase.collapsed) {
+                        phase.actions.forEach(action => {
+                            const actionRow = document.querySelector(`[data-action-id="${action.id}"]`);
+                            if (actionRow) {
+                                renderGanttBar(actionRow, action.startWeek, action.duration, 'action-bar', months, monthOffsets);
+                            }
+                        });
+                    }
+                });
+            }, 10);
         }
 
         // Render individual gantt bar
@@ -1049,27 +1091,29 @@
             const bar = document.createElement('div');
             bar.className = `gantt-bar ${className}`;
             
-            // Get the timeline cells to calculate positioning
-            const timelineCells = row.querySelectorAll('.timeline-cell');
-            if (timelineCells.length === 0) return;
+            // Calculate position and width based on actual cell positions
+            const monthCells = row.querySelectorAll('.timeline-cell');
             
-            // Calculate the total timeline width and position
-            const totalTimelineWidth = timelineCells.length * timelineCells[0].offsetWidth;
-            const weekWidth = totalTimelineWidth / projectData.totalWeeks;
+            if (monthCells.length === 0) return;
             
-            // Calculate bar position and width
-            const leftOffset = (startWeek - 1) * weekWidth;
-            const barWidth = duration * weekWidth;
-            
-            // Position relative to the first timeline cell
-            const firstCell = timelineCells[0];
+            // Get the actual position of the first timeline cell
+            const firstCell = monthCells[0];
             const firstCellRect = firstCell.getBoundingClientRect();
             const rowRect = row.getBoundingClientRect();
-            const relativeLeft = firstCellRect.left - rowRect.left + leftOffset;
             
-            bar.style.position = 'absolute';
-            bar.style.left = `${relativeLeft}px`;
-            bar.style.width = `${barWidth}px`;
+            // Calculate the start position relative to the row
+            const timelineStart = firstCellRect.left - rowRect.left;
+            
+            // Calculate cell width and week width
+            const cellWidth = firstCell.offsetWidth;
+            const totalTimelineWidth = cellWidth * months.length;
+            const weekWidth = totalTimelineWidth / projectData.totalWeeks;
+            
+            const left = timelineStart + ((startWeek - 1) * weekWidth);
+            const width = duration * weekWidth;
+            
+            bar.style.left = `${left}px`;
+            bar.style.width = `${width}px`;
             
             // Add duration text for longer bars
             if (duration >= 2) {
@@ -1135,7 +1179,7 @@
             if (phase) {
                 phase.collapsed = !phase.collapsed;
                 updateTimeline();
-                autoSaveProject();
+                autoSave();
             }
         }
 
@@ -1145,10 +1189,18 @@
             
             if (phase && phaseNameEl) {
                 const currentName = phase.name;
-                phaseNameEl.innerHTML = `<input type="text" class="inline-input" value="${currentName}" 
-                    onblur="savePhaseName(${phaseId}, this.value)" 
-                    onkeydown="handleInlineEdit(event, ${phaseId}, this.value, 'phase')"
-                    style="width: 100%; margin: 0;">`;
+                const hasActions = phase.actions && phase.actions.length > 0;
+                
+                phaseNameEl.innerHTML = `
+                    <div class="edit-mode">
+                        <button class="delete-btn" 
+                                onmousedown="event.preventDefault(); deletePhase(${phaseId}); return false;"
+                                ${hasActions ? 'disabled' : ''}></button>
+                        <input type="text" class="inline-input" value="${currentName}" 
+                            onblur="savePhaseName(${phaseId}, this.value)" 
+                            onkeydown="handleInlineEdit(event, ${phaseId}, this.value, 'phase')">
+                    </div>
+                `;
                 
                 const input = phaseNameEl.querySelector('input');
                 input.focus();
@@ -1161,7 +1213,28 @@
             if (phase && newName.trim()) {
                 phase.name = newName.trim();
                 updateTimeline();
-                autoSaveProject();
+                autoSave();
+            } else {
+                updateTimeline();
+            }
+        }
+
+        function deletePhase(phaseId) {
+            console.log('deletePhase called for phaseId:', phaseId);
+            const phase = projectData.phases.find(p => p.id === phaseId);
+            console.log('Found phase:', phase);
+            
+            if (phase && (!phase.actions || phase.actions.length === 0)) {
+                // Remove the phase from the array
+                const originalLength = projectData.phases.length;
+                projectData.phases = projectData.phases.filter(p => p.id !== phaseId);
+                console.log('Phase deleted:', phase.name, 'Phases before:', originalLength, 'after:', projectData.phases.length);
+                updateTimeline();
+                autoSave();
+            } else if (phase && phase.actions && phase.actions.length > 0) {
+                alert(`Cannot delete "${phase.name}" because it contains actions. Delete all actions first.`);
+            } else {
+                console.log('Phase not found or other issue:', phase);
             }
         }
 
@@ -1176,7 +1249,7 @@
                     recalculatePhaseActionWeeks(phaseId);
                     
                     updateTimeline();
-                    autoSaveProject();
+                    autoSave();
                 }
             }
         }
@@ -1192,7 +1265,7 @@
                 recalculatePhaseActionWeeks(phaseId);
                 
                 updateTimeline();
-                autoSaveProject();
+                autoSave();
             }
         }
 
@@ -1211,7 +1284,7 @@
             
             projectData.phases.push(newPhase);
             updateTimeline();
-            autoSaveProject();
+            autoSave();
             
             // Auto-edit the new phase name
             setTimeout(() => editPhaseName(newPhase.id), 100);
@@ -1224,10 +1297,16 @@
             
             if (action && actionNameEl) {
                 const currentName = action.name;
-                actionNameEl.innerHTML = `<input type="text" class="inline-input" value="${currentName}" 
-                    onblur="saveActionName(${actionId}, this.value)" 
-                    onkeydown="handleInlineEdit(event, ${actionId}, this.value, 'action')"
-                    style="width: 100%; margin: 0;">`;
+                
+                actionNameEl.innerHTML = `
+                    <div class="edit-mode">
+                        <button class="delete-btn" 
+                                onmousedown="event.preventDefault(); deleteAction(${actionId}); return false;"></button>
+                        <input type="text" class="inline-input" value="${currentName}" 
+                            onblur="saveActionName(${actionId}, this.value)" 
+                            onkeydown="handleInlineEdit(event, ${actionId}, this.value, 'action')">
+                    </div>
+                `;
                 
                 const input = actionNameEl.querySelector('input');
                 input.focus();
@@ -1240,7 +1319,40 @@
             if (action && newName.trim()) {
                 action.name = newName.trim();
                 updateTimeline();
-                autoSaveProject();
+                autoSave();
+            } else {
+                updateTimeline();
+            }
+        }
+
+        function deleteAction(actionId) {
+            console.log('deleteAction called for actionId:', actionId);
+            const action = findActionById(actionId);
+            console.log('Found action:', action);
+            
+            if (action) {
+                const phase = projectData.phases.find(p => p.id === action.phaseId);
+                if (phase && phase.actions) {
+                    // Remove the action from the phase
+                    const originalLength = phase.actions.length;
+                    const actionIndex = phase.actions.findIndex(a => a.id === actionId);
+                    if (actionIndex > -1) {
+                        phase.actions.splice(actionIndex, 1);
+                        console.log('Action deleted:', action.name, 'Actions before:', originalLength, 'after:', phase.actions.length);
+                        
+                        // Recalculate start weeks for remaining actions
+                        recalculatePhaseActionWeeks(action.phaseId);
+                        
+                        updateTimeline();
+                        autoSave();
+                    } else {
+                        console.log('Action index not found:', actionIndex);
+                    }
+                } else {
+                    console.log('Phase or phase.actions not found:', phase);
+                }
+            } else {
+                console.log('Action not found for ID:', actionId);
             }
         }
 
@@ -1255,7 +1367,7 @@
                     recalculatePhaseActionWeeks(action.phaseId);
                     
                     updateTimeline();
-                    autoSaveProject();
+                    autoSave();
                 }
             }
         }
@@ -1271,7 +1383,7 @@
                 recalculatePhaseActionWeeks(action.phaseId);
                 
                 updateTimeline();
-                autoSaveProject();
+                autoSave();
             }
         }
 
@@ -1296,7 +1408,7 @@
             recalculatePhaseActionWeeks(phaseId);
             
             updateTimeline();
-            autoSaveProject();
+            autoSave();
             
             // Auto-edit the new action name
             setTimeout(() => editActionName(newAction.id), 100);
@@ -1338,7 +1450,7 @@
                 titleEl.textContent = newTitle;
                 document.title = newTitle;
                 projectData.projectName = newTitle;
-                autoSaveProject();
+                autoSave();
             }, { once: true });
             
             titleEl.addEventListener('keydown', function(e) {
@@ -1350,11 +1462,24 @@
         }
 
         // Auto-save functionality
-        function autoSaveProject() {
+        function autoSave() {
             try {
                 const dataScript = document.getElementById('projectData');
-                dataScript.textContent = '\n    ' + JSON.stringify(projectData, null, 4) + '\n    ';
-                console.log('Auto-saved project data');
+                if (dataScript) {
+                    const formattedData = JSON.stringify(projectData, null, 4);
+                    dataScript.textContent = '\n    ' + formattedData + '\n    ';
+                    console.log('Auto-saved project data. Total phases:', projectData.phases.length);
+                    
+                    // Verify the save worked
+                    try {
+                        const testParse = JSON.parse(dataScript.textContent);
+                        console.log('Save verification successful. Phases in saved data:', testParse.phases.length);
+                    } catch (verifyError) {
+                        console.error('Save verification failed:', verifyError);
+                    }
+                } else {
+                    console.error('Could not find projectData script element');
+                }
             } catch (error) {
                 console.error('Error auto-saving:', error);
             }
@@ -1397,9 +1522,9 @@
 
         // Initialize when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeApp);
+            document.addEventListener('DOMContentLoaded', init);
         } else {
-            initializeApp();
+            init();
         }
     </script>
 </body>
