@@ -340,12 +340,14 @@
         .stepper-control {
             display: flex;
             align-items: center;
+            justify-content: center;
             background: var(--surface-secondary);
             border-radius: 8px;
             border: 1px solid rgba(44, 74, 107, 0.1);
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             min-width: 70px;
+            height: 32px;
             backdrop-filter: blur(10px);
         }
 
@@ -362,7 +364,7 @@
             align-items: center;
             justify-content: center;
             min-width: 20px;
-            height: 24px;
+            height: 28px;
             border-radius: 4px;
         }
 
@@ -406,9 +408,11 @@
             border-radius: 8px;
         }
 
-        .duration-display.updating {
-            color: var(--accent-warm);
-            transform: scale(1.05);
+        .stepper-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
         }
 
         .timeline-cell {
@@ -596,18 +600,18 @@
             <div class="date-control">
                 <label>Start:</label>
                 <select class="date-select" id="startMonth" onchange="updateTimeline()">
-                    <option value="0">Jan</option>
-                    <option value="1">Feb</option>
-                    <option value="2">Mar</option>
-                    <option value="3">Apr</option>
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
                     <option value="4">May</option>
-                    <option value="5">Jun</option>
-                    <option value="6">Jul</option>
-                    <option value="7">Aug</option>
-                    <option value="8">Sep</option>
-                    <option value="9">Oct</option>
-                    <option value="10">Nov</option>
-                    <option value="11">Dec</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
                 </select>
                 <select class="date-select" id="startYear" onchange="updateTimeline()"></select>
             </div>
@@ -615,23 +619,21 @@
             <div class="date-control">
                 <label>End:</label>
                 <select class="date-select" id="endMonth" onchange="updateTimeline()">
-                    <option value="0">Jan</option>
-                    <option value="1">Feb</option>
-                    <option value="2">Mar</option>
-                    <option value="3">Apr</option>
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
                     <option value="4">May</option>
-                    <option value="5">Jun</option>
-                    <option value="6">Jul</option>
-                    <option value="7">Aug</option>
-                    <option value="8">Sep</option>
-                    <option value="9">Oct</option>
-                    <option value="10">Nov</option>
-                    <option value="11">Dec</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
                 </select>
                 <select class="date-select" id="endYear" onchange="updateTimeline()"></select>
             </div>
-
-            <button class="btn btn-primary" onclick="saveProject()">💾 Save Project</button>
         </div>
 
         <div class="timeline-container">
@@ -695,7 +697,7 @@
                          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
         // Initialize the application
-        function init() {
+        function initializeApp() {
             loadProjectData();
             initializeDateSelectors();
             initializeProjectName();
@@ -770,8 +772,8 @@
             document.getElementById('endYear').value = projectData.endYear;
         }
 
-        // Calculate weeks in a month - detailed calculation to avoid double counting
-        function getWeeksInMonth(year, month) {
+        // Calculate weeks in a month
+        function calculateWeeksInMonth(year, month) {
             const firstDay = new Date(year, month, 1);
             let weekCount = 0;
             let currentDate = new Date(firstDay);
@@ -790,7 +792,6 @@
                     }
                 }
                 
-                // Only count week if majority of days (4 or more) are in this month
                 if (daysInMonth >= 4) {
                     weekCount++;
                 }
@@ -809,7 +810,7 @@
             
             while (currentYear < projectData.endYear || 
                    (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
-                totalWeeks += getWeeksInMonth(currentYear, currentMonth);
+                totalWeeks += calculateWeeksInMonth(currentYear, currentMonth);
                 currentMonth++;
                 if (currentMonth > 11) {
                     currentMonth = 0;
@@ -832,7 +833,7 @@
                     month: currentMonth,
                     year: currentYear,
                     name: monthNames[currentMonth],
-                    weeks: getWeeksInMonth(currentYear, currentMonth)
+                    weeks: calculateWeeksInMonth(currentYear, currentMonth)
                 });
                 
                 currentMonth++;
@@ -856,7 +857,7 @@
             
             renderTimelineHeader();
             renderTimelineGrid();
-            autoSave();
+            autoSaveProject();
         }
 
         // Render timeline header
@@ -868,12 +869,14 @@
             document.documentElement.style.setProperty('--month-count', months.length);
             
             header.innerHTML = `
-                <div class="timeline-header-spacer"></div>
+                <div class="timeline-header-spacer" style="display: flex; align-items: center; justify-content: center;">
+                    <button class="btn btn-primary" onclick="saveProject()" style="font-size: 12px; padding: 8px 16px;">💾 Save</button>
+                </div>
                 <div class="timeline-header-spacer"></div>
                 <div class="timeline-header-spacer"></div>
                 ${months.map(month => `
                     <div class="timeline-header-cell">
-                        <div class="month-header">${month.name}${month.year !== new Date().getFullYear() ? month.year.toString().slice(-2) : ''}</div>
+                        <div class="month-header">${month.name}${month.year !== new Date().getFullYear() ? "'" + month.year.toString().slice(-2) : ''}</div>
                         <div class="month-weeks">${month.weeks}w</div>
                     </div>
                 `).join('')}
@@ -933,11 +936,13 @@
                             <span class="phase-name" onclick="editPhaseName(${phase.id})">${phase.name}</span>
                         </div>
                     </div>
-                    <div class="stepper-control">
-                        <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, -1)">‹</button>
-                        <input type="number" class="stepper-input" value="${phase.startWeek}" 
-                               onchange="setPhaseStartWeek(${phase.id}, this.value)" min="1" max="${projectData.totalWeeks}">
-                        <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
+                    <div class="stepper-cell">
+                        <div class="stepper-control">
+                            <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, -1)">‹</button>
+                            <input type="number" class="stepper-input" value="${phase.startWeek}" 
+                                   onchange="setPhaseStartWeek(${phase.id}, this.value)" min="1" max="${projectData.totalWeeks}">
+                            <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
+                        </div>
                     </div>
                     <div class="duration-display">${duration}w</div>
                     ${months.map(month => `
@@ -955,13 +960,15 @@
                     <div class="timeline-row-label action-label">
                         <span class="action-name" onclick="editActionName(${action.id})">${action.name}</span>
                     </div>
-                    <div></div>
-                    <div class="stepper-control">
-                        <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, -1)">‹</button>
-                        <input type="number" class="stepper-input" value="${action.duration}" 
-                               onchange="setActionDuration(${action.id}, this.value)" min="1" max="12">
-                        <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, 1)">›</button>
+                    <div class="stepper-cell">
+                        <div class="stepper-control">
+                            <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, -1)">‹</button>
+                            <input type="number" class="stepper-input" value="${action.duration}" 
+                                   onchange="setActionDuration(${action.id}, this.value)" min="1" max="12">
+                            <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, 1)">›</button>
+                        </div>
                     </div>
+                    <div></div>
                     ${months.map(month => `
                         <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
                              data-month="${month.month}" data-year="${month.year}"></div>
@@ -998,12 +1005,20 @@
             `;
         }
 
-        // Render gantt bars with proper positioning
+        // Render gantt bars
         function renderGanttBars() {
             // Clear existing gantt bars
             document.querySelectorAll('.gantt-bar').forEach(bar => bar.remove());
             
             const months = generateTimelineMonths();
+            let weekOffset = 0;
+            
+            // Calculate week offsets for each month
+            const monthOffsets = {};
+            months.forEach((month, index) => {
+                monthOffsets[`${month.year}-${month.month}`] = weekOffset;
+                weekOffset += month.weeks;
+            });
             
             // Render phase gantt bars
             projectData.phases.forEach(phase => {
@@ -1011,7 +1026,7 @@
                 if (phaseRow) {
                     const duration = calculatePhaseDuration(phase);
                     if (duration > 0) {
-                        renderGanttBar(phaseRow, phase.startWeek, duration, 'phase-bar', months);
+                        renderGanttBar(phaseRow, phase.startWeek, duration, 'phase-bar', months, monthOffsets);
                     }
                 }
             });
@@ -1022,87 +1037,39 @@
                     phase.actions.forEach(action => {
                         const actionRow = document.querySelector(`[data-action-id="${action.id}"]`);
                         if (actionRow) {
-                            renderGanttBar(actionRow, action.startWeek, action.duration, 'action-bar', months);
+                            renderGanttBar(actionRow, action.startWeek, action.duration, 'action-bar', months, monthOffsets);
                         }
                     });
                 }
             });
         }
 
-        // DEBUG: Position gantt bars to align with month column boundaries
-        function renderGanttBar(row, startWeek, duration, className, months) {
+        // Render individual gantt bar
+        function renderGanttBar(row, startWeek, duration, className, months, monthOffsets) {
             const bar = document.createElement('div');
             bar.className = `gantt-bar ${className}`;
             
-            // Get the actual position of the first month cell
-            const firstMonthCell = row.querySelector('.timeline-cell');
-            if (!firstMonthCell) return;
+            // Get the timeline cells to calculate positioning
+            const timelineCells = row.querySelectorAll('.timeline-cell');
+            if (timelineCells.length === 0) return;
             
+            // Calculate the total timeline width and position
+            const totalTimelineWidth = timelineCells.length * timelineCells[0].offsetWidth;
+            const weekWidth = totalTimelineWidth / projectData.totalWeeks;
+            
+            // Calculate bar position and width
+            const leftOffset = (startWeek - 1) * weekWidth;
+            const barWidth = duration * weekWidth;
+            
+            // Position relative to the first timeline cell
+            const firstCell = timelineCells[0];
+            const firstCellRect = firstCell.getBoundingClientRect();
             const rowRect = row.getBoundingClientRect();
-            const firstCellRect = firstMonthCell.getBoundingClientRect();
-            const actualTimelineStart = firstCellRect.left - rowRect.left;
+            const relativeLeft = firstCellRect.left - rowRect.left + leftOffset;
             
-            console.log('🔍 GANTT BAR POSITIONING:');
-            console.log(`  startWeek: ${startWeek}, duration: ${duration}`);
-            console.log(`  actualTimelineStart (measured): ${actualTimelineStart}px`);
-            
-            // Calculate positioning based on which month/week we're in
-            const monthCells = row.querySelectorAll('.timeline-cell');
-            const cellWidth = monthCells[0].offsetWidth;
-            
-            console.log(`  cellWidth: ${cellWidth}px`);
-            
-            // Find which month and position within month the start week falls
-            let weekCounter = 0;
-            let monthIndex = 0;
-            let weekWithinMonth = 0;
-            
-            for (let i = 0; i < months.length; i++) {
-                const monthWeeks = months[i].weeks;
-                if (weekCounter + monthWeeks >= startWeek) {
-                    monthIndex = i;
-                    weekWithinMonth = startWeek - weekCounter - 1; // 0-based within month
-                    break;
-                }
-                weekCounter += monthWeeks;
-            }
-            
-            console.log(`  Found: month ${monthIndex} (${months[monthIndex].name}), week ${weekWithinMonth + 1} of ${months[monthIndex].weeks}`);
-            
-            // Position based on month column + offset within that month
-            const monthStartX = actualTimelineStart + (monthIndex * cellWidth) + (monthIndex * 1); // +1px gap per month
-            const weekWidthInMonth = cellWidth / months[monthIndex].weeks;
-            const weekOffsetInMonth = weekWithinMonth * weekWidthInMonth;
-            
-            const left = monthStartX + weekOffsetInMonth;
-            
-            console.log(`  monthStartX: ${monthStartX}px`);
-            console.log(`  weekOffsetInMonth: ${weekOffsetInMonth}px`);
-            console.log(`  final left: ${left}px`);
-            
-            // Calculate width spanning potentially multiple months
-            let remainingDuration = duration;
-            let totalWidth = 0;
-            let currentMonthIndex = monthIndex;
-            let currentWeekInMonth = weekWithinMonth;
-            
-            while (remainingDuration > 0 && currentMonthIndex < months.length) {
-                const currentMonth = months[currentMonthIndex];
-                const weeksAvailableInMonth = currentMonth.weeks - currentWeekInMonth;
-                const weeksToUseInMonth = Math.min(remainingDuration, weeksAvailableInMonth);
-                
-                const weekWidthInCurrentMonth = cellWidth / currentMonth.weeks;
-                totalWidth += weeksToUseInMonth * weekWidthInCurrentMonth;
-                
-                remainingDuration -= weeksToUseInMonth;
-                currentMonthIndex++;
-                currentWeekInMonth = 0; // Start from beginning of next month
-            }
-            
-            console.log(`  totalWidth: ${totalWidth}px`);
-            
-            bar.style.left = `${left}px`;
-            bar.style.width = `${totalWidth}px`;
+            bar.style.position = 'absolute';
+            bar.style.left = `${relativeLeft}px`;
+            bar.style.width = `${barWidth}px`;
             
             // Add duration text for longer bars
             if (duration >= 2) {
@@ -1111,8 +1078,6 @@
             
             row.style.position = 'relative';
             row.appendChild(bar);
-            
-            console.log('---');
         }
 
         // Calculate phase duration
@@ -1170,7 +1135,7 @@
             if (phase) {
                 phase.collapsed = !phase.collapsed;
                 updateTimeline();
-                autoSave();
+                autoSaveProject();
             }
         }
 
@@ -1196,7 +1161,7 @@
             if (phase && newName.trim()) {
                 phase.name = newName.trim();
                 updateTimeline();
-                autoSave();
+                autoSaveProject();
             }
         }
 
@@ -1211,7 +1176,7 @@
                     recalculatePhaseActionWeeks(phaseId);
                     
                     updateTimeline();
-                    autoSave();
+                    autoSaveProject();
                 }
             }
         }
@@ -1227,7 +1192,7 @@
                 recalculatePhaseActionWeeks(phaseId);
                 
                 updateTimeline();
-                autoSave();
+                autoSaveProject();
             }
         }
 
@@ -1246,7 +1211,7 @@
             
             projectData.phases.push(newPhase);
             updateTimeline();
-            autoSave();
+            autoSaveProject();
             
             // Auto-edit the new phase name
             setTimeout(() => editPhaseName(newPhase.id), 100);
@@ -1275,7 +1240,7 @@
             if (action && newName.trim()) {
                 action.name = newName.trim();
                 updateTimeline();
-                autoSave();
+                autoSaveProject();
             }
         }
 
@@ -1290,7 +1255,7 @@
                     recalculatePhaseActionWeeks(action.phaseId);
                     
                     updateTimeline();
-                    autoSave();
+                    autoSaveProject();
                 }
             }
         }
@@ -1306,7 +1271,7 @@
                 recalculatePhaseActionWeeks(action.phaseId);
                 
                 updateTimeline();
-                autoSave();
+                autoSaveProject();
             }
         }
 
@@ -1331,7 +1296,7 @@
             recalculatePhaseActionWeeks(phaseId);
             
             updateTimeline();
-            autoSave();
+            autoSaveProject();
             
             // Auto-edit the new action name
             setTimeout(() => editActionName(newAction.id), 100);
@@ -1373,7 +1338,7 @@
                 titleEl.textContent = newTitle;
                 document.title = newTitle;
                 projectData.projectName = newTitle;
-                autoSave();
+                autoSaveProject();
             }, { once: true });
             
             titleEl.addEventListener('keydown', function(e) {
@@ -1385,7 +1350,7 @@
         }
 
         // Auto-save functionality
-        function autoSave() {
+        function autoSaveProject() {
             try {
                 const dataScript = document.getElementById('projectData');
                 dataScript.textContent = '\n    ' + JSON.stringify(projectData, null, 4) + '\n    ';
@@ -1432,9 +1397,9 @@
 
         // Initialize when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
+            document.addEventListener('DOMContentLoaded', initializeApp);
         } else {
-            init();
+            initializeApp();
         }
     </script>
 </body>
