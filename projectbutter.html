@@ -125,16 +125,13 @@
         }
 
         .btn {
-            padding: 12px 16px; /* Reduced horizontal padding for icon-only button */
+            padding: 12px 24px;
             border: none;
             border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 16px; /* Slightly larger for the emoji icon */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 14px;
         }
 
         .btn-primary {
@@ -219,22 +216,6 @@
             border-radius: 12px;
             overflow: hidden;
             position: relative;
-            /* Clip gantt bars so they don't appear in the fixed columns */
-            --timeline-start: 360px;
-        }
-
-        .timeline-row::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: var(--timeline-start);
-            height: 100%;
-            background: transparent;
-            pointer-events: none;
-            z-index: 20;
-            /* This creates an invisible barrier to clip gantt bars */
-            box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.8);
         }
 
         .timeline-row.phase-row {
@@ -354,8 +335,6 @@
             font-weight: 500;
             color: var(--text-secondary);
             font-size: 13px;
-            display: flex;
-            align-items: center; /* Center the action name vertically */
         }
 
         .stepper-control {
@@ -368,12 +347,10 @@
             overflow: hidden;
             min-width: 70px;
             backdrop-filter: blur(10px);
-            height: 28px; /* Fixed height to make container tighter */
-            align-self: center; /* Center the stepper control in its grid cell */
         }
 
         .stepper-btn {
-            padding: 2px 8px; /* Reduced vertical padding */
+            padding: 4px 8px;
             border: none;
             background: var(--primary-cream);
             cursor: pointer;
@@ -385,7 +362,7 @@
             align-items: center;
             justify-content: center;
             min-width: 20px;
-            height: 100%; /* Fill the container height */
+            height: 24px;
             border-radius: 4px;
         }
 
@@ -408,8 +385,7 @@
             width: 30px;
             outline: none;
             font-size: 13px;
-            padding: 2px; /* Reduced padding */
-            height: 100%; /* Fill the container height */
+            padding: 4px 2px;
         }
 
         .stepper-input:focus {
@@ -620,42 +596,42 @@
             <div class="date-control">
                 <label>Start:</label>
                 <select class="date-select" id="startMonth" onchange="updateTimeline()">
-                    <option value="0">January</option>
-                    <option value="1">February</option>
-                    <option value="2">March</option>
-                    <option value="3">April</option>
+                    <option value="0">Jan</option>
+                    <option value="1">Feb</option>
+                    <option value="2">Mar</option>
+                    <option value="3">Apr</option>
                     <option value="4">May</option>
-                    <option value="5">June</option>
-                    <option value="6">July</option>
-                    <option value="7">August</option>
-                    <option value="8">September</option>
-                    <option value="9">October</option>
-                    <option value="10">November</option>
-                    <option value="11">December</option>
+                    <option value="5">Jun</option>
+                    <option value="6">Jul</option>
+                    <option value="7">Aug</option>
+                    <option value="8">Sep</option>
+                    <option value="9">Oct</option>
+                    <option value="10">Nov</option>
+                    <option value="11">Dec</option>
                 </select>
                 <select class="date-select" id="startYear" onchange="updateTimeline()"></select>
             </div>
             
-            <button class="btn btn-primary" onclick="saveProject()" title="Save Project">💾</button>
-            
             <div class="date-control">
                 <label>End:</label>
                 <select class="date-select" id="endMonth" onchange="updateTimeline()">
-                    <option value="0">January</option>
-                    <option value="1">February</option>
-                    <option value="2">March</option>
-                    <option value="3">April</option>
+                    <option value="0">Jan</option>
+                    <option value="1">Feb</option>
+                    <option value="2">Mar</option>
+                    <option value="3">Apr</option>
                     <option value="4">May</option>
-                    <option value="5">June</option>
-                    <option value="6">July</option>
-                    <option value="7">August</option>
-                    <option value="8">September</option>
-                    <option value="9">October</option>
-                    <option value="10">November</option>
-                    <option value="11">December</option>
+                    <option value="5">Jun</option>
+                    <option value="6">Jul</option>
+                    <option value="7">Aug</option>
+                    <option value="8">Sep</option>
+                    <option value="9">Oct</option>
+                    <option value="10">Nov</option>
+                    <option value="11">Dec</option>
                 </select>
                 <select class="date-select" id="endYear" onchange="updateTimeline()"></select>
             </div>
+
+            <button class="btn btn-primary" onclick="saveProject()">💾 Save Project</button>
         </div>
 
         <div class="timeline-container">
@@ -715,8 +691,8 @@
 
     <script>
         let projectData = {};
-        let monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                         'July', 'August', 'September', 'October', 'November', 'December'];
+        let monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
         // Initialize the application
         function init() {
@@ -794,36 +770,31 @@
             document.getElementById('endYear').value = projectData.endYear;
         }
 
-        // Calculate weeks in a month - count weeks where majority of days fall in this month
+        // Calculate weeks in a month - detailed calculation to avoid double counting
         function getWeeksInMonth(year, month) {
-            let weekCount = 0;
             const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            
-            // Start from the first Sunday on or before the first day of the month
+            let weekCount = 0;
             let currentDate = new Date(firstDay);
-            currentDate.setDate(currentDate.getDate() - currentDate.getDay());
             
-            while (currentDate <= lastDay) {
-                // Count days of this week that fall within the month
-                let daysInThisMonth = 0;
-                let weekStart = new Date(currentDate);
+            while (currentDate.getMonth() === month) {
+                const weekStart = new Date(currentDate);
+                weekStart.setDate(currentDate.getDate() - currentDate.getDay());
                 
-                for (let i = 0; i < 7; i++) {
-                    let checkDate = new Date(weekStart);
-                    checkDate.setDate(weekStart.getDate() + i);
-                    
-                    if (checkDate.getMonth() === month) {
-                        daysInThisMonth++;
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekStart.getDate() + 6);
+                
+                let daysInMonth = 0;
+                for (let d = new Date(weekStart); d <= weekEnd; d.setDate(d.getDate() + 1)) {
+                    if (d.getMonth() === month) {
+                        daysInMonth++;
                     }
                 }
                 
-                // Only count this week if majority of days (4+) are in this month
-                if (daysInThisMonth >= 4) {
+                // Only count week if majority of days (4 or more) are in this month
+                if (daysInMonth >= 4) {
                     weekCount++;
                 }
                 
-                // Move to next week
                 currentDate.setDate(currentDate.getDate() + 7);
             }
             
@@ -836,13 +807,9 @@
             let currentMonth = projectData.startMonth;
             let currentYear = projectData.startYear;
             
-            console.log(`Calculating weeks from ${currentYear}-${currentMonth + 1}:`);
-            
             while (currentYear < projectData.endYear || 
                    (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
-                const monthWeeks = getWeeksInMonth(currentYear, currentMonth);
-                console.log(`  ${currentYear}-${currentMonth + 1}: ${monthWeeks} weeks (cumulative: ${totalWeeks + monthWeeks})`);
-                totalWeeks += monthWeeks;
+                totalWeeks += getWeeksInMonth(currentYear, currentMonth);
                 currentMonth++;
                 if (currentMonth > 11) {
                     currentMonth = 0;
@@ -850,8 +817,6 @@
                 }
             }
             
-            console.log(`Total weeks: ${totalWeeks}`);
-            console.log(`Week 1 should be at the start of ${projectData.startYear}-${projectData.startMonth + 1}`);
             return totalWeeks;
         }
 
@@ -898,30 +863,20 @@
         function renderTimelineHeader() {
             const header = document.getElementById('timelineHeader');
             const months = generateTimelineMonths();
-            const currentYear = new Date().getFullYear();
             
             // Update CSS custom property for month count
             document.documentElement.style.setProperty('--month-count', months.length);
-            
-            const monthAbbreviations = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             
             header.innerHTML = `
                 <div class="timeline-header-spacer"></div>
                 <div class="timeline-header-spacer"></div>
                 <div class="timeline-header-spacer"></div>
-                ${months.map(month => {
-                    const monthAbbr = monthAbbreviations[month.month];
-                    const yearSuffix = month.year !== currentYear ? month.year.toString().slice(-2) : '';
-                    const displayName = monthAbbr + yearSuffix;
-                    
-                    return `
-                        <div class="timeline-header-cell">
-                            <div class="month-header">${displayName}</div>
-                            <div class="month-weeks">${month.weeks}w</div>
-                        </div>
-                    `;
-                }).join('')}
+                ${months.map(month => `
+                    <div class="timeline-header-cell">
+                        <div class="month-header">${month.name}${month.year !== new Date().getFullYear() ? month.year.toString().slice(-2) : ''}</div>
+                        <div class="month-weeks">${month.weeks}w</div>
+                    </div>
+                `).join('')}
             `;
         }
 
@@ -967,6 +922,8 @@
 
         // Render phase row
         function renderPhaseRow(phase, months, currentMonth, currentYear) {
+            const duration = calculatePhaseDuration(phase);
+            
             return `
                 <div class="timeline-row phase-row" data-phase-id="${phase.id}">
                     <div class="timeline-row-label">
@@ -982,7 +939,7 @@
                                onchange="setPhaseStartWeek(${phase.id}, this.value)" min="1" max="${projectData.totalWeeks}">
                         <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
                     </div>
-                    <div></div>
+                    <div class="duration-display">${duration}w</div>
                     ${months.map(month => `
                         <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
                              data-month="${month.month}" data-year="${month.year}"></div>
@@ -1041,20 +998,12 @@
             `;
         }
 
-        // Render gantt bars
+        // Render gantt bars with proper positioning
         function renderGanttBars() {
             // Clear existing gantt bars
             document.querySelectorAll('.gantt-bar').forEach(bar => bar.remove());
             
             const months = generateTimelineMonths();
-            let weekOffset = 0;
-            
-            // Calculate week offsets for each month
-            const monthOffsets = {};
-            months.forEach((month, index) => {
-                monthOffsets[`${month.year}-${month.month}`] = weekOffset;
-                weekOffset += month.weeks;
-            });
             
             // Render phase gantt bars
             projectData.phases.forEach(phase => {
@@ -1062,7 +1011,7 @@
                 if (phaseRow) {
                     const duration = calculatePhaseDuration(phase);
                     if (duration > 0) {
-                        renderGanttBar(phaseRow, phase.startWeek, duration, 'phase-bar', months, monthOffsets);
+                        renderGanttBar(phaseRow, phase.startWeek, duration, 'phase-bar', months);
                     }
                 }
             });
@@ -1073,34 +1022,87 @@
                     phase.actions.forEach(action => {
                         const actionRow = document.querySelector(`[data-action-id="${action.id}"]`);
                         if (actionRow) {
-                            renderGanttBar(actionRow, action.startWeek, action.duration, 'action-bar', months, monthOffsets);
+                            renderGanttBar(actionRow, action.startWeek, action.duration, 'action-bar', months);
                         }
                     });
                 }
             });
         }
 
-        // Render individual gantt bar - simple and direct
-        function renderGanttBar(row, startWeek, duration, className, months, monthOffsets) {
+        // DEBUG: Position gantt bars to align with month column boundaries
+        function renderGanttBar(row, startWeek, duration, className, months) {
             const bar = document.createElement('div');
             bar.className = `gantt-bar ${className}`;
             
-            // Calculate position and width
-            const timelineStart = 360; // Width of fixed columns (200 + 80 + 80)
+            // Get the actual position of the first month cell
+            const firstMonthCell = row.querySelector('.timeline-cell');
+            if (!firstMonthCell) return;
+            
+            const rowRect = row.getBoundingClientRect();
+            const firstCellRect = firstMonthCell.getBoundingClientRect();
+            const actualTimelineStart = firstCellRect.left - rowRect.left;
+            
+            console.log('🔍 GANTT BAR POSITIONING:');
+            console.log(`  startWeek: ${startWeek}, duration: ${duration}`);
+            console.log(`  actualTimelineStart (measured): ${actualTimelineStart}px`);
+            
+            // Calculate positioning based on which month/week we're in
             const monthCells = row.querySelectorAll('.timeline-cell');
-            
-            if (monthCells.length === 0) return;
-            
             const cellWidth = monthCells[0].offsetWidth;
-            const totalTimelineWidth = cellWidth * months.length;
-            const weekWidth = totalTimelineWidth / projectData.totalWeeks;
             
-            // Simple positioning: week 1 starts at the beginning of timeline
-            const left = timelineStart + ((startWeek - 1) * weekWidth);
-            const width = duration * weekWidth;
+            console.log(`  cellWidth: ${cellWidth}px`);
+            
+            // Find which month and position within month the start week falls
+            let weekCounter = 0;
+            let monthIndex = 0;
+            let weekWithinMonth = 0;
+            
+            for (let i = 0; i < months.length; i++) {
+                const monthWeeks = months[i].weeks;
+                if (weekCounter + monthWeeks >= startWeek) {
+                    monthIndex = i;
+                    weekWithinMonth = startWeek - weekCounter - 1; // 0-based within month
+                    break;
+                }
+                weekCounter += monthWeeks;
+            }
+            
+            console.log(`  Found: month ${monthIndex} (${months[monthIndex].name}), week ${weekWithinMonth + 1} of ${months[monthIndex].weeks}`);
+            
+            // Position based on month column + offset within that month
+            const monthStartX = actualTimelineStart + (monthIndex * cellWidth) + (monthIndex * 1); // +1px gap per month
+            const weekWidthInMonth = cellWidth / months[monthIndex].weeks;
+            const weekOffsetInMonth = weekWithinMonth * weekWidthInMonth;
+            
+            const left = monthStartX + weekOffsetInMonth;
+            
+            console.log(`  monthStartX: ${monthStartX}px`);
+            console.log(`  weekOffsetInMonth: ${weekOffsetInMonth}px`);
+            console.log(`  final left: ${left}px`);
+            
+            // Calculate width spanning potentially multiple months
+            let remainingDuration = duration;
+            let totalWidth = 0;
+            let currentMonthIndex = monthIndex;
+            let currentWeekInMonth = weekWithinMonth;
+            
+            while (remainingDuration > 0 && currentMonthIndex < months.length) {
+                const currentMonth = months[currentMonthIndex];
+                const weeksAvailableInMonth = currentMonth.weeks - currentWeekInMonth;
+                const weeksToUseInMonth = Math.min(remainingDuration, weeksAvailableInMonth);
+                
+                const weekWidthInCurrentMonth = cellWidth / currentMonth.weeks;
+                totalWidth += weeksToUseInMonth * weekWidthInCurrentMonth;
+                
+                remainingDuration -= weeksToUseInMonth;
+                currentMonthIndex++;
+                currentWeekInMonth = 0; // Start from beginning of next month
+            }
+            
+            console.log(`  totalWidth: ${totalWidth}px`);
             
             bar.style.left = `${left}px`;
-            bar.style.width = `${width}px`;
+            bar.style.width = `${totalWidth}px`;
             
             // Add duration text for longer bars
             if (duration >= 2) {
@@ -1109,6 +1111,8 @@
             
             row.style.position = 'relative';
             row.appendChild(bar);
+            
+            console.log('---');
         }
 
         // Calculate phase duration
@@ -1154,12 +1158,8 @@
             if (!phase || !phase.actions) return;
             
             let currentWeek = phase.startWeek;
-            console.log(`Recalculating action weeks for phase ${phaseId}, starting at week ${currentWeek}`);
-            
-            phase.actions.forEach((action, index) => {
-                const oldStartWeek = action.startWeek;
+            phase.actions.forEach(action => {
                 action.startWeek = currentWeek;
-                console.log(`  Action ${action.id}: ${oldStartWeek} -> ${action.startWeek}`);
                 currentWeek += action.duration;
             });
         }
@@ -1203,10 +1203,7 @@
         function adjustPhaseStartWeek(phaseId, delta) {
             const phase = projectData.phases.find(p => p.id === phaseId);
             if (phase) {
-                const oldStartWeek = phase.startWeek;
-                // Week 1 is the first week, simple as that
                 const newStartWeek = Math.max(1, Math.min(projectData.totalWeeks, phase.startWeek + delta));
-                
                 if (newStartWeek !== phase.startWeek) {
                     phase.startWeek = newStartWeek;
                     
