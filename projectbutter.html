@@ -164,8 +164,8 @@
 
         .timeline-header {
             display: grid;
-            grid-template-columns: 200px 80px 80px repeat(var(--month-count, 12), 1fr);
-            gap: 0.25rem;
+            grid-template-columns: var(--label-width) var(--control-width) repeat(var(--month-count, 12), 1fr);
+            gap: 1px;
             margin-bottom: 20px;
         }
 
@@ -208,8 +208,8 @@
 
         .timeline-row {
             display: grid;
-            grid-template-columns: 200px 80px 80px repeat(var(--month-count, 12), 1fr);
-            gap: 0.25rem;
+            grid-template-columns: var(--label-width) var(--control-width) repeat(var(--month-count, 12), 1fr);
+            gap: 1px;
             margin-bottom: 2px;
             min-height: 50px;
             background: rgba(0, 0, 0, 0.05);
@@ -337,7 +337,27 @@
             font-size: 13px;
         }
 
-        .stepper-control {
+        /* Phase Week Selector - Label above, controls centered */
+        .phase-week-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 100%;
+        }
+
+        .phase-week-label {
+            font-size: 9px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            text-align: center;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .phase-week-controls {
             display: flex;
             align-items: center;
             background: var(--surface-secondary);
@@ -345,13 +365,12 @@
             border: 1px solid rgba(44, 74, 107, 0.1);
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             overflow: hidden;
-            min-width: 70px;
+            min-width: 80px;
             backdrop-filter: blur(10px);
-            margin-right: 0.5rem;
         }
 
-        .stepper-btn {
-            padding: 0.4rem 0.3125rem;
+        .phase-week-btn {
+            padding: 4px 8px;
             border: none;
             background: var(--primary-cream);
             cursor: pointer;
@@ -362,55 +381,127 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 1.0625rem;
+            min-width: 20px;
+            height: 24px;
             border-radius: 4px;
-            line-height: 1;
         }
 
-        .stepper-btn:hover {
-            background: var(--primary-peach);
+        .phase-week-btn:hover {
+            background: var(--primary-sky);
             color: white;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
-        .stepper-btn:active {
+        .phase-week-btn:active {
             transform: scale(0.95);
         }
 
-        .stepper-input {
+        .phase-week-display {
             border: none;
             text-align: center;
             background: transparent;
             font-weight: 600;
             color: var(--text-primary);
-            width: 30px;
+            width: 40px;
             outline: none;
             font-size: 13px;
-            padding: 2px;
-            line-height: 1.2;
-        }
-
-        .stepper-input:focus {
-            background: rgba(255, 255, 255, 0.7);
+            padding: 4px 2px;
             border-radius: 4px;
+            transition: all 0.2s ease;
         }
 
-        .duration-display {
-            padding: 12px 16px;
+        .phase-week-display:focus {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 2px rgba(93, 173, 226, 0.3);
+        }
+
+        /* Action Duration Selector - Label above, controls centered */
+        .action-duration-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 100%;
+        }
+
+        .action-duration-label {
+            font-size: 9px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            text-align: center;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .action-duration-controls {
+            display: flex;
+            align-items: center;
+            background: var(--surface-secondary);
+            border-radius: 8px;
+            border: 1px solid rgba(44, 74, 107, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            min-width: 80px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Action Duration Selector - Compact style */
+        .action-duration-selector {
+            display: flex;
+            align-items: center;
+            background: var(--surface-secondary);
+            border-radius: 8px;
+            border: 1px solid rgba(44, 74, 107, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            min-width: 80px;
+            backdrop-filter: blur(10px);
+        }
+
+        .action-duration-btn {
+            padding: 4px 8px;
+            border: none;
+            background: var(--primary-cream);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
-            color: var(--primary-sky);
-            background: transparent;
+            color: var(--primary-navy);
+            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            border-radius: 8px;
+            min-width: 20px;
+            height: 24px;
+            border-radius: 4px;
         }
 
-        .duration-display.updating {
-            color: var(--accent-warm);
-            transform: scale(1.05);
+        .action-duration-btn:hover {
+            background: var(--primary-peach);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .action-duration-btn:active {
+            transform: scale(0.95);
+        }
+
+        .action-duration-input {
+            border: none;
+            text-align: center;
+            background: transparent;
+            font-weight: 600;
+            color: var(--text-primary);
+            width: 40px;
+            outline: none;
+            font-size: 13px;
+            padding: 4px 2px;
+        }
+
+        .action-duration-input:focus {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 4px;
         }
 
         .timeline-cell {
@@ -428,43 +519,13 @@
             box-shadow: inset 0 0 0 2px rgba(93, 173, 226, 0.4);
         }
 
-        .gantt-bar {
-            position: absolute;
-            height: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 11px;
-            color: white;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            user-select: none;
-            z-index: 10;
-            will-change: transform, box-shadow;
-        }
 
-        .gantt-bar:hover {
-            transform: translateY(-50%) translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            filter: saturate(1.1) brightness(1.05);
-        }
 
-        .gantt-bar.phase-bar {
-            background: var(--gradient-cool);
-            height: 20px;
-            bottom: 5px;
-            top: auto;
-            transform: none;
-        }
+
 
         .gantt-bar.action-bar {
             background: var(--gradient-warm);
+            /* Remove duration text from action bars */
         }
 
         .add-row-content {
@@ -533,51 +594,6 @@
             transform: scale(1.05);
         }
 
-        /* Delete button styles */
-        .delete-btn {
-            width: 18px;
-            height: 18px;
-            border: none;
-            background: #ef4444;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            margin-right: 6px;
-            min-width: 18px;
-        }
-
-        .delete-btn:hover:not(:disabled) {
-            background: #dc2626;
-            transform: scale(1.1);
-        }
-
-        .delete-btn:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .delete-btn::before {
-            content: '×';
-        }
-
-        /* Edit mode styles */
-        .edit-mode {
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-
-        .edit-mode .inline-input {
-            margin-right: 0;
-        }
-
         /* Collapse/Expand Animations */
         .phase-actions-container {
             overflow: hidden;
@@ -606,18 +622,30 @@
             }
         }
 
+        /* CSS Custom Properties for Column Widths */
+        :root {
+            --label-width: 200px;
+            --control-width: 160px;
+            --timeline-start: calc(var(--label-width) + var(--control-width));
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
+            :root {
+                --label-width: 150px;
+                --control-width: 120px;
+            }
+            
             .timeline {
                 min-width: 1000px;
             }
             
             .timeline-header {
-                grid-template-columns: 150px 60px 60px repeat(var(--month-count, 12), 1fr);
+                grid-template-columns: var(--label-width) var(--control-width) repeat(var(--month-count, 12), 1fr);
             }
             
             .timeline-row {
-                grid-template-columns: 150px 60px 60px repeat(var(--month-count, 12), 1fr);
+                grid-template-columns: var(--label-width) var(--control-width) repeat(var(--month-count, 12), 1fr);
             }
         }
 
@@ -643,18 +671,18 @@
             <div class="date-control">
                 <label>Start:</label>
                 <select class="date-select" id="startMonth" onchange="updateTimeline()">
-                    <option value="0">Jan</option>
-                    <option value="1">Feb</option>
-                    <option value="2">Mar</option>
-                    <option value="3">Apr</option>
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
                     <option value="4">May</option>
-                    <option value="5">Jun</option>
-                    <option value="6">Jul</option>
-                    <option value="7">Aug</option>
-                    <option value="8">Sep</option>
-                    <option value="9">Oct</option>
-                    <option value="10">Nov</option>
-                    <option value="11">Dec</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
                 </select>
                 <select class="date-select" id="startYear" onchange="updateTimeline()"></select>
             </div>
@@ -662,18 +690,18 @@
             <div class="date-control">
                 <label>End:</label>
                 <select class="date-select" id="endMonth" onchange="updateTimeline()">
-                    <option value="0">Jan</option>
-                    <option value="1">Feb</option>
-                    <option value="2">Mar</option>
-                    <option value="3">Apr</option>
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
                     <option value="4">May</option>
-                    <option value="5">Jun</option>
-                    <option value="6">Jul</option>
-                    <option value="7">Aug</option>
-                    <option value="8">Sep</option>
-                    <option value="9">Oct</option>
-                    <option value="10">Nov</option>
-                    <option value="11">Dec</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
                 </select>
                 <select class="date-select" id="endYear" onchange="updateTimeline()"></select>
             </div>
@@ -916,7 +944,6 @@
             header.innerHTML = `
                 <div class="timeline-header-spacer"></div>
                 <div class="timeline-header-spacer"></div>
-                <div class="timeline-header-spacer"></div>
                 ${months.map(month => `
                     <div class="timeline-header-cell">
                         <div class="month-header">${month.name}${month.year !== new Date().getFullYear() ? month.year.toString().slice(-2) : ''}</div>
@@ -979,13 +1006,16 @@
                             <span class="phase-name" onclick="editPhaseName(${phase.id})">${phase.name}</span>
                         </div>
                     </div>
-                    <div class="stepper-control">
-                        <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, -1)">‹</button>
-                        <input type="number" class="stepper-input" value="${phase.startWeek}" 
-                               onchange="setPhaseStartWeek(${phase.id}, this.value)" min="1" max="${projectData.totalWeeks}">
-                        <button class="stepper-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
+                    <div class="phase-week-selector">
+                        <div class="phase-week-label">Start Week</div>
+                        <div class="phase-week-controls">
+                            <button class="phase-week-btn" onclick="adjustPhaseStartWeek(${phase.id}, -1)">‹</button>
+                            <input type="number" class="phase-week-display" value="${phase.startWeek}" 
+                                   onchange="setPhaseStartWeek(${phase.id}, this.value)" 
+                                   min="1" max="${projectData.totalWeeks}">
+                            <button class="phase-week-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
+                        </div>
                     </div>
-                    <div class="duration-display">${duration}w</div>
                     ${months.map(month => `
                         <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
                              data-month="${month.month}" data-year="${month.year}"></div>
@@ -1001,12 +1031,15 @@
                     <div class="timeline-row-label action-label">
                         <span class="action-name" onclick="editActionName(${action.id})">${action.name}</span>
                     </div>
-                    <div></div>
-                    <div class="stepper-control">
-                        <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, -1)">‹</button>
-                        <input type="number" class="stepper-input" value="${action.duration}" 
-                               onchange="setActionDuration(${action.id}, this.value)" min="1" max="12">
-                        <button class="stepper-btn" onclick="adjustActionDuration(${action.id}, 1)">›</button>
+                    <div class="action-duration-selector">
+                        <div class="action-duration-label">Weeks Long</div>
+                        <div class="action-duration-controls">
+                            <button class="action-duration-btn" onclick="adjustActionDuration(${action.id}, -1)">‹</button>
+                            <input type="number" class="action-duration-input" value="${action.duration}" 
+                                   onchange="setActionDuration(${action.id}, this.value)" 
+                                   min="1" max="12">
+                            <button class="action-duration-btn" onclick="adjustActionDuration(${action.id}, 1)">›</button>
+                        </div>
                     </div>
                     ${months.map(month => `
                         <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
@@ -1024,7 +1057,6 @@
                         <div class="add-row-content">+ Add Action</div>
                     </div>
                     <div></div>
-                    <div></div>
                     ${months.map(() => '<div class="timeline-cell"></div>').join('')}
                 </div>
             `;
@@ -1038,90 +1070,91 @@
                         <div class="add-row-content">+ Add Phase</div>
                     </div>
                     <div></div>
-                    <div></div>
                     ${months.map(() => '<div class="timeline-cell"></div>').join('')}
                 </div>
             `;
         }
 
-        // Render gantt bars
+        // Render gantt bars with percentage-based positioning
         function renderGanttBars() {
             // Clear existing gantt bars
             document.querySelectorAll('.gantt-bar').forEach(bar => bar.remove());
             
-            // Add a small delay to ensure DOM is fully rendered
-            setTimeout(() => {
-                const months = generateTimelineMonths();
-                let weekOffset = 0;
-                
-                // Calculate week offsets for each month
-                const monthOffsets = {};
-                months.forEach((month, index) => {
-                    monthOffsets[`${month.year}-${month.month}`] = weekOffset;
-                    weekOffset += month.weeks;
-                });
-                
-                // Render phase gantt bars
-                projectData.phases.forEach(phase => {
-                    const phaseRow = document.querySelector(`[data-phase-id="${phase.id}"]`);
-                    if (phaseRow) {
-                        const duration = calculatePhaseDuration(phase);
-                        if (duration > 0) {
-                            renderGanttBar(phaseRow, phase.startWeek, duration, 'phase-bar', months, monthOffsets);
-                        }
+            const months = generateTimelineMonths();
+            
+            // Render phase gantt bars
+            projectData.phases.forEach(phase => {
+                const phaseRow = document.querySelector(`[data-phase-id="${phase.id}"]`);
+                if (phaseRow) {
+                    const duration = calculatePhaseDuration(phase);
+                    if (duration > 0) {
+                        renderGanttBar(phaseRow, phase.startWeek, duration, 'phase-bar', months, `${duration}w`);
                     }
-                });
+                }
+            });
 
-                // Render action gantt bars
-                projectData.phases.forEach(phase => {
-                    if (!phase.collapsed) {
-                        phase.actions.forEach(action => {
-                            const actionRow = document.querySelector(`[data-action-id="${action.id}"]`);
-                            if (actionRow) {
-                                renderGanttBar(actionRow, action.startWeek, action.duration, 'action-bar', months, monthOffsets);
-                            }
-                        });
-                    }
-                });
-            }, 10);
+            // Render action gantt bars
+            projectData.phases.forEach(phase => {
+                if (!phase.collapsed) {
+                    phase.actions.forEach(action => {
+                        const actionRow = document.querySelector(`[data-action-id="${action.id}"]`);
+                        if (actionRow) {
+                            renderGanttBar(actionRow, action.startWeek, action.duration, 'action-bar', months, '');
+                        }
+                    });
+                }
+            });
         }
 
-        // Render individual gantt bar
-        function renderGanttBar(row, startWeek, duration, className, months, monthOffsets) {
+        // Render individual gantt bar using percentage positioning
+        function renderGanttBar(row, startWeek, duration, className, months, text = '') {
             const bar = document.createElement('div');
             bar.className = `gantt-bar ${className}`;
             
-            // Calculate position and width based on actual cell positions
-            const monthCells = row.querySelectorAll('.timeline-cell');
+            // DEBUG: Log what we're creating
+            console.log(`Creating ${className}:`, {
+                height: getComputedStyle(document.documentElement).fontSize, // Base font size
+                className: bar.className,
+                element: bar
+            });
             
+            const monthCells = row.querySelectorAll('.timeline-cell');
             if (monthCells.length === 0) return;
             
-            // Get the actual position of the first timeline cell
+            // Calculate total timeline width as percentage
+            const totalTimelineWidthPercent = 100; // Timeline cells span 100% of their container
+            const weekWidthPercent = totalTimelineWidthPercent / projectData.totalWeeks;
+            
+            // Calculate position and width as percentages
+            const leftPercent = ((startWeek - 1) * weekWidthPercent);
+            const widthPercent = duration * weekWidthPercent;
+            
+            // Position relative to the timeline cell container
             const firstCell = monthCells[0];
-            const firstCellRect = firstCell.getBoundingClientRect();
-            const rowRect = row.getBoundingClientRect();
+            const timelineContainer = firstCell.parentElement;
+            const timelineStartPercent = (firstCell.offsetLeft / timelineContainer.offsetWidth) * 100;
             
-            // Calculate the start position relative to the row
-            const timelineStart = firstCellRect.left - rowRect.left;
+            bar.style.left = `${timelineStartPercent + leftPercent}%`;
+            bar.style.width = `${widthPercent}%`;
             
-            // Calculate cell width and week width
-            const cellWidth = firstCell.offsetWidth;
-            const totalTimelineWidth = cellWidth * months.length;
-            const weekWidth = totalTimelineWidth / projectData.totalWeeks;
-            
-            const left = timelineStart + ((startWeek - 1) * weekWidth);
-            const width = duration * weekWidth;
-            
-            bar.style.left = `${left}px`;
-            bar.style.width = `${width}px`;
-            
-            // Add duration text for longer bars
-            if (duration >= 2) {
-                bar.textContent = `${duration}w`;
+            // Add text if provided
+            if (text) {
+                bar.textContent = text;
             }
             
             row.style.position = 'relative';
             row.appendChild(bar);
+            
+            // DEBUG: Log computed styles after adding to DOM
+            setTimeout(() => {
+                const computedStyle = getComputedStyle(bar);
+                console.log(`${className} computed styles:`, {
+                    height: computedStyle.height,
+                    bottom: computedStyle.bottom,
+                    position: computedStyle.position,
+                    backgroundColor: computedStyle.backgroundColor
+                });
+            }, 10);
         }
 
         // Calculate phase duration
@@ -1189,18 +1222,10 @@
             
             if (phase && phaseNameEl) {
                 const currentName = phase.name;
-                const hasActions = phase.actions && phase.actions.length > 0;
-                
-                phaseNameEl.innerHTML = `
-                    <div class="edit-mode">
-                        <button class="delete-btn" 
-                                onmousedown="event.preventDefault(); deletePhase(${phaseId}); return false;"
-                                ${hasActions ? 'disabled' : ''}></button>
-                        <input type="text" class="inline-input" value="${currentName}" 
-                            onblur="savePhaseName(${phaseId}, this.value)" 
-                            onkeydown="handleInlineEdit(event, ${phaseId}, this.value, 'phase')">
-                    </div>
-                `;
+                phaseNameEl.innerHTML = `<input type="text" class="inline-input" value="${currentName}" 
+                    onblur="savePhaseName(${phaseId}, this.value)" 
+                    onkeydown="handleInlineEdit(event, ${phaseId}, this.value, 'phase')"
+                    style="width: 100%; margin: 0;">`;
                 
                 const input = phaseNameEl.querySelector('input');
                 input.focus();
@@ -1214,27 +1239,6 @@
                 phase.name = newName.trim();
                 updateTimeline();
                 autoSave();
-            } else {
-                updateTimeline();
-            }
-        }
-
-        function deletePhase(phaseId) {
-            console.log('deletePhase called for phaseId:', phaseId);
-            const phase = projectData.phases.find(p => p.id === phaseId);
-            console.log('Found phase:', phase);
-            
-            if (phase && (!phase.actions || phase.actions.length === 0)) {
-                // Remove the phase from the array
-                const originalLength = projectData.phases.length;
-                projectData.phases = projectData.phases.filter(p => p.id !== phaseId);
-                console.log('Phase deleted:', phase.name, 'Phases before:', originalLength, 'after:', projectData.phases.length);
-                updateTimeline();
-                autoSave();
-            } else if (phase && phase.actions && phase.actions.length > 0) {
-                alert(`Cannot delete "${phase.name}" because it contains actions. Delete all actions first.`);
-            } else {
-                console.log('Phase not found or other issue:', phase);
             }
         }
 
@@ -1297,16 +1301,10 @@
             
             if (action && actionNameEl) {
                 const currentName = action.name;
-                
-                actionNameEl.innerHTML = `
-                    <div class="edit-mode">
-                        <button class="delete-btn" 
-                                onmousedown="event.preventDefault(); deleteAction(${actionId}); return false;"></button>
-                        <input type="text" class="inline-input" value="${currentName}" 
-                            onblur="saveActionName(${actionId}, this.value)" 
-                            onkeydown="handleInlineEdit(event, ${actionId}, this.value, 'action')">
-                    </div>
-                `;
+                actionNameEl.innerHTML = `<input type="text" class="inline-input" value="${currentName}" 
+                    onblur="saveActionName(${actionId}, this.value)" 
+                    onkeydown="handleInlineEdit(event, ${actionId}, this.value, 'action')"
+                    style="width: 100%; margin: 0;">`;
                 
                 const input = actionNameEl.querySelector('input');
                 input.focus();
@@ -1320,39 +1318,6 @@
                 action.name = newName.trim();
                 updateTimeline();
                 autoSave();
-            } else {
-                updateTimeline();
-            }
-        }
-
-        function deleteAction(actionId) {
-            console.log('deleteAction called for actionId:', actionId);
-            const action = findActionById(actionId);
-            console.log('Found action:', action);
-            
-            if (action) {
-                const phase = projectData.phases.find(p => p.id === action.phaseId);
-                if (phase && phase.actions) {
-                    // Remove the action from the phase
-                    const originalLength = phase.actions.length;
-                    const actionIndex = phase.actions.findIndex(a => a.id === actionId);
-                    if (actionIndex > -1) {
-                        phase.actions.splice(actionIndex, 1);
-                        console.log('Action deleted:', action.name, 'Actions before:', originalLength, 'after:', phase.actions.length);
-                        
-                        // Recalculate start weeks for remaining actions
-                        recalculatePhaseActionWeeks(action.phaseId);
-                        
-                        updateTimeline();
-                        autoSave();
-                    } else {
-                        console.log('Action index not found:', actionIndex);
-                    }
-                } else {
-                    console.log('Phase or phase.actions not found:', phase);
-                }
-            } else {
-                console.log('Action not found for ID:', actionId);
             }
         }
 
@@ -1465,21 +1430,8 @@
         function autoSave() {
             try {
                 const dataScript = document.getElementById('projectData');
-                if (dataScript) {
-                    const formattedData = JSON.stringify(projectData, null, 4);
-                    dataScript.textContent = '\n    ' + formattedData + '\n    ';
-                    console.log('Auto-saved project data. Total phases:', projectData.phases.length);
-                    
-                    // Verify the save worked
-                    try {
-                        const testParse = JSON.parse(dataScript.textContent);
-                        console.log('Save verification successful. Phases in saved data:', testParse.phases.length);
-                    } catch (verifyError) {
-                        console.error('Save verification failed:', verifyError);
-                    }
-                } else {
-                    console.error('Could not find projectData script element');
-                }
+                dataScript.textContent = '\n    ' + JSON.stringify(projectData, null, 4) + '\n    ';
+                console.log('Auto-saved project data');
             } catch (error) {
                 console.error('Error auto-saving:', error);
             }
