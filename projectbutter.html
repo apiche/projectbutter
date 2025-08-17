@@ -1700,31 +1700,27 @@
         }
 
         function deletePhase(phaseId) {
-            if (confirm('Are you sure you want to delete this phase and all its actions?')) {
-                const phaseIndex = projectData.phases.findIndex(p => p.id === phaseId);
-                if (phaseIndex !== -1) {
-                    projectData.phases.splice(phaseIndex, 1);
-                    updateTimeline();
-                    autoSave();
-                }
+            const phaseIndex = projectData.phases.findIndex(p => p.id === phaseId);
+            if (phaseIndex !== -1) {
+                projectData.phases.splice(phaseIndex, 1);
+                updateTimeline();
+                autoSave();
             }
         }
 
         function deleteAction(actionId) {
-            if (confirm('Are you sure you want to delete this action?')) {
-                for (const phase of projectData.phases) {
-                    if (phase.actions) {
-                        const actionIndex = phase.actions.findIndex(a => a.id === actionId);
-                        if (actionIndex !== -1) {
-                            phase.actions.splice(actionIndex, 1);
-                            
-                            // Recalculate start weeks for remaining actions in this phase
-                            recalculatePhaseActionWeeks(phase.id);
-                            
-                            updateTimeline();
-                            autoSave();
-                            break;
-                        }
+            for (const phase of projectData.phases) {
+                if (phase.actions) {
+                    const actionIndex = phase.actions.findIndex(a => a.id === actionId);
+                    if (actionIndex !== -1) {
+                        phase.actions.splice(actionIndex, 1);
+                        
+                        // Recalculate start weeks for remaining actions in this phase
+                        recalculatePhaseActionWeeks(phase.id);
+                        
+                        updateTimeline();
+                        autoSave();
+                        break;
                     }
                 }
             }
@@ -1733,44 +1729,40 @@
         // Delete functions - define as global functions
         window.deletePhase = function(phaseId) {
             console.log('Delete phase called:', phaseId);
-            if (confirm('Are you sure you want to delete this phase and all its actions?')) {
-                const phaseIndex = projectData.phases.findIndex(p => p.id === phaseId);
-                if (phaseIndex !== -1) {
-                    projectData.phases.splice(phaseIndex, 1);
-                    updateTimeline();
-                    autoSave();
-                    console.log(`Deleted phase ${phaseId}`);
-                } else {
-                    console.log('Phase not found:', phaseId);
-                }
+            const phaseIndex = projectData.phases.findIndex(p => p.id === phaseId);
+            if (phaseIndex !== -1) {
+                projectData.phases.splice(phaseIndex, 1);
+                updateTimeline();
+                autoSave();
+                console.log(`Deleted phase ${phaseId}`);
+            } else {
+                console.log('Phase not found:', phaseId);
             }
         };
 
         window.deleteAction = function(actionId) {
             console.log('Delete action called:', actionId);
-            if (confirm('Are you sure you want to delete this action?')) {
-                let deletedFromPhase = null;
-                
-                for (const phase of projectData.phases) {
-                    if (phase.actions) {
-                        const actionIndex = phase.actions.findIndex(a => a.id === actionId);
-                        if (actionIndex !== -1) {
-                            phase.actions.splice(actionIndex, 1);
-                            deletedFromPhase = phase.id;
-                            console.log(`Deleted action ${actionId} from phase ${phase.id}`);
-                            break;
-                        }
+            let deletedFromPhase = null;
+            
+            for (const phase of projectData.phases) {
+                if (phase.actions) {
+                    const actionIndex = phase.actions.findIndex(a => a.id === actionId);
+                    if (actionIndex !== -1) {
+                        phase.actions.splice(actionIndex, 1);
+                        deletedFromPhase = phase.id;
+                        console.log(`Deleted action ${actionId} from phase ${phase.id}`);
+                        break;
                     }
                 }
-                
-                if (deletedFromPhase !== null) {
-                    // Recalculate start weeks for remaining actions in this phase
-                    recalculatePhaseActionWeeks(deletedFromPhase);
-                    updateTimeline();
-                    autoSave();
-                } else {
-                    console.log('Action not found:', actionId);
-                }
+            }
+            
+            if (deletedFromPhase !== null) {
+                // Recalculate start weeks for remaining actions in this phase
+                recalculatePhaseActionWeeks(deletedFromPhase);
+                updateTimeline();
+                autoSave();
+            } else {
+                console.log('Action not found:', actionId);
             }
         };
 
