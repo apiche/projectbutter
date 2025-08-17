@@ -231,6 +231,7 @@
             border-radius: 8px;
             border-left: 2px solid var(--primary-blue);
             opacity: 0.95;
+            overflow: hidden;
         }
 
         .timeline-row.add-action-row {
@@ -290,6 +291,46 @@
             flex: 1;
         }
 
+        .delete-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: rgba(231, 76, 60, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #E74C3C;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.7;
+        }
+
+        .delete-btn:hover {
+            background: rgba(231, 76, 60, 0.3);
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .delete-btn:disabled {
+            background: rgba(128, 128, 128, 0.2);
+            color: #888;
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+
+        .delete-btn:disabled:hover {
+            transform: none;
+            background: rgba(128, 128, 128, 0.2);
+            opacity: 0.4;
+        }
+
+        .delete-btn::before {
+            content: '×';
+            font-weight: bold;
+        }
+
         .collapse-btn {
             width: 20px;
             height: 20px;
@@ -335,6 +376,10 @@
             font-weight: 500;
             color: var(--text-secondary);
             font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
         }
 
         /* Phase Week Selector - Label above, controls centered */
@@ -447,19 +492,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* Action Duration Selector - Compact style */
-        .action-duration-selector {
-            display: flex;
-            align-items: center;
-            background: var(--surface-secondary);
-            border-radius: 8px;
-            border: 1px solid rgba(44, 74, 107, 0.1);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-            min-width: 80px;
-            backdrop-filter: blur(10px);
-        }
-
         .action-duration-btn {
             padding: 4px 8px;
             border: none;
@@ -522,8 +554,6 @@
         .gantt-bar {
             position: absolute;
             height: 1.5em;
-            top: 60%;
-            transform: translateY(-50%);
             border-radius: 0.4em;
             display: flex;
             align-items: center;
@@ -538,6 +568,9 @@
             user-select: none;
             z-index: 10;
             will-change: transform, box-shadow;
+            cursor: pointer;
+            overflow: hidden;
+            pointer-events: auto;
         }
 
         .gantt-bar:hover {
@@ -548,19 +581,169 @@
 
         .gantt-bar.phase-bar {
             background: var(--gradient-cool);
+            pointer-events: none; /* Phase bars are not clickable */
         }
 
         .gantt-bar.action-bar {
             background: var(--gradient-warm);
+            position: relative;
         }
-
-
-
-
 
         .gantt-bar.action-bar {
             background: var(--gradient-warm);
-            /* Remove duration text from action bars */
+            position: relative;
+        }
+
+        /* Progress overlay for action bars */
+        .gantt-bar.action-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(135deg, #27AE60, #2ECC71);
+            border-radius: inherit;
+            width: var(--progress-width, 0%);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        /* Completed action styling */
+        .gantt-bar.action-bar.completed {
+            background: linear-gradient(135deg, #27AE60, #2ECC71);
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.6);
+        }
+
+        /* Charging animation */
+        .gantt-bar.action-bar.charging {
+            animation: chargeUp 0.8s ease-in-out forwards;
+            background: linear-gradient(135deg, #F39C12, #E74C3C, #9B59B6, #3498DB);
+            background-size: 400% 400%;
+            animation: chargeGlow 0.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes chargeGlow {
+            0% {
+                background-position: 0% 50%;
+                box-shadow: 0 0 10px rgba(243, 156, 18, 0.6);
+                transform: translateY(-50%) scale(1);
+            }
+            100% {
+                background-position: 100% 50%;
+                box-shadow: 0 0 30px rgba(231, 76, 60, 0.8), 0 0 50px rgba(155, 89, 182, 0.6);
+                transform: translateY(-50%) scale(1.05);
+            }
+        }
+
+        /* Ker-chunk animation for weekly progress */
+        @keyframes kerChunk {
+            0% {
+                transform: translateY(-50%) scale(1);
+            }
+            30% {
+                transform: translateY(-50%) scale(1.15) rotate(2deg);
+                box-shadow: 0 0 20px rgba(46, 204, 113, 0.8);
+            }
+            60% {
+                transform: translateY(-50%) scale(0.95) rotate(-1deg);
+            }
+            100% {
+                transform: translateY(-50%) scale(1) rotate(0deg);
+            }
+        }
+
+        .gantt-bar.ker-chunk {
+            animation: kerChunk 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* Task completion power-up animation */
+        @keyframes taskComplete {
+            0% {
+                transform: translateY(-50%) scale(1);
+                box-shadow: 0 0 0 rgba(46, 204, 113, 0);
+            }
+            20% {
+                transform: translateY(-50%) scale(1.2);
+                box-shadow: 0 0 30px rgba(46, 204, 113, 0.9);
+            }
+            40% {
+                transform: translateY(-50%) scale(1.1);
+                box-shadow: 0 0 50px rgba(46, 204, 113, 0.9), 0 0 100px rgba(52, 152, 219, 0.5);
+            }
+            60% {
+                transform: translateY(-50%) scale(1.15);
+                box-shadow: 0 0 60px rgba(46, 204, 113, 1), 0 0 120px rgba(52, 152, 219, 0.7);
+            }
+            100% {
+                transform: translateY(-50%) scale(1);
+                box-shadow: 0 0 20px rgba(46, 204, 113, 0.6);
+            }
+        }
+
+        .gantt-bar.task-complete {
+            animation: taskComplete 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* Instant completion power-up animation */
+        @keyframes instantComplete {
+            0% {
+                transform: translateY(-50%) scale(1);
+                box-shadow: 0 0 0 rgba(46, 204, 113, 0);
+            }
+            15% {
+                transform: translateY(-50%) scale(1.3);
+                box-shadow: 0 0 40px rgba(46, 204, 113, 1), 0 0 80px rgba(52, 152, 219, 0.8);
+            }
+            30% {
+                transform: translateY(-50%) scale(1.1);
+                box-shadow: 0 0 60px rgba(46, 204, 113, 1), 0 0 120px rgba(52, 152, 219, 0.9), 0 0 200px rgba(155, 89, 182, 0.6);
+            }
+            50% {
+                transform: translateY(-50%) scale(1.25);
+                box-shadow: 0 0 80px rgba(46, 204, 113, 1), 0 0 160px rgba(52, 152, 219, 1), 0 0 300px rgba(155, 89, 182, 0.8);
+            }
+            70% {
+                transform: translateY(-50%) scale(1.15);
+                box-shadow: 0 0 100px rgba(46, 204, 113, 1), 0 0 200px rgba(52, 152, 219, 1), 0 0 400px rgba(243, 156, 18, 0.6);
+            }
+            100% {
+                transform: translateY(-50%) scale(1);
+                box-shadow: 0 0 20px rgba(46, 204, 113, 0.6);
+            }
+        }
+
+        .gantt-bar.instant-complete {
+            animation: instantComplete 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* Completion particle effects */
+        .completion-particles {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #2ECC71, #27AE60);
+            border-radius: 50%;
+            animation: particleBurst 0.8s ease-out forwards;
+        }
+
+        @keyframes particleBurst {
+            0% {
+                opacity: 1;
+                transform: scale(0) translate(0, 0);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1) translate(var(--particle-x, 0), var(--particle-y, 0));
+            }
         }
 
         .add-row-content {
@@ -1031,11 +1214,16 @@
         // Render phase row
         function renderPhaseRow(phase, months, currentMonth, currentYear) {
             const duration = calculatePhaseDuration(phase);
+            const hasActions = phase.actions && phase.actions.length > 0;
             
             return `
                 <div class="timeline-row phase-row" data-phase-id="${phase.id}">
                     <div class="timeline-row-label">
                         <div class="phase-label">
+                            ${hasActions ? 
+                                '<button class="delete-btn" disabled title="Cannot delete phase with actions"></button>' :
+                                `<button class="delete-btn" onclick="deletePhase(${phase.id})" title="Delete Phase"></button>`
+                            }
                             <button class="collapse-btn ${phase.collapsed ? 'collapsed' : ''}" 
                                     onclick="togglePhaseCollapse(${phase.id})"></button>
                             <span class="phase-name" onclick="editPhaseName(${phase.id})">${phase.name}</span>
@@ -1064,6 +1252,7 @@
             return `
                 <div class="timeline-row action-row" data-action-id="${action.id}">
                     <div class="timeline-row-label action-label">
+                        <button class="delete-btn" onclick="deleteAction(${action.id})" title="Delete Action"></button>
                         <span class="action-name" onclick="editActionName(${action.id})">${action.name}</span>
                     </div>
                     <div class="action-duration-selector">
@@ -1141,55 +1330,151 @@
             });
         }
 
-        // Render individual gantt bar using percentage positioning
+        // Render individual gantt bar aligned with month columns
         function renderGanttBar(row, startWeek, duration, className, months, text = '') {
             const bar = document.createElement('div');
             bar.className = `gantt-bar ${className}`;
             
-            // DEBUG: Log what we're creating
-            console.log(`Creating ${className}:`, {
-                height: getComputedStyle(document.documentElement).fontSize, // Base font size
-                className: bar.className,
-                element: bar
-            });
-            
             const monthCells = row.querySelectorAll('.timeline-cell');
             if (monthCells.length === 0) return;
             
-            // Calculate total timeline width as percentage
-            const totalTimelineWidthPercent = 100; // Timeline cells span 100% of their container
-            const weekWidthPercent = totalTimelineWidthPercent / projectData.totalWeeks;
+            // Calculate which month and position within month for start week
+            let cumulativeWeeks = 0;
+            let startMonthIndex = 0;
+            let startWeekInMonth = 0;
             
-            // Calculate position and width as percentages
-            const leftPercent = ((startWeek - 1) * weekWidthPercent);
-            const widthPercent = duration * weekWidthPercent;
+            for (let i = 0; i < months.length; i++) {
+                if (cumulativeWeeks + months[i].weeks >= startWeek) {
+                    startMonthIndex = i;
+                    startWeekInMonth = startWeek - cumulativeWeeks - 1;
+                    break;
+                }
+                cumulativeWeeks += months[i].weeks;
+            }
             
-            // Position relative to the timeline cell container
-            const firstCell = monthCells[0];
-            const timelineContainer = firstCell.parentElement;
-            const timelineStartPercent = (firstCell.offsetLeft / timelineContainer.offsetWidth) * 100;
+            // Calculate end position
+            const endWeek = startWeek + duration - 1;
+            cumulativeWeeks = 0;
+            let endMonthIndex = 0;
+            let endWeekInMonth = 0;
             
-            bar.style.left = `${timelineStartPercent + leftPercent}%`;
-            bar.style.width = `${widthPercent}%`;
+            for (let i = 0; i < months.length; i++) {
+                if (cumulativeWeeks + months[i].weeks >= endWeek) {
+                    endMonthIndex = i;
+                    endWeekInMonth = endWeek - cumulativeWeeks;
+                    break;
+                }
+                cumulativeWeeks += months[i].weeks;
+            }
+            
+            // Get the actual month cells for positioning
+            const startCell = monthCells[startMonthIndex];
+            const endCell = monthCells[endMonthIndex];
+            
+            if (!startCell || !endCell) return;
+            
+            // Calculate position within the timeline
+            const startCellRect = startCell.getBoundingClientRect();
+            const endCellRect = endCell.getBoundingClientRect();
+            const rowRect = row.getBoundingClientRect();
+            
+            // Position within start cell based on week within month
+            const startCellWidth = startCellRect.width;
+            const startPositionInCell = (startWeekInMonth / months[startMonthIndex].weeks) * startCellWidth;
+            
+            // Position within end cell based on week within month  
+            const endCellWidth = endCellRect.width;
+            const endPositionInCell = (endWeekInMonth / months[endMonthIndex].weeks) * endCellWidth;
+            
+            // Calculate final position and width
+            const leftPosition = startCellRect.left - rowRect.left + startPositionInCell;
+            const rightPosition = endCellRect.left - rowRect.left + endPositionInCell;
+            const barWidth = rightPosition - leftPosition;
+            
+            // Position the bar to overlay the timeline cells, not below them
+            const timelineCellTop = startCellRect.top - rowRect.top;
+            
+            bar.style.left = `${leftPosition}px`;
+            bar.style.width = `${barWidth}px`;
+            bar.style.top = `${timelineCellTop + (startCellRect.height / 2)}px`;
+            bar.style.transform = 'translateY(-50%)';
+            bar.style.position = 'absolute';
             
             // Add text if provided
             if (text) {
                 bar.textContent = text;
             }
             
+            // Add click handlers for action bars
+            if (className === 'action-bar') {
+                const actionId = parseInt(row.dataset.actionId);
+                const action = findActionById(actionId);
+                
+                if (action) {
+                    // Update progress visualization
+                    const progressPercent = (action.completedWeeks / action.duration) * 100;
+                    bar.style.setProperty('--progress-width', `${progressPercent}%`);
+                    
+                    // Add completed class if fully completed
+                    if (action.completedWeeks >= action.duration) {
+                        bar.classList.add('completed');
+                    }
+                    
+                    // Add click and hold handlers
+                    let holdTimer = null;
+                    let isHolding = false;
+                    
+                    const startHold = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        if (action.completedWeeks >= action.duration) return; // Already completed
+                        
+                        isHolding = true;
+                        bar.classList.add('charging');
+                        
+                        holdTimer = setTimeout(() => {
+                            if (isHolding) {
+                                // Complete the entire task instantly
+                                completeTaskInstantly(actionId);
+                            }
+                        }, 800); // 0.8 seconds to charge
+                    };
+                    
+                    const endHold = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        if (!isHolding) return;
+                        
+                        isHolding = false;
+                        bar.classList.remove('charging');
+                        
+                        if (holdTimer) {
+                            clearTimeout(holdTimer);
+                            holdTimer = null;
+                            
+                            // If released before full charge, do incremental progress
+                            if (action.completedWeeks < action.duration) {
+                                incrementTaskProgress(actionId);
+                            }
+                        }
+                    };
+                    
+                    // Mouse events
+                    bar.addEventListener('mousedown', startHold);
+                    bar.addEventListener('mouseup', endHold);
+                    bar.addEventListener('mouseleave', endHold);
+                    
+                    // Touch events for mobile
+                    bar.addEventListener('touchstart', startHold);
+                    bar.addEventListener('touchend', endHold);
+                    bar.addEventListener('touchcancel', endHold);
+                }
+            }
+            
             row.style.position = 'relative';
             row.appendChild(bar);
-            
-            // DEBUG: Log computed styles after adding to DOM
-            setTimeout(() => {
-                const computedStyle = getComputedStyle(bar);
-                console.log(`${className} computed styles:`, {
-                    height: computedStyle.height,
-                    bottom: computedStyle.bottom,
-                    position: computedStyle.position,
-                    backgroundColor: computedStyle.backgroundColor
-                });
-            }, 10);
         }
 
         // Calculate phase duration
@@ -1414,6 +1699,81 @@
             setTimeout(() => editActionName(newAction.id), 100);
         }
 
+        function deletePhase(phaseId) {
+            if (confirm('Are you sure you want to delete this phase and all its actions?')) {
+                const phaseIndex = projectData.phases.findIndex(p => p.id === phaseId);
+                if (phaseIndex !== -1) {
+                    projectData.phases.splice(phaseIndex, 1);
+                    updateTimeline();
+                    autoSave();
+                }
+            }
+        }
+
+        function deleteAction(actionId) {
+            if (confirm('Are you sure you want to delete this action?')) {
+                for (const phase of projectData.phases) {
+                    if (phase.actions) {
+                        const actionIndex = phase.actions.findIndex(a => a.id === actionId);
+                        if (actionIndex !== -1) {
+                            phase.actions.splice(actionIndex, 1);
+                            
+                            // Recalculate start weeks for remaining actions in this phase
+                            recalculatePhaseActionWeeks(phase.id);
+                            
+                            updateTimeline();
+                            autoSave();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Delete functions - define as global functions
+        window.deletePhase = function(phaseId) {
+            console.log('Delete phase called:', phaseId);
+            if (confirm('Are you sure you want to delete this phase and all its actions?')) {
+                const phaseIndex = projectData.phases.findIndex(p => p.id === phaseId);
+                if (phaseIndex !== -1) {
+                    projectData.phases.splice(phaseIndex, 1);
+                    updateTimeline();
+                    autoSave();
+                    console.log(`Deleted phase ${phaseId}`);
+                } else {
+                    console.log('Phase not found:', phaseId);
+                }
+            }
+        };
+
+        window.deleteAction = function(actionId) {
+            console.log('Delete action called:', actionId);
+            if (confirm('Are you sure you want to delete this action?')) {
+                let deletedFromPhase = null;
+                
+                for (const phase of projectData.phases) {
+                    if (phase.actions) {
+                        const actionIndex = phase.actions.findIndex(a => a.id === actionId);
+                        if (actionIndex !== -1) {
+                            phase.actions.splice(actionIndex, 1);
+                            deletedFromPhase = phase.id;
+                            console.log(`Deleted action ${actionId} from phase ${phase.id}`);
+                            break;
+                        }
+                    }
+                }
+                
+                if (deletedFromPhase !== null) {
+                    // Recalculate start weeks for remaining actions in this phase
+                    recalculatePhaseActionWeeks(deletedFromPhase);
+                    updateTimeline();
+                    autoSave();
+                } else {
+                    console.log('Action not found:', actionId);
+                }
+            }
+        };
+
         // Utility functions
         function findActionById(actionId) {
             for (const phase of projectData.phases) {
@@ -1505,6 +1865,155 @@
                 .replace(/^_|_$/g, '');
             
             return `${sanitized}_planner.html`;
+        }
+
+        // Task completion functions
+        function incrementTaskProgress(actionId) {
+            const action = findActionById(actionId);
+            if (!action || action.completedWeeks >= action.duration) return;
+            
+            action.completedWeeks++;
+            
+            const actionRow = document.querySelector(`[data-action-id="${actionId}"]`);
+            const ganttBar = actionRow?.querySelector('.gantt-bar.action-bar');
+            
+            if (ganttBar) {
+                // Ker-chunk animation
+                ganttBar.classList.add('ker-chunk');
+                
+                // Update progress visualization
+                const progressPercent = (action.completedWeeks / action.duration) * 100;
+                ganttBar.style.setProperty('--progress-width', `${progressPercent}%`);
+                
+                // Check if task is now complete
+                if (action.completedWeeks >= action.duration) {
+                    setTimeout(() => {
+                        ganttBar.classList.add('completed');
+                        ganttBar.classList.add('task-complete');
+                        createCompletionParticles(ganttBar);
+                        
+                        // Clean up animation classes
+                        setTimeout(() => {
+                            ganttBar.classList.remove('task-complete');
+                        }, 1000);
+                    }, 300);
+                }
+                
+                // Clean up ker-chunk animation
+                setTimeout(() => {
+                    ganttBar.classList.remove('ker-chunk');
+                }, 500);
+            }
+            
+            autoSave();
+        }
+        
+        function completeTaskInstantly(actionId) {
+            const action = findActionById(actionId);
+            if (!action) return;
+            
+            const previousCompleted = action.completedWeeks;
+            action.completedWeeks = action.duration;
+            
+            const actionRow = document.querySelector(`[data-action-id="${actionId}"]`);
+            const ganttBar = actionRow?.querySelector('.gantt-bar.action-bar');
+            
+            if (ganttBar) {
+                // Remove charging state
+                ganttBar.classList.remove('charging');
+                
+                // Instant completion animation
+                ganttBar.classList.add('instant-complete');
+                ganttBar.classList.add('completed');
+                
+                // Update progress visualization instantly
+                ganttBar.style.setProperty('--progress-width', '100%');
+                
+                // Create enhanced particle effect for instant completion
+                createInstantCompletionParticles(ganttBar);
+                
+                // Clean up animation class
+                setTimeout(() => {
+                    ganttBar.classList.remove('instant-complete');
+                }, 1500);
+            }
+            
+            autoSave();
+        }
+        
+        function createCompletionParticles(ganttBar) {
+            const rect = ganttBar.getBoundingClientRect();
+            const particleContainer = document.createElement('div');
+            particleContainer.className = 'completion-particles';
+            
+            // Position container at the center of the gantt bar
+            particleContainer.style.left = rect.left + rect.width / 2 + 'px';
+            particleContainer.style.top = rect.top + rect.height / 2 + 'px';
+            
+            document.body.appendChild(particleContainer);
+            
+            // Create 8 particles
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random direction and distance
+                const angle = (i / 8) * Math.PI * 2;
+                const distance = 50 + Math.random() * 30;
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--particle-x', x + 'px');
+                particle.style.setProperty('--particle-y', y + 'px');
+                
+                particleContainer.appendChild(particle);
+            }
+            
+            // Remove particles after animation
+            setTimeout(() => {
+                document.body.removeChild(particleContainer);
+            }, 800);
+        }
+        
+        function createInstantCompletionParticles(ganttBar) {
+            const rect = ganttBar.getBoundingClientRect();
+            const particleContainer = document.createElement('div');
+            particleContainer.className = 'completion-particles';
+            
+            // Position container at the center of the gantt bar
+            particleContainer.style.left = rect.left + rect.width / 2 + 'px';
+            particleContainer.style.top = rect.top + rect.height / 2 + 'px';
+            
+            document.body.appendChild(particleContainer);
+            
+            // Create 16 particles for more impressive effect
+            for (let i = 0; i < 16; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Enhanced particles with different colors
+                const colors = ['#2ECC71', '#3498DB', '#9B59B6', '#F39C12', '#E74C3C'];
+                particle.style.background = `radial-gradient(circle, ${colors[i % colors.length]}, ${colors[(i + 1) % colors.length]})`;
+                
+                // Random direction and distance
+                const angle = (i / 16) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+                const distance = 70 + Math.random() * 50;
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--particle-x', x + 'px');
+                particle.style.setProperty('--particle-y', y + 'px');
+                
+                // Stagger the animation start
+                particle.style.animationDelay = (i * 0.05) + 's';
+                
+                particleContainer.appendChild(particle);
+            }
+            
+            // Remove particles after animation
+            setTimeout(() => {
+                document.body.removeChild(particleContainer);
+            }, 1200);
         }
 
         // Initialize when DOM is ready
