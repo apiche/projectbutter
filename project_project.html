@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Project</title>
+    <title>Project</title>
     <style>
         :root {
             /* Primary Colors */
@@ -253,6 +253,13 @@
             padding: 0 8px;
         }
 
+        .left-row > *:last-child {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: var(--row-height);
+        }
+
         .left-row.phase-row {
             background: var(--surface-secondary);
             border-left: 4px solid var(--primary-sky);
@@ -440,9 +447,8 @@
             justify-content: center;
             gap: 3px;
             height: 100%;
-            overflow: hidden;
+            min-height: var(--row-height);
             max-height: var(--row-height);
-            box-sizing: border-box;
         }
 
         .selector-label {
@@ -790,7 +796,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1 class="project-title" onclick="editProjectTitle(this)">My Project</h1>
+            <h1 class="project-title" onclick="editProjectTitle(this)">Project</h1>
         </div>
 
         <div class="planner-layout">
@@ -836,7 +842,7 @@
     <!-- PROJECT DATA -->
     <script id="projectData" type="application/json">
     {
-        "projectName": "My Project",
+        "projectName": "Project",
         "startMonth": 0,
         "startYear": 2025,
         "endMonth": 11,
@@ -896,7 +902,7 @@
             } catch (error) {
                 console.log('No saved data found, using defaults');
                 projectData = {
-                    projectName: "My Project",
+                    projectName: "Project",
                     startMonth: 0,
                     startYear: 2025,
                     endMonth: 11,
@@ -911,7 +917,7 @@
 
         // Initialize project name from filename
         function initializeProjectName() {
-            let projectName = projectData.projectName || 'My Project';
+            let projectName = projectData.projectName || 'Project';
             
             if (typeof window !== 'undefined' && window.location) {
                 const filename = window.location.pathname.split('/').pop();
@@ -1057,28 +1063,36 @@
             let leftHtml = '';
             let timelineHtml = '';
             
+            console.log('Starting content generation...');
+            
             // Render phases and actions
-            projectData.phases.forEach(phase => {
+            projectData.phases.forEach((phase, phaseIndex) => {
+                console.log(`Rendering phase ${phaseIndex}: ${phase.name}`);
                 // Phase row
                 leftHtml += renderLeftPhaseRow(phase);
                 timelineHtml += renderTimelineRow(months, currentMonth, currentYear);
                 
                 if (!phase.collapsed) {
                     // Action rows
-                    phase.actions.forEach(action => {
+                    phase.actions.forEach((action, actionIndex) => {
+                        console.log(`  Rendering action ${actionIndex}: ${action.name}`);
                         leftHtml += renderLeftActionRow(action);
                         timelineHtml += renderTimelineRow(months, currentMonth, currentYear);
                     });
                     
                     // Add action row
+                    console.log(`  Adding 'Add Action' row for phase ${phaseIndex}`);
                     leftHtml += renderLeftAddActionRow(phase.id);
                     timelineHtml += renderTimelineRow(months, currentMonth, currentYear);
                 }
             });
             
-            // Add phase row
+            // Add phase row - OUTSIDE the phases loop
+            console.log('Adding "Add Phase" row');
             leftHtml += renderLeftAddPhaseRow();
             timelineHtml += renderTimelineRow(months, currentMonth, currentYear);
+            
+            console.log('Final leftHtml:', leftHtml);
             
             leftContent.innerHTML = leftHtml;
             timelineContent.innerHTML = timelineHtml;
@@ -1816,7 +1830,7 @@
             
             titleEl.addEventListener('blur', function() {
                 titleEl.contentEditable = false;
-                const newTitle = titleEl.textContent.trim() || 'My Project';
+                const newTitle = titleEl.textContent.trim() || 'Project';
                 titleEl.textContent = newTitle;
                 document.title = newTitle;
                 projectData.projectName = newTitle;
@@ -1849,7 +1863,7 @@
                 const blob = new Blob([htmlContent], { type: 'text/html' });
                 const url = URL.createObjectURL(blob);
                 
-                const projectName = projectData.projectName || 'My Project';
+                const projectName = projectData.projectName || 'Project';
                 const filename = generateFileName(projectName);
                 
                 const a = document.createElement('a');
@@ -1874,7 +1888,7 @@
                 .replace(/_{2,}/g, '_')
                 .replace(/^_|_$/g, '');
             
-            return `${sanitized}_planner.html`;
+            return `${sanitized}_project.html`;
         }
 
         // Task completion functions
