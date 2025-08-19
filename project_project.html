@@ -6,7 +6,7 @@
     <title>Project</title>
     <style>
         :root {
-            /* Primary Colors */
+            /* Light Theme - Primary Colors */
             --primary-navy: #2C4A6B;
             --primary-sky: #5DADE2;
             --primary-blue: #85C1E0;
@@ -14,13 +14,13 @@
             --primary-peach: #F7B267;
             --primary-orange: #E07A39;
             
-            /* Gradient Combinations */
+            /* Light Theme - Gradient Combinations */
             --gradient-cool: linear-gradient(135deg, #5DADE2, #2C4A6B);
             --gradient-warm: linear-gradient(135deg, #F7B267, #E07A39);
             --gradient-full: linear-gradient(135deg, #5DADE2, #F7B267);
             --gradient-neutral: linear-gradient(135deg, #F4E4BC, #85C1E0);
             
-            /* Semantic Colors */
+            /* Light Theme - Semantic Colors */
             --background-primary: var(--gradient-cool);
             --surface-primary: rgba(244, 228, 188, 0.9);
             --surface-secondary: rgba(255, 255, 255, 0.8);
@@ -39,10 +39,37 @@
             --row-height: 50px;
         }
 
+        /* Dark Theme */
+        [data-theme="dark"] {
+            /* Dark Theme - Primary Colors (inspired by cozy autumn night) */
+            --primary-navy: #F2E6D9;
+            --primary-sky: #9BB5E0;
+            --primary-blue: #7A9BD1;
+            --primary-cream: #3A2B3F;
+            --primary-peach: #E09B65;
+            --primary-orange: #D48F52;
+            
+            /* Dark Theme - Gradient Combinations */
+            --gradient-cool: linear-gradient(135deg, #3D2A4B, #2A1B3D);
+            --gradient-warm: linear-gradient(135deg, #8B4B3D, #6B3728);
+            --gradient-full: linear-gradient(135deg, #4A3B5C, #6B4B3D);
+            --gradient-neutral: linear-gradient(135deg, #3D2A4B, #4A3B47);
+            
+            /* Dark Theme - Semantic Colors */
+            --background-primary: linear-gradient(135deg, #1F1426, #2A1B3D, #3A2B3F);
+            --surface-primary: rgba(35, 25, 45, 0.95);
+            --surface-secondary: rgba(50, 38, 58, 0.9);
+            --text-primary: #F2E6D9;
+            --text-secondary: rgba(242, 230, 217, 0.85);
+            --accent-warm: #E09B65;
+            --accent-cool: #9BB5E0;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         body {
@@ -238,6 +265,11 @@
             height: 60px;
         }
 
+        .month-header-cell.current-month {
+            border: 2px solid var(--primary-sky);
+            background: var(--surface-secondary);
+        }
+
         .month-header {
             font-size: 13px;
             font-weight: 700;
@@ -343,6 +375,12 @@
             opacity: 0.95;
         }
 
+        /* Darker action rows in cozy mode for better text contrast */
+        [data-theme="dark"] .left-row.action-row {
+            background: rgba(40, 30, 48, 0.9);
+            border-left: 2px solid var(--primary-blue);
+        }
+
         .left-row.add-action-row {
             background: transparent;
             border: 2px dashed var(--primary-blue);
@@ -394,8 +432,8 @@
         }
 
         .timeline-cell.current-month {
-            background: rgba(93, 173, 226, 0.3);
-            box-shadow: inset 0 0 0 2px rgba(93, 173, 226, 0.5);
+            background: var(--surface-secondary);
+            border: 2px solid var(--primary-sky);
         }
 
         /* Row Labels and Controls */
@@ -624,12 +662,13 @@
         }
 
         .gantt-bar.phase-bar {
-            background: var(--gradient-cool);
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
             pointer-events: none;
+            box-shadow: 0 2px 12px rgba(74, 144, 226, 0.3);
         }
 
         .gantt-bar.action-bar {
-            background: var(--gradient-warm);
+            background: linear-gradient(135deg, #FF8C42, #E67E22);
             position: relative;
         }
 
@@ -880,6 +919,10 @@
                             <div class="control-main">Dec</div>
                             <div class="control-sub">End Month</div>
                         </div>
+                        <div class="left-header-cell control-header-cell" onclick="toggleTheme()">
+                            <div class="control-main">🌙</div>
+                            <div class="control-sub">Cozy</div>
+                        </div>
                         <div class="left-header-cell control-header-cell" onclick="saveProject()">
                             <div class="control-main">💾</div>
                             <div class="control-sub">Save Project</div>
@@ -914,7 +957,7 @@
     <script id="projectData" type="application/json">
     {
         "projectName": "Project",
-        "startMonth": 0,
+        "startMonth": 6,
         "startYear": 2025,
         "endMonth": 11,
         "endYear": 2025,
@@ -961,8 +1004,42 @@
         function init() {
             loadProjectData();
             initializeProjectName();
+            loadTheme();
             updateLayout();
             setupScrollSync();
+        }
+
+        // Load and apply saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('projectPlannerTheme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButton();
+        }
+
+        // Toggle between light and dark themes
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('projectPlannerTheme', newTheme);
+            updateThemeButton();
+        }
+
+        // Update theme button appearance
+        function updateThemeButton() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const themeButtons = document.querySelectorAll('.control-header-cell');
+            
+            // Find the theme button (3rd button)
+            if (themeButtons.length >= 3) {
+                const themeButton = themeButtons[2];
+                if (currentTheme === 'dark') {
+                    themeButton.innerHTML = '<div class="control-main">☀️</div><div class="control-sub">Bright Mode</div>';
+                } else {
+                    themeButton.innerHTML = '<div class="control-main">🌙</div><div class="control-sub">Cozy Mode</div>';
+                }
+            }
         }
 
         // Load project data from embedded JSON
@@ -973,12 +1050,31 @@
                 console.log('Project data loaded successfully');
             } catch (error) {
                 console.log('No saved data found, using defaults');
+                const currentDate = new Date();
+                const currentMonth = currentDate.getMonth();
+                const currentYear = currentDate.getFullYear();
+                
+                // Start one month before current, end 4 months after current
+                let startMonth = currentMonth - 1;
+                let startYear = currentYear;
+                if (startMonth < 0) {
+                    startMonth = 11;
+                    startYear = currentYear - 1;
+                }
+                
+                let endMonth = currentMonth + 4;
+                let endYear = currentYear;
+                if (endMonth > 11) {
+                    endMonth = endMonth - 12;
+                    endYear = currentYear + 1;
+                }
+                
                 projectData = {
                     projectName: "Project",
-                    startMonth: 0,
-                    startYear: 2025,
-                    endMonth: 11,
-                    endYear: 2025,
+                    startMonth: startMonth,
+                    startYear: startYear,
+                    endMonth: endMonth,
+                    endYear: endYear,
                     phases: [],
                     totalWeeks: 52,
                     phaseIdCounter: 0,
@@ -2076,6 +2172,12 @@
             let isScrollingVertical = false;
             let isScrollingHorizontal = false;
             
+            // Pan functionality variables
+            let isPanning = false;
+            let panStartX = 0;
+            let panStartScrollLeft = 0;
+            let panTarget = null;
+            
             // Sync vertical scrolling between left and right panels
             function syncVerticalScroll(source, target) {
                 if (isScrollingVertical) return;
@@ -2095,6 +2197,67 @@
                     isScrollingHorizontal = false;
                 });
             }
+            
+            // Pan functionality
+            function startPan(e, target) {
+                if (e.button === 1 || (e.button === 0 && (e.ctrlKey || e.metaKey || e.shiftKey))) {
+                    e.preventDefault();
+                    isPanning = true;
+                    panStartX = e.clientX;
+                    panStartScrollLeft = target.scrollLeft;
+                    panTarget = target;
+                    document.body.style.cursor = 'grab';
+                    
+                    // Prevent text selection during pan
+                    document.body.style.userSelect = 'none';
+                }
+            }
+            
+            function doPan(e) {
+                if (!isPanning || !panTarget) return;
+                
+                e.preventDefault();
+                document.body.style.cursor = 'grabbing';
+                
+                const deltaX = e.clientX - panStartX;
+                const newScrollLeft = panStartScrollLeft - deltaX;
+                
+                // Update both header and content to keep them in sync
+                if (panTarget === headerWrapper) {
+                    headerWrapper.scrollLeft = newScrollLeft;
+                    contentWrapper.scrollLeft = newScrollLeft;
+                } else if (panTarget === contentWrapper) {
+                    contentWrapper.scrollLeft = newScrollLeft;
+                    headerWrapper.scrollLeft = newScrollLeft;
+                }
+            }
+            
+            function endPan() {
+                if (isPanning) {
+                    isPanning = false;
+                    panTarget = null;
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                }
+            }
+            
+            // Add pan event listeners to timeline areas
+            [headerWrapper, contentWrapper].forEach(element => {
+                element.addEventListener('mousedown', (e) => startPan(e, element));
+            });
+            
+            // Global mouse events for panning
+            document.addEventListener('mousemove', doPan);
+            document.addEventListener('mouseup', endPan);
+            
+            // Prevent context menu on middle click
+            [headerWrapper, contentWrapper].forEach(element => {
+                element.addEventListener('contextmenu', (e) => {
+                    if (e.button === 1) {
+                        e.preventDefault();
+                    }
+                });
+            });
             
             // Vertical scroll sync
             leftContent.addEventListener('scroll', () => {
