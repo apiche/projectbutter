@@ -96,6 +96,7 @@
             background: transparent;
             border-radius: 16px;
             overflow: hidden;
+            height: calc(100vh - 200px); /* Set a fixed height for the planner */
         }
 
         .left-panel {
@@ -104,14 +105,18 @@
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .timeline-panel {
-            overflow-x: auto;
             background: var(--surface-primary);
             backdrop-filter: blur(20px);
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         /* Headers Grid */
@@ -123,6 +128,9 @@
             background: var(--surface-primary);
             height: 80px;
             align-items: center;
+            flex-shrink: 0; /* Prevent header from shrinking */
+            position: relative;
+            z-index: 10;
         }
 
         .left-panel-header > div:nth-child(2) {
@@ -136,10 +144,31 @@
             grid-auto-columns: var(--month-card-min-width);
             grid-auto-flow: column;
             gap: 1px;
-            padding: 20px;
+            padding: 20px 0; /* Remove horizontal padding since wrapper handles it */
             background: var(--surface-primary);
             min-width: max-content;
             height: 80px;
+            flex-shrink: 0; /* Prevent header from shrinking */
+            position: relative;
+            z-index: 10;
+            overflow: hidden; /* Hide any overflow completely */
+        }
+
+        .timeline-header-wrapper {
+            flex-shrink: 0;
+            overflow-x: auto;
+            overflow-y: hidden; /* Ensure no vertical scrolling */
+            padding-left: 20px;
+            padding-right: 20px;
+            height: 80px; /* Fixed height to prevent any vertical movement */
+            /* Hide horizontal scrollbar */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+        }
+
+        .timeline-header-wrapper::-webkit-scrollbar {
+            /* Hide horizontal scrollbar - Webkit browsers */
+            display: none;
         }
 
         .left-header-cell {
@@ -165,17 +194,20 @@
         }
 
         .control-header-cell {
-            background: var(--gradient-warm);
-            color: white;
+            background: var(--surface-secondary);
+            color: var(--text-primary);
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             height: 60px;
-            aspect-ratio: unset;
+            width: var(--month-card-min-width);
+            border: 2px solid var(--primary-blue);
         }
 
         .control-header-cell:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(247, 178, 103, 0.6);
+            box-shadow: 0 8px 25px rgba(133, 193, 224, 0.4);
+            background: rgba(133, 193, 224, 0.1);
+            border-color: var(--primary-sky);
         }
 
         .control-header-cell .control-main {
@@ -226,21 +258,55 @@
             display: grid;
             gap: 2px;
             align-content: start;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            /* Hide scrollbar in left panel */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+        }
+
+        .left-panel-content::-webkit-scrollbar {
+            /* Hide scrollbar in left panel - Webkit browsers */
+            display: none;
+        }
+
+        .timeline-content-wrapper {
+            flex: 1;
+            overflow-x: auto;
+            overflow-y: hidden;
+            position: relative;
+            /* Add padding to match the content padding */
+            padding-left: 20px;
+            padding-right: 20px;
+            /* Hide horizontal scrollbar */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+            /* Remove the negative margin that was causing the overlap */
+            /* Use box-sizing to handle the scrollbar space instead */
+            box-sizing: border-box;
+        }
+
+        .timeline-content-wrapper::-webkit-scrollbar {
+            /* Hide horizontal scrollbar - Webkit browsers */
+            display: none;
         }
 
         .timeline-content {
-            padding: 20px;
+            padding: 20px 0; /* Remove horizontal padding since wrapper handles it */
             min-width: max-content;
             background: var(--surface-primary);
             display: grid;
             gap: 2px;
             align-content: start;
+            overflow-y: auto;
+            height: 100%;
         }
 
-        /* Unified Row System */
+        /* Unified Row System - UPDATED */
         .left-row {
             display: grid;
-            grid-template-columns: 1fr auto 1fr;
+            grid-template-columns: 1fr auto;
             gap: 8px;
             height: var(--row-height);
             max-height: var(--row-height);
@@ -253,11 +319,15 @@
             padding: 0 8px;
         }
 
+        .left-row > *:first-child {
+            display: flex;
+            align-items: center;
+        }
+
         .left-row > *:last-child {
             display: flex;
             align-items: center;
-            justify-content: center;
-            height: var(--row-height);
+            justify-content: flex-end;
         }
 
         .left-row.phase-row {
@@ -330,7 +400,6 @@
 
         /* Row Labels and Controls */
         .row-label {
-            padding: 12px 16px;
             font-weight: 600;
             color: var(--text-primary);
             background: transparent;
@@ -339,6 +408,7 @@
             justify-content: space-between;
             font-size: 14px;
             border-radius: 8px;
+            padding: 0 16px;
         }
 
         .phase-label {
@@ -446,9 +516,6 @@
             align-items: center;
             justify-content: center;
             gap: 3px;
-            height: 100%;
-            min-height: var(--row-height);
-            max-height: var(--row-height);
         }
 
         .selector-label {
@@ -828,12 +895,16 @@
 
             <!-- Timeline Panel -->
             <div class="timeline-panel">
-                <div class="timeline-header" id="timelineHeader">
-                    <!-- Generated by JavaScript -->
+                <div class="timeline-header-wrapper">
+                    <div class="timeline-header" id="timelineHeader">
+                        <!-- Generated by JavaScript -->
+                    </div>
                 </div>
                 
-                <div class="timeline-content" id="timelineContent">
-                    <!-- Generated by JavaScript -->
+                <div class="timeline-content-wrapper">
+                    <div class="timeline-content" id="timelineContent">
+                        <!-- Generated by JavaScript -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -891,6 +962,7 @@
             loadProjectData();
             initializeProjectName();
             updateLayout();
+            setupScrollSync();
         }
 
         // Load project data from embedded JSON
@@ -1098,7 +1170,7 @@
             timelineContent.innerHTML = timelineHtml;
         }
 
-        // Render left panel phase row
+        // Render left panel phase row - UPDATED
         function renderLeftPhaseRow(phase) {
             const hasActions = phase.actions && phase.actions.length > 0;
             
@@ -1129,7 +1201,7 @@
             `;
         }
 
-        // Render left panel action row
+        // Render left panel action row - UPDATED
         function renderLeftActionRow(action) {
             return `
                 <div class="left-row action-row" data-action-id="${action.id}">
@@ -1151,25 +1223,24 @@
             `;
         }
 
-        // Render left panel add action row
+        // Render left panel add action row - UPDATED
         function renderLeftAddActionRow(phaseId) {
             return `
                 <div class="left-row add-action-row" onclick="createAction(${phaseId})">
                     <div class="row-label">
-                    <div class="add-row-content">+ Add Action</div>
-                    <div></div>
+                        <div class="add-row-content">+ Add Action</div>
+                    </div>
                 </div>
             `;
         }
 
-        // Render left panel add phase row
+        // Render left panel add phase row - UPDATED
         function renderLeftAddPhaseRow() {
             return `
                 <div class="left-row add-phase-row" onclick="createPhase()">
                     <div class="row-label">
                         <div class="add-row-content">+ Add Phase</div>
                     </div>
-                    <div></div><div></div><div></div><div></div>
                 </div>
             `;
         }
@@ -1993,6 +2064,55 @@
             document.addEventListener('DOMContentLoaded', init);
         } else {
             init();
+        }
+
+        // Synchronize vertical scrolling between left and right panels
+        function setupScrollSync() {
+            const leftContent = document.getElementById('leftPanelContent');
+            const rightContent = document.getElementById('timelineContent');
+            const headerWrapper = document.querySelector('.timeline-header-wrapper');
+            const contentWrapper = document.querySelector('.timeline-content-wrapper');
+            
+            let isScrollingVertical = false;
+            let isScrollingHorizontal = false;
+            
+            // Sync vertical scrolling between left and right panels
+            function syncVerticalScroll(source, target) {
+                if (isScrollingVertical) return;
+                isScrollingVertical = true;
+                target.scrollTop = source.scrollTop;
+                requestAnimationFrame(() => {
+                    isScrollingVertical = false;
+                });
+            }
+            
+            // Sync horizontal scrolling between header and content
+            function syncHorizontalScroll(source, target) {
+                if (isScrollingHorizontal) return;
+                isScrollingHorizontal = true;
+                target.scrollLeft = source.scrollLeft;
+                requestAnimationFrame(() => {
+                    isScrollingHorizontal = false;
+                });
+            }
+            
+            // Vertical scroll sync
+            leftContent.addEventListener('scroll', () => {
+                syncVerticalScroll(leftContent, rightContent);
+            });
+            
+            rightContent.addEventListener('scroll', () => {
+                syncVerticalScroll(rightContent, leftContent);
+            });
+            
+            // Horizontal scroll sync
+            headerWrapper.addEventListener('scroll', () => {
+                syncHorizontalScroll(headerWrapper, contentWrapper);
+            });
+            
+            contentWrapper.addEventListener('scroll', () => {
+                syncHorizontalScroll(contentWrapper, headerWrapper);
+            });
         }
     </script>
 </body>
