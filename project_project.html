@@ -955,9 +955,34 @@
             user-select: none;
         }
 
+
+
         .timeline-nav:hover {
             opacity: 0.9 !important;
             transform: translateY(-50%) scale(1.05);
+        }
+
+        [data-theme="light"] .timeline-nav {
+            background: linear-gradient(135deg, rgba(44, 74, 107, 0.1), rgba(44, 74, 107, 0.05));
+            border: 1px solid rgba(44, 74, 107, 0.2);
+            color: var(--primary-navy);
+            box-shadow: 0 4px 20px rgba(44, 74, 107, 0.1);
+        }
+        
+        [data-theme="light"] .timeline-nav:hover {
+            background: linear-gradient(135deg, rgba(44, 74, 107, 0.15), rgba(44, 74, 107, 0.08));
+            border-color: rgba(44, 74, 107, 0.3);
+            color: var(--primary-navy);
+            box-shadow: 0 6px 25px rgba(44, 74, 107, 0.15);
+        }
+        
+        [data-theme="light"] .timeline-panel:hover .timeline-nav {
+            opacity: 0.8; /* Slightly more opaque in bright mode */
+        }
+        
+        /* Keep dark mode as-is (they already look good) */
+        [data-theme="dark"] .timeline-nav {
+            /* Existing styles work well in cozy mode */
         }
 
         .timeline-nav.left {
@@ -2215,7 +2240,7 @@
             
             if (currentTheme === 'dark') {
                 // Cozy mode - smooth and relaxing
-                smoothScrollTimeline(-cardWidth, 1200, 'cozy');
+                smoothScrollTimeline(-cardWidth, 600, 'cozy');
             } else {
                 // Bright mode - quick and snappy
                 smoothScrollTimeline(-cardWidth, 400, 'bright');
@@ -2228,7 +2253,7 @@
             
             if (currentTheme === 'dark') {
                 // Cozy mode - smooth and relaxing
-                smoothScrollTimeline(cardWidth, 1200, 'cozy');
+                smoothScrollTimeline(cardWidth, 600, 'cozy');
             } else {
                 // Bright mode - quick and snappy
                 smoothScrollTimeline(cardWidth, 400, 'bright');
@@ -2258,8 +2283,9 @@
                 // Apply easing curves
                 let easedProgress;
                 if (style === 'cozy') {
-                    // Smooth, gentle S-curve for cozy mode
-                    easedProgress = 0.5 * (1 + Math.sin(Math.PI * (progress - 0.5)));
+                    // New cozy curve: slow start, gentle acceleration, very smooth settle
+                    const t = progress;
+                    easedProgress = t * t * (3 - 2 * t); // Smoothstep function
                 } else {
                     // Snappy ease-out with slight overshoot for bright mode
                     const c = 1.2; // Overshoot factor
