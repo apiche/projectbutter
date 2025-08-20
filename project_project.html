@@ -220,12 +220,6 @@
             display: none;
         }
 
-        /* Immediate scroll feedback */
-        .timeline-header-wrapper.scroll-active,
-        .timeline-content-wrapper.scroll-active {
-            opacity: 0.9;
-        }
-
         .left-header-cell {
             padding: 12px 8px;
             text-align: center;
@@ -1158,7 +1152,6 @@
             loadTheme();
             updateLayout();
             setupScrollSync();
-            setupSmoothScrolling();
         }
 
         // Load and apply saved theme
@@ -2314,65 +2307,6 @@
             requestAnimationFrame(animate);
         }
 
-        // Enhanced scroll wheel handling for card-by-card scrolling
-        function setupSmoothScrolling() {
-            const headerWrapper = document.querySelector('.timeline-header-wrapper');
-            const contentWrapper = document.querySelector('.timeline-content-wrapper');
-            
-            [headerWrapper, contentWrapper].forEach(wrapper => {
-                if (!wrapper) return;
-                
-                let isBlocked = false;
-                
-                wrapper.addEventListener('wheel', (e) => {
-                    // Only handle horizontal scrolling
-                    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 3) {
-                        e.preventDefault();
-                        
-                        // Block all scrolling if we're already processing or animating
-                        if (isBlocked || wrapper.isAnimating) return;
-                        
-                        // Block immediately to prevent any additional events
-                        isBlocked = true;
-                        
-                        // Immediate visual feedback
-                        headerWrapper.classList.add('scroll-active');
-                        contentWrapper.classList.add('scroll-active');
-                        setTimeout(() => {
-                            headerWrapper.classList.remove('scroll-active');
-                            contentWrapper.classList.remove('scroll-active');
-                        }, 100);
-                        
-                        // Determine direction and scroll exactly one card
-                        const direction = e.deltaX > 0 ? 1 : -1;
-                        const cardWidth = getCardWidth();
-                        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-                        
-                        if (currentTheme === 'dark') {
-                            // Cozy mode - smooth scrolling
-                            smoothScrollTimeline(direction * cardWidth, 800, 'cozy');
-                            // Unblock after animation completes
-                            setTimeout(() => { isBlocked = false; }, 850);
-                        } else {
-                            // Bright mode - snappy scrolling  
-                            smoothScrollTimeline(direction * cardWidth, 300, 'bright');
-                            // Unblock after animation completes
-                            setTimeout(() => { isBlocked = false; }, 350);
-                        }
-                    }
-                }, { passive: false });
-                
-                // Reset on touch/trackpad lift
-                wrapper.addEventListener('touchend', () => {
-                    setTimeout(() => { isBlocked = false; }, 100);
-                }, { passive: true });
-                
-                // Reset on mouse leave (for safety)
-                wrapper.addEventListener('mouseleave', () => {
-                    setTimeout(() => { isBlocked = false; }, 100);
-                }, { passive: true });
-            });
-        }
         function incrementTaskProgress(actionId) {
             const action = findActionById(actionId);
             if (!action || action.completedWeeks >= action.duration) return;
@@ -2484,14 +2418,8 @@
             const contentWrapper = document.querySelector('.timeline-content-wrapper');
             
             let isScrollingVertical = false;
-            let isScrollingHorizontal = false;
-            
-            // Pan functionality variables
-            let isPanning = false;
-            let panStartX = 0;
-            let panStartScrollLeft = 0;
-            let panTarget = null;
-            
+            let isScrollingHorizontal = false;    
+
             // Sync vertical scrolling between left and right panels
             function syncVerticalScroll(source, target) {
                 if (isScrollingVertical) return;
@@ -2511,68 +2439,7 @@
                     isScrollingHorizontal = false;
                 });
             }
-            
-            // Pan functionality
-            function startPan(e, target) {
-                if (e.button === 1 || (e.button === 0 && (e.ctrlKey || e.metaKey || e.shiftKey))) {
-                    e.preventDefault();
-                    isPanning = true;
-                    panStartX = e.clientX;
-                    panStartScrollLeft = target.scrollLeft;
-                    panTarget = target;
-                    document.body.style.cursor = 'grab';
-                    
-                    // Prevent text selection during pan
-                    document.body.style.userSelect = 'none';
-                }
-            }
-            
-            function doPan(e) {
-                if (!isPanning || !panTarget) return;
-                
-                e.preventDefault();
-                document.body.style.cursor = 'grabbing';
-                
-                const deltaX = e.clientX - panStartX;
-                const newScrollLeft = panStartScrollLeft - deltaX;
-                
-                // Update both header and content to keep them in sync
-                if (panTarget === headerWrapper) {
-                    headerWrapper.scrollLeft = newScrollLeft;
-                    contentWrapper.scrollLeft = newScrollLeft;
-                } else if (panTarget === contentWrapper) {
-                    contentWrapper.scrollLeft = newScrollLeft;
-                    headerWrapper.scrollLeft = newScrollLeft;
-                }
-            }
-            
-            function endPan() {
-                if (isPanning) {
-                    isPanning = false;
-                    panTarget = null;
-                    document.body.style.cursor = '';
-                    document.body.style.userSelect = '';
-                }
-            }
-            
-            // Add pan event listeners to timeline areas
-            [headerWrapper, contentWrapper].forEach(element => {
-                element.addEventListener('mousedown', (e) => startPan(e, element));
-            });
-            
-            // Global mouse events for panning
-            document.addEventListener('mousemove', doPan);
-            document.addEventListener('mouseup', endPan);
-            
-            // Prevent context menu on middle click
-            [headerWrapper, contentWrapper].forEach(element => {
-                element.addEventListener('contextmenu', (e) => {
-                    if (e.button === 1) {
-                        e.preventDefault();
-                    }
-                });
-            });
-            
+                        
             // Vertical scroll sync
             leftContent.addEventListener('scroll', () => {
                 syncVerticalScroll(leftContent, rightContent);
