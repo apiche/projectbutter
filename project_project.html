@@ -69,11 +69,23 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            /* Default: Bright to Cozy - Gentle settling */
+            transition: background-color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
+                       color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
+                       border-color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
+                       box-shadow 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        /* Cozy to Bright - Quick, energetic awakening */
+        [data-theme="light"] * {
+            transition: background-color 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
+                       color 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
+                       border-color 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
+                       box-shadow 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', system-ui, sans-serif;
             background: var(--background-primary);
             min-height: 100vh;
             padding: 20px;
@@ -93,26 +105,33 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px; /* Give it some height to center within */
         }
 
         .project-title {
-            font-size: 2rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 15px;
+            font-size: 1.5rem; /* Reduced from 2rem */
+            font-weight: 500; /* Reduced from 600 */
+            color: var(--text-secondary); /* More subtle color */
+            margin-bottom: 0; /* Remove bottom margin since parent handles spacing */
             cursor: pointer;
-            border-radius: 8px;
-            padding: 8px 16px;
+            border-radius: 6px;
+            padding: 6px 12px; /* Reduced padding */
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block; /* Only as wide as the text */
         }
 
         .project-title:hover {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.2); /* More subtle hover */
+            color: var(--text-primary); /* Slightly more prominent on hover */
         }
 
         .project-title[contenteditable="true"] {
             background: rgba(255, 255, 255, 0.9);
             outline: 2px solid var(--primary-sky);
+            color: var(--text-primary);
         }
 
         /* Main Grid Layout */
@@ -181,7 +200,8 @@
             overflow: hidden; /* Hide any overflow completely */
         }
 
-        .timeline-header-wrapper {
+        .timeline-header-wrapper,
+        .timeline-content-wrapper {
             flex-shrink: 0;
             overflow-x: auto;
             overflow-y: hidden; /* Ensure no vertical scrolling */
@@ -191,11 +211,19 @@
             /* Hide horizontal scrollbar */
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none; /* Internet Explorer 10+ */
+            transition: opacity 0.1s ease;
         }
 
-        .timeline-header-wrapper::-webkit-scrollbar {
+        .timeline-header-wrapper::-webkit-scrollbar,
+        .timeline-content-wrapper::-webkit-scrollbar {
             /* Hide horizontal scrollbar - Webkit browsers */
             display: none;
+        }
+
+        /* Immediate scroll feedback */
+        .timeline-header-wrapper.scroll-active,
+        .timeline-content-wrapper.scroll-active {
+            opacity: 0.9;
         }
 
         .left-header-cell {
@@ -241,6 +269,20 @@
             font-size: 13px;
             font-weight: 700;
             margin-bottom: 2px;
+            filter: contrast(1.3) saturate(1.2);
+        }
+
+        .control-header-cell:hover .control-main {
+            filter: contrast(1.5) saturate(1.4) brightness(1.1);
+        }
+
+        /* Make moon icon richer in bright mode */
+        [data-theme="light"] .control-header-cell .control-main {
+            filter: contrast(1.6) saturate(1.5) brightness(0.9);
+        }
+
+        [data-theme="light"] .control-header-cell:hover .control-main {
+            filter: contrast(1.8) saturate(1.7) brightness(1.0);
         }
 
         .control-header-cell .control-sub {
@@ -317,6 +359,13 @@
             /* Remove the negative margin that was causing the overlap */
             /* Use box-sizing to handle the scrollbar space instead */
             box-sizing: border-box;
+            transition: opacity 0.1s ease;
+        }
+
+        .timeline-header-wrapper::-webkit-scrollbar,
+        .timeline-content-wrapper::-webkit-scrollbar {
+            /* Hide horizontal scrollbar - Webkit browsers */
+            display: none;
         }
 
         .timeline-content-wrapper::-webkit-scrollbar {
@@ -879,7 +928,80 @@
             }
         }
 
-        /* Responsive Design */
+        /* Scroll Navigation Buttons - Fixed over month cards */
+        .timeline-panel {
+            position: relative; /* Make this a positioning context */
+        }
+
+        .timeline-nav {
+            position: absolute;
+            top: 40px; /* Position to align with month cards (80px header / 2) */
+            transform: translateY(-50%);
+            width: 32px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 100;
+            font-size: 16px;
+            color: var(--text-primary);
+            user-select: none;
+        }
+
+        .timeline-nav:hover {
+            opacity: 0.9 !important;
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .timeline-nav.left {
+            left: 12px; /* Slightly more inset for better symmetry */
+        }
+
+        .timeline-nav.right {
+            right: 12px; /* Slightly more inset for better symmetry */
+        }
+
+        .timeline-panel:hover .timeline-nav {
+            opacity: 0.6;
+        }
+
+        /* Remove the header wrapper positioning */
+        .timeline-header-wrapper {
+            flex-shrink: 0;
+            overflow-x: auto;
+            overflow-y: hidden; /* Ensure no vertical scrolling */
+            padding-left: 20px;
+            padding-right: 20px;
+            height: 80px; /* Fixed height to prevent any vertical movement */
+            /* Hide horizontal scrollbar */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+            transition: opacity 0.1s ease;
+        }
+
+        /* Smooth scrolling container */
+        .timeline-header-wrapper,
+        .timeline-content-wrapper {
+            scroll-behavior: smooth;
+        }
+
+        /* Theme-specific scroll animations */
+        [data-theme="light"] .timeline-header-wrapper,
+        [data-theme="light"] .timeline-content-wrapper {
+            scroll-behavior: auto; /* We'll handle this with JS for snappy animation */
+        }
+
+        [data-theme="dark"] .timeline-header-wrapper,
+        [data-theme="dark"] .timeline-content-wrapper {
+            scroll-behavior: smooth; /* Native smooth for cozy mode */
+        }
         @media (max-width: 1200px) {
             :root {
                 --label-width: 6em;
@@ -938,6 +1060,10 @@
 
             <!-- Timeline Panel -->
             <div class="timeline-panel">
+                <!-- Fixed Navigation Buttons that float over month cards -->
+                <div class="timeline-nav left" onclick="scrollTimelineLeft()">‹</div>
+                <div class="timeline-nav right" onclick="scrollTimelineRight()">›</div>
+                
                 <div class="timeline-header-wrapper">
                     <div class="timeline-header" id="timelineHeader">
                         <!-- Generated by JavaScript -->
@@ -959,8 +1085,8 @@
         "projectName": "Project",
         "startMonth": 6,
         "startYear": 2025,
-        "endMonth": 11,
-        "endYear": 2025,
+        "endMonth": 0,
+        "endYear": 2026,
         "phases": [
             {
                 "id": 0,
@@ -1007,6 +1133,7 @@
             loadTheme();
             updateLayout();
             setupScrollSync();
+            setupSmoothScrolling();
         }
 
         // Load and apply saved theme
@@ -1248,17 +1375,17 @@
                         timelineHtml += renderTimelineRow(months, currentMonth, currentYear);
                     });
                     
-                    // Add action row
+                    // Add action row - NO TIMELINE ROW
                     console.log(`  Adding 'Add Action' row for phase ${phaseIndex}`);
                     leftHtml += renderLeftAddActionRow(phase.id);
-                    timelineHtml += renderTimelineRow(months, currentMonth, currentYear);
+                    // No timeline row for add action
                 }
             });
             
-            // Add phase row - OUTSIDE the phases loop
+            // Add phase row - NO TIMELINE ROW
             console.log('Adding "Add Phase" row');
             leftHtml += renderLeftAddPhaseRow();
-            timelineHtml += renderTimelineRow(months, currentMonth, currentYear);
+            // No timeline row for add phase
             
             console.log('Final leftHtml:', leftHtml);
             
@@ -1705,7 +1832,16 @@
         }
 
         function deletePhase(phaseId) {
-            if (confirm('Are you sure you want to delete this phase and all its actions?')) {
+            const phase = projectData.phases.find(p => p.id === phaseId);
+            if (!phase) return;
+            
+            // Check if phase has actions
+            if (phase.actions && phase.actions.length > 0) {
+                alert('Cannot delete phase with actions. Please delete all actions first.');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to delete this phase?')) {
                 const phaseIndex = projectData.phases.findIndex(p => p.id === phaseId);
                 if (phaseIndex !== -1) {
                     projectData.phases.splice(phaseIndex, 1);
@@ -2058,7 +2194,159 @@
             return `${sanitized}_project.html`;
         }
 
-        // Task completion functions
+        // Smooth timeline scrolling functions
+        function getCardWidth() {
+            const timelineCell = document.querySelector('.timeline-cell');
+            if (timelineCell) {
+                const style = window.getComputedStyle(timelineCell);
+                const width = timelineCell.offsetWidth;
+                const gap = parseFloat(style.marginRight) || 1; // Gap between cells
+                return width + gap;
+            }
+            // Fallback to CSS variable
+            const rootStyles = getComputedStyle(document.documentElement);
+            const cardMinWidth = rootStyles.getPropertyValue('--month-card-min-width').trim();
+            return parseInt(cardMinWidth) * 16 + 1; // Convert em to px (assuming 16px base) + gap
+        }
+
+        function scrollTimelineLeft() {
+            const cardWidth = getCardWidth();
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            
+            if (currentTheme === 'dark') {
+                // Cozy mode - smooth and relaxing
+                smoothScrollTimeline(-cardWidth, 1200, 'cozy');
+            } else {
+                // Bright mode - quick and snappy
+                smoothScrollTimeline(-cardWidth, 400, 'bright');
+            }
+        }
+
+        function scrollTimelineRight() {
+            const cardWidth = getCardWidth();
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            
+            if (currentTheme === 'dark') {
+                // Cozy mode - smooth and relaxing
+                smoothScrollTimeline(cardWidth, 1200, 'cozy');
+            } else {
+                // Bright mode - quick and snappy
+                smoothScrollTimeline(cardWidth, 400, 'bright');
+            }
+        }
+
+        function smoothScrollTimeline(distance, duration, style) {
+            const headerWrapper = document.querySelector('.timeline-header-wrapper');
+            const contentWrapper = document.querySelector('.timeline-content-wrapper');
+            
+            if (!headerWrapper || !contentWrapper) return;
+            
+            const startScrollLeft = headerWrapper.scrollLeft;
+            const targetScrollLeft = Math.max(0, startScrollLeft + distance);
+            
+            // Prevent multiple simultaneous animations
+            if (headerWrapper.isAnimating) return;
+            headerWrapper.isAnimating = true;
+            contentWrapper.isAnimating = true;
+            
+            const startTime = performance.now();
+            
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Apply easing curves
+                let easedProgress;
+                if (style === 'cozy') {
+                    // Smooth, gentle S-curve for cozy mode
+                    easedProgress = 0.5 * (1 + Math.sin(Math.PI * (progress - 0.5)));
+                } else {
+                    // Snappy ease-out with slight overshoot for bright mode
+                    const c = 1.2; // Overshoot factor
+                    easedProgress = progress < 1 ? 
+                        1 - Math.pow(1 - progress, 3) : 
+                        1 + c * Math.pow(progress - 1, 3);
+                }
+                
+                const currentScrollLeft = startScrollLeft + (targetScrollLeft - startScrollLeft) * easedProgress;
+                
+                headerWrapper.scrollLeft = currentScrollLeft;
+                contentWrapper.scrollLeft = currentScrollLeft;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Animation complete
+                    headerWrapper.isAnimating = false;
+                    contentWrapper.isAnimating = false;
+                    // Ensure we end exactly on target
+                    headerWrapper.scrollLeft = targetScrollLeft;
+                    contentWrapper.scrollLeft = targetScrollLeft;
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        // Enhanced scroll wheel handling for card-by-card scrolling
+        function setupSmoothScrolling() {
+            const headerWrapper = document.querySelector('.timeline-header-wrapper');
+            const contentWrapper = document.querySelector('.timeline-content-wrapper');
+            
+            [headerWrapper, contentWrapper].forEach(wrapper => {
+                if (!wrapper) return;
+                
+                let isBlocked = false;
+                
+                wrapper.addEventListener('wheel', (e) => {
+                    // Only handle horizontal scrolling
+                    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 3) {
+                        e.preventDefault();
+                        
+                        // Block all scrolling if we're already processing or animating
+                        if (isBlocked || wrapper.isAnimating) return;
+                        
+                        // Block immediately to prevent any additional events
+                        isBlocked = true;
+                        
+                        // Immediate visual feedback
+                        headerWrapper.classList.add('scroll-active');
+                        contentWrapper.classList.add('scroll-active');
+                        setTimeout(() => {
+                            headerWrapper.classList.remove('scroll-active');
+                            contentWrapper.classList.remove('scroll-active');
+                        }, 100);
+                        
+                        // Determine direction and scroll exactly one card
+                        const direction = e.deltaX > 0 ? 1 : -1;
+                        const cardWidth = getCardWidth();
+                        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                        
+                        if (currentTheme === 'dark') {
+                            // Cozy mode - smooth scrolling
+                            smoothScrollTimeline(direction * cardWidth, 800, 'cozy');
+                            // Unblock after animation completes
+                            setTimeout(() => { isBlocked = false; }, 850);
+                        } else {
+                            // Bright mode - snappy scrolling  
+                            smoothScrollTimeline(direction * cardWidth, 300, 'bright');
+                            // Unblock after animation completes
+                            setTimeout(() => { isBlocked = false; }, 350);
+                        }
+                    }
+                }, { passive: false });
+                
+                // Reset on touch/trackpad lift
+                wrapper.addEventListener('touchend', () => {
+                    setTimeout(() => { isBlocked = false; }, 100);
+                }, { passive: true });
+                
+                // Reset on mouse leave (for safety)
+                wrapper.addEventListener('mouseleave', () => {
+                    setTimeout(() => { isBlocked = false; }, 100);
+                }, { passive: true });
+            });
+        }
         function incrementTaskProgress(actionId) {
             const action = findActionById(actionId);
             if (!action || action.completedWeeks >= action.duration) return;
