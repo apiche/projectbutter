@@ -877,6 +877,77 @@
             opacity: 0.8;
         }
 
+        /* 1. REMOVE these lines (431-456) - they're in the wrong place: */
+
+        /* Better visibility in cozy mode */
+        [data-theme="dark"] .add-row-content {
+            color: var(--text-primary); /* Use primary text color instead of secondary */
+            opacity: 0.9; /* Slightly more opaque */
+        }
+        
+        /* Better hover for add-action in cozy mode */
+        [data-theme="dark"] .left-row.add-action-row:hover {
+            background: rgba(155, 185, 224, 0.15); /* Use cozy sky color */
+            border-color: var(--accent-cool);
+        }
+        
+        [data-theme="dark"] .left-row.add-action-row:hover .add-row-content {
+            color: var(--accent-cool); /* Brighter text on hover in cozy mode */
+            opacity: 1;
+        }
+        
+        /* Better hover for add-phase in cozy mode */
+        [data-theme="dark"] .left-row.add-phase-row:hover {
+            background: rgba(224, 155, 101, 0.15); /* Use cozy peach color */
+            border-color: var(--accent-warm);
+        }
+        
+        [data-theme="dark"] .left-row.add-phase-row:hover .add-row-content {
+            color: var(--accent-warm); /* Brighter text on hover in cozy mode */
+            opacity: 1;
+        } 
+
+        /* Better visibility in cozy mode - MOVED TO CORRECT POSITION */
+        [data-theme="dark"] .add-row-content {
+            color: var(--text-primary) !important; /* Use primary text color instead of secondary */
+            opacity: 0.9 !important; /* Slightly more opaque */
+        }
+        
+        /* Better hover for add-action in cozy mode */
+        [data-theme="dark"] .left-row.add-action-row:hover {
+            background: rgba(155, 185, 224, 0.15); /* Use cozy sky color */
+            border-color: var(--accent-cool);
+        }
+        
+        [data-theme="dark"] .left-row.add-action-row:hover .add-row-content {
+            color: var(--accent-cool) !important; /* Brighter text on hover in cozy mode */
+            opacity: 1 !important;
+        }
+        
+        /* Better hover for add-phase in cozy mode */
+        [data-theme="dark"] .left-row.add-phase-row:hover {
+            background: rgba(224, 155, 101, 0.15); /* Use cozy peach color */
+            border-color: var(--accent-warm);
+        }
+        
+        [data-theme="dark"] .left-row.add-phase-row:hover .add-row-content {
+            color: var(--accent-warm) !important; /* Brighter text on hover in cozy mode */
+            opacity: 1 !important;
+        }
+
+        /* Fix input styling for cozy mode */
+        [data-theme="dark"] .inline-input {
+            background: var(--surface-secondary) !important; /* Use cozy surface color instead of       white */
+            border: 2px solid var(--accent-cool) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        [data-theme="dark"] .inline-input:focus {
+            background: var(--surface-secondary) !important;
+            box-shadow: 0 0 0 2px rgba(155, 185, 224, 0.4) !important; /* Cozy glow */
+        }
+
+
         .inline-input {
             background: white;
             border: 2px solid var(--primary-sky);
@@ -2166,27 +2237,120 @@
             });
         }
 
-        // Auto-save functionality
+                // 1. SAVE INDICATOR
+        function showSaveIndicator(message) {
+            let indicator = document.getElementById('saveIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'saveIndicator';
+                indicator.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: var(--primary-sky);
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    font-weight: 500;
+                    z-index: 1000;
+                    opacity: 0;
+                    transform: translateY(10px);
+                    transition: all 0.3s ease;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(indicator);
+            }
+            
+            indicator.textContent = message;
+            indicator.style.opacity = '1';
+            indicator.style.transform = 'translateY(0)';
+            
+            setTimeout(() => {
+                indicator.style.opacity = '0';
+                indicator.style.transform = 'translateY(10px)';
+            }, 1500);
+        }
+        
+        // 2. AUTO-SAVE TO LOCALSTORAGE
         function autoSave() {
             try {
-                const dataScript = document.getElementById('projectData');
-                dataScript.textContent = '\n    ' + JSON.stringify(projectData, null, 4) + '\n    ';
-                console.log('Auto-saved project data');
+                localStorage.setItem('projectPlannerData', JSON.stringify(projectData));
+                showSaveIndicator('✓ Saved');
+                console.log('✅ Auto-saved');
             } catch (error) {
-                console.error('Error auto-saving:', error);
+                showSaveIndicator('⚠ Save failed');
+                console.warn('⚠️ Auto-save failed:', error);
             }
         }
-
-        // Save project to file
-        function saveProject() {
+        
+        // 3. LOAD FROM LOCALSTORAGE OR DEFAULTS
+        function loadProject() {
             try {
+                const savedData = localStorage.getItem('projectPlannerData');
+                if (savedData) {
+                    projectData = JSON.parse(savedData);
+                    console.log('✅ Loaded from localStorage');
+                    showSaveIndicator('↻ Restored');
+                    return true;
+                }
+            } catch (error) {
+                console.warn('⚠️ Failed to load from localStorage');
+            }
+            
+            // Load defaults if no saved data
+            console.log('📄 Loading defaults');
+            loadDefaultProject();
+            return false;
+        }
+        
+        // 4. LOAD DEFAULT PROJECT DATA
+        function loadDefaultProject() {
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth();
+            const currentYear = currentDate.getFullYear();
+            
+            let startMonth = currentMonth - 1;
+            let startYear = currentYear;
+            if (startMonth < 0) {
+                startMonth = 11;
+                startYear = currentYear - 1;
+            }
+            
+            let endMonth = currentMonth + 4;
+            let endYear = currentYear;
+            if (endMonth > 11) {
+                endMonth = endMonth - 12;
+                endYear = currentYear + 1;
+            }
+            
+            projectData = {
+                projectName: "New Project",
+                startMonth: startMonth,
+                startYear: startYear,
+                endMonth: endMonth,
+                endYear: endYear,
+                phases: [],
+                totalWeeks: 52,
+                phaseIdCounter: 0,
+                actionIdCounter: 0
+            };
+        }
+        
+        // 5. EXPORT PROJECT (DOWNLOAD)
+        function exportProject() {
+            try {
+                // Create a clean HTML file with current data embedded
+                const dataScript = document.getElementById('projectData');
+                if (dataScript) {
+                    dataScript.textContent = '\n    ' + JSON.stringify(projectData, null, 4) + '\n    ';
+                }
+                
                 const htmlContent = document.documentElement.outerHTML;
                 const blob = new Blob([htmlContent], { type: 'text/html' });
                 const url = URL.createObjectURL(blob);
                 
-                const projectName = projectData.projectName || 'Project';
-                const filename = generateFileName(projectName);
-                
+                const filename = generateFileName(projectData.projectName);
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = filename;
@@ -2195,11 +2359,124 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                console.log('Project saved successfully');
+                showSaveIndicator('📁 Exported');
+                console.log('📁 Project exported');
             } catch (error) {
-                console.error('Error saving project:', error);
+                console.error('Export failed:', error);
+                showSaveIndicator('⚠ Export failed');
             }
         }
+        
+        // 6. IMPORT PROJECT (FILE UPLOAD)
+        function importProject() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.html';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        // Parse the HTML to extract project data
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(e.target.result, 'text/html');
+                        const dataScript = doc.getElementById('projectData');
+                        
+                        if (dataScript) {
+                            const importedData = JSON.parse(dataScript.textContent);
+                            projectData = importedData;
+                            
+                            // Update UI
+                            initializeProjectName();
+                            updateLayout();
+                            
+                            showSaveIndicator('📂 Imported');
+                            console.log('📂 Project imported');
+                        } else {
+                            throw new Error('No project data found in file');
+                        }
+                    } catch (error) {
+                        console.error('Import failed:', error);
+                        showSaveIndicator('⚠ Import failed');
+                        alert('Failed to import project. Make sure it\'s a valid project file.');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // 7. REPLACE EXISTING FUNCTIONS
+        
+        // Replace loadProjectData with our localStorage-first approach
+        window.loadProjectData = loadProject;
+        
+        // Replace saveProject with export
+        window.saveProject = exportProject;
+        
+        // Enhance updateLayout to auto-save
+        const originalUpdateLayout = window.updateLayout;
+        window.updateLayout = function() {
+            originalUpdateLayout.call(this);
+            autoSave();
+        };
+        
+        // 8. ADD IMPORT BUTTON TO HEADER
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add import button next to save button
+            setTimeout(() => {
+                const headerControls = document.querySelector('.left-panel-header > div:nth-child(2)');
+                if (headerControls) {
+                    const importButton = document.createElement('div');
+                    importButton.className = 'left-header-cell control-header-cell';
+                    importButton.innerHTML = '<div class="control-main">📂</div><div         class="control-sub">Import</div>';
+                    importButton.onclick = importProject;
+                    importButton.title = 'Import Project File';
+                    
+                    // Insert before save button (last button)
+                    const saveButton = headerControls.lastElementChild;
+                    headerControls.insertBefore(importButton, saveButton);
+                    
+                    // Update save button text
+                    saveButton.innerHTML = '<div class="control-main">📁</div><div       class="control-sub">Export</div>';
+                    saveButton.title = 'Export Project File';
+                }
+            }, 100);
+        });
+        
+        // 9. UTILITY FUNCTIONS
+        function generateFileName(projectName) {
+            const sanitized = (projectName || 'project')
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, '')
+                .replace(/\s+/g, '_')
+                .replace(/_{2,}/g, '_')
+                .replace(/^_|_$/g, '');
+            
+            return `${sanitized}_project.html`;
+        }
+        
+        // 10. DEBUG HELPERS
+        window.projectDebug = {
+            exportData: () => console.log('Current data:', JSON.stringify(projectData, null, 2)),
+            clearData: () => {
+                localStorage.removeItem('projectPlannerData');
+                console.log('🗑️ Cleared localStorage');
+                location.reload();
+            },
+            checkStorage: () => {
+                const data = localStorage.getItem('projectPlannerData');
+                console.log('localStorage:', data ? 'Has data' : 'Empty');
+                return data;
+            }
+        };
+        
+        console.log('🛠️ Debug: projectDebug.exportData(), projectDebug.clearData(), projectDebug.checkStorage()')       ;
+        
 
         function generateFileName(projectName) {
             const sanitized = projectName
@@ -2457,6 +2734,97 @@
             contentWrapper.addEventListener('scroll', () => {
                 syncHorizontalScroll(contentWrapper, headerWrapper);
             });
+            // 1. SIMPLE SAVE INDICATOR
+            function showSaveIndicator(message) {
+                let indicator = document.getElementById('saveIndicator');
+                if (!indicator) {
+                    indicator = document.createElement('div');
+                    indicator.id = 'saveIndicator';
+                    indicator.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        right: 20px;
+                        background: var(--primary-sky);
+                        color: white;
+                        padding: 6px 12px;
+                        border-radius: 15px;
+                        font-size: 12px;
+                        font-weight: 500;
+                        z-index: 1000;
+                        opacity: 0;
+                        transform: translateY(10px);
+                        transition: all 0.3s ease;
+                        pointer-events: none;
+                    `;
+                    document.body.appendChild(indicator);
+                }
+                
+                indicator.textContent = message;
+                indicator.style.opacity = '1';
+                indicator.style.transform = 'translateY(0)';
+                
+                // Hide after 1.5 seconds
+                setTimeout(() => {
+                    indicator.style.opacity = '0';
+                    indicator.style.transform = 'translateY(10px)';
+                }, 1500);
+            }
+            
+            // 2. AUTO-SAVE FUNCTION
+            function autoSaveToStorage() {
+                try {
+                    localStorage.setItem('projectPlannerData', JSON.stringify(projectData));
+                    showSaveIndicator('✓ Saved');
+                    console.log('✅ Auto-saved');
+                } catch (error) {
+                    showSaveIndicator('⚠ Save failed');
+                    console.warn('⚠️ Auto-save failed:', error);
+                }
+            }
+            
+            // 3. LOAD FROM STORAGE
+            function loadFromStorage() {
+                try {
+                    const savedData = localStorage.getItem('projectPlannerData');
+                    if (savedData) {
+                        projectData = JSON.parse(savedData);
+                        document.querySelector('.project-title').textContent = projectData.projectName || 'Project';
+                        document.title = projectData.projectName || 'Project';
+                        showSaveIndicator('↻ Restored');
+                        console.log('✅ Project restored from storage');
+                        return true;
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Failed to load from storage:', error);
+                }
+                return false;
+            }
+            
+            // 4. ENHANCE YOUR EXISTING FUNCTIONS
+            
+            // Replace your existing updateLayout function
+            const originalUpdateLayout = updateLayout;
+            updateLayout = function() {
+                originalUpdateLayout();
+                autoSaveToStorage(); // Auto-save after every change
+            };
+            
+            // Replace your existing init function  
+            const originalInit = init;
+            init = function() {
+                // Try to load saved data first
+                const wasRestored = loadFromStorage();
+                
+                // If nothing was restored, run normal init
+                if (!wasRestored) {
+                    originalInit();
+                } else {
+                    // Just run the essential parts if we restored data
+                    loadTheme();
+                    updateLayout();
+                    setupScrollSync();
+                }
+            };
         }
     </script>
 </body>
