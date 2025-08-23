@@ -69,14 +69,12 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            /* Default: Bright to Cozy - Gentle settling */
             transition: background-color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
                        color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
                        border-color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
                        box-shadow 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
-        /* Cozy to Bright - Quick, energetic awakening */
         [data-theme="light"] * {
             transition: background-color 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
                        color 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
@@ -108,24 +106,24 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 60px; /* Give it some height to center within */
+            min-height: 60px;
         }
 
         .project-title {
-            font-size: 1.5rem; /* Reduced from 2rem */
-            font-weight: 500; /* Reduced from 600 */
-            color: var(--text-secondary); /* More subtle color */
-            margin-bottom: 0; /* Remove bottom margin since parent handles spacing */
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0;
             cursor: pointer;
             border-radius: 6px;
-            padding: 6px 12px; /* Reduced padding */
+            padding: 6px 12px;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-block; /* Only as wide as the text */
+            display: inline-block;
         }
 
         .project-title:hover {
-            background: rgba(255, 255, 255, 0.2); /* More subtle hover */
-            color: var(--text-primary); /* Slightly more prominent on hover */
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
         }
 
         .project-title[contenteditable="true"] {
@@ -142,7 +140,7 @@
             background: transparent;
             border-radius: 16px;
             overflow: hidden;
-            height: calc(100vh - 200px); /* Set a fixed height for the planner */
+            height: calc(100vh - 200px);
         }
 
         .left-panel {
@@ -163,6 +161,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
         /* Headers Grid */
@@ -174,7 +173,7 @@
             background: var(--surface-primary);
             height: 80px;
             align-items: center;
-            flex-shrink: 0; /* Prevent header from shrinking */
+            flex-shrink: 0;
             position: relative;
             z-index: 10;
         }
@@ -190,33 +189,31 @@
             grid-auto-columns: var(--month-card-min-width);
             grid-auto-flow: column;
             gap: 1px;
-            padding: 20px 0; /* Remove horizontal padding since wrapper handles it */
+            padding: 20px 0;
             background: var(--surface-primary);
             min-width: max-content;
             height: 80px;
-            flex-shrink: 0; /* Prevent header from shrinking */
+            flex-shrink: 0;
             position: relative;
             z-index: 10;
-            overflow: hidden; /* Hide any overflow completely */
+            overflow: hidden;
         }
 
         .timeline-header-wrapper,
         .timeline-content-wrapper {
             flex-shrink: 0;
             overflow-x: auto;
-            overflow-y: hidden; /* Ensure no vertical scrolling */
+            overflow-y: hidden;
             padding-left: 20px;
             padding-right: 20px;
-            height: 80px; /* Fixed height to prevent any vertical movement */
-            /* Hide horizontal scrollbar */
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* Internet Explorer 10+ */
+            height: 80px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             transition: opacity 0.1s ease;
         }
 
         .timeline-header-wrapper::-webkit-scrollbar,
         .timeline-content-wrapper::-webkit-scrollbar {
-            /* Hide horizontal scrollbar - Webkit browsers */
             display: none;
         }
 
@@ -270,7 +267,6 @@
             filter: contrast(1.5) saturate(1.4) brightness(1.1);
         }
 
-        /* Make moon icon richer in bright mode */
         [data-theme="light"] .control-header-cell .control-main {
             filter: contrast(1.6) saturate(1.5) brightness(0.9);
         }
@@ -329,13 +325,11 @@
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            /* Hide scrollbar in left panel */
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* Internet Explorer 10+ */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
 
         .left-panel-content::-webkit-scrollbar {
-            /* Hide scrollbar in left panel - Webkit browsers */
             display: none;
         }
 
@@ -344,31 +338,16 @@
             overflow-x: auto;
             overflow-y: hidden;
             position: relative;
-            /* Add padding to match the content padding */
             padding-left: 20px;
             padding-right: 20px;
-            /* Hide horizontal scrollbar */
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* Internet Explorer 10+ */
-            /* Remove the negative margin that was causing the overlap */
-            /* Use box-sizing to handle the scrollbar space instead */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             box-sizing: border-box;
             transition: opacity 0.1s ease;
         }
 
-        .timeline-header-wrapper::-webkit-scrollbar,
-        .timeline-content-wrapper::-webkit-scrollbar {
-            /* Hide horizontal scrollbar - Webkit browsers */
-            display: none;
-        }
-
-        .timeline-content-wrapper::-webkit-scrollbar {
-            /* Hide horizontal scrollbar - Webkit browsers */
-            display: none;
-        }
-
         .timeline-content {
-            padding: 20px 0; /* Remove horizontal padding since wrapper handles it */
+            padding: 20px 0;
             min-width: max-content;
             background: var(--surface-primary);
             display: grid;
@@ -378,7 +357,7 @@
             height: 100%;
         }
 
-        /* Unified Row System - UPDATED */
+        /* Unified Row System */
         .left-row {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -418,7 +397,6 @@
             opacity: 0.95;
         }
 
-        /* Darker action rows in cozy mode for better text contrast */
         [data-theme="dark"] .left-row.action-row {
             background: rgba(40, 30, 48, 0.9);
             border-left: 2px solid var(--primary-blue);
@@ -477,6 +455,72 @@
         .timeline-cell.current-month {
             background: var(--surface-secondary);
             border: 2px solid var(--primary-sky);
+        }
+
+        /* Timeline breathing space rows */
+        .timeline-row.add-action-timeline .timeline-cell {
+            background: transparent;
+            border: 1px dashed rgba(133, 193, 224, 0.3);
+            opacity: 0.7;
+        }
+
+        .timeline-row.add-phase-timeline {
+            margin-top: 6px;
+        }
+
+        .timeline-row.add-phase-timeline .timeline-cell {
+            background: transparent;
+            border: 1px dashed rgba(247, 178, 103, 0.3);
+            opacity: 0.7;
+        }
+
+        .timeline-row.add-action-timeline:hover .timeline-cell {
+            background: rgba(93, 173, 226, 0.05);
+            border-color: rgba(133, 193, 224, 0.6);
+            opacity: 1;
+        }
+
+        .timeline-row.add-phase-timeline:hover .timeline-cell {
+            background: rgba(247, 178, 103, 0.05);
+            border-color: rgba(247, 178, 103, 0.6);
+            opacity: 1;
+        }
+
+        /* Better visibility in cozy mode */
+        [data-theme="dark"] .add-row-content {
+            color: var(--text-primary) !important;
+            opacity: 0.9 !important;
+        }
+        
+        [data-theme="dark"] .left-row.add-action-row:hover {
+            background: rgba(155, 185, 224, 0.15);
+            border-color: var(--accent-cool);
+        }
+        
+        [data-theme="dark"] .left-row.add-action-row:hover .add-row-content {
+            color: var(--accent-cool) !important;
+            opacity: 1 !important;
+        }
+        
+        [data-theme="dark"] .left-row.add-phase-row:hover {
+            background: rgba(224, 155, 101, 0.15);
+            border-color: var(--accent-warm);
+        }
+        
+        [data-theme="dark"] .left-row.add-phase-row:hover .add-row-content {
+            color: var(--accent-warm) !important;
+            opacity: 1 !important;
+        }
+
+        [data-theme="dark"] .inline-input {
+            background: var(--surface-secondary) !important;
+            border: 2px solid var(--accent-cool) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        [data-theme="dark"] .inline-input:focus {
+            background: var(--surface-secondary) !important;
+            box-shadow: 0 0 0 2px rgba(155, 185, 224, 0.4) !important;
         }
 
         /* Row Labels and Controls */
@@ -756,7 +800,6 @@
             }
         }
 
-        /* Ker-chunk animation for weekly progress */
         @keyframes kerChunk {
             0% {
                 transform: translateY(-50%) scale(1);
@@ -777,7 +820,6 @@
             animation: kerChunk 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        /* Task completion power-up animation */
         @keyframes taskComplete {
             0% {
                 transform: translateY(-50%) scale(1);
@@ -805,7 +847,6 @@
             animation: taskComplete 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        /* Instant completion power-up animation */
         @keyframes instantComplete {
             0% {
                 transform: translateY(-50%) scale(1);
@@ -877,77 +918,6 @@
             opacity: 0.8;
         }
 
-        /* 1. REMOVE these lines (431-456) - they're in the wrong place: */
-
-        /* Better visibility in cozy mode */
-        [data-theme="dark"] .add-row-content {
-            color: var(--text-primary); /* Use primary text color instead of secondary */
-            opacity: 0.9; /* Slightly more opaque */
-        }
-        
-        /* Better hover for add-action in cozy mode */
-        [data-theme="dark"] .left-row.add-action-row:hover {
-            background: rgba(155, 185, 224, 0.15); /* Use cozy sky color */
-            border-color: var(--accent-cool);
-        }
-        
-        [data-theme="dark"] .left-row.add-action-row:hover .add-row-content {
-            color: var(--accent-cool); /* Brighter text on hover in cozy mode */
-            opacity: 1;
-        }
-        
-        /* Better hover for add-phase in cozy mode */
-        [data-theme="dark"] .left-row.add-phase-row:hover {
-            background: rgba(224, 155, 101, 0.15); /* Use cozy peach color */
-            border-color: var(--accent-warm);
-        }
-        
-        [data-theme="dark"] .left-row.add-phase-row:hover .add-row-content {
-            color: var(--accent-warm); /* Brighter text on hover in cozy mode */
-            opacity: 1;
-        } 
-
-        /* Better visibility in cozy mode - MOVED TO CORRECT POSITION */
-        [data-theme="dark"] .add-row-content {
-            color: var(--text-primary) !important; /* Use primary text color instead of secondary */
-            opacity: 0.9 !important; /* Slightly more opaque */
-        }
-        
-        /* Better hover for add-action in cozy mode */
-        [data-theme="dark"] .left-row.add-action-row:hover {
-            background: rgba(155, 185, 224, 0.15); /* Use cozy sky color */
-            border-color: var(--accent-cool);
-        }
-        
-        [data-theme="dark"] .left-row.add-action-row:hover .add-row-content {
-            color: var(--accent-cool) !important; /* Brighter text on hover in cozy mode */
-            opacity: 1 !important;
-        }
-        
-        /* Better hover for add-phase in cozy mode */
-        [data-theme="dark"] .left-row.add-phase-row:hover {
-            background: rgba(224, 155, 101, 0.15); /* Use cozy peach color */
-            border-color: var(--accent-warm);
-        }
-        
-        [data-theme="dark"] .left-row.add-phase-row:hover .add-row-content {
-            color: var(--accent-warm) !important; /* Brighter text on hover in cozy mode */
-            opacity: 1 !important;
-        }
-
-        /* Fix input styling for cozy mode */
-        [data-theme="dark"] .inline-input {
-            background: var(--surface-secondary) !important; /* Use cozy surface color instead of       white */
-            border: 2px solid var(--accent-cool) !important;
-            color: var(--text-primary) !important;
-        }
-        
-        [data-theme="dark"] .inline-input:focus {
-            background: var(--surface-secondary) !important;
-            box-shadow: 0 0 0 2px rgba(155, 185, 224, 0.4) !important; /* Cozy glow */
-        }
-
-
         .inline-input {
             background: white;
             border: 2px solid var(--primary-sky);
@@ -993,14 +963,10 @@
             }
         }
 
-        /* Scroll Navigation Buttons - Fixed over month cards */
-        .timeline-panel {
-            position: relative; /* Make this a positioning context */
-        }
-
+        /* Scroll Navigation Buttons */
         .timeline-nav {
             position: absolute;
-            top: 40px; /* Position to align with month cards (80px header / 2) */
+            top: 40px;
             transform: translateY(-50%);
             width: 32px;
             height: 60px;
@@ -1019,8 +985,6 @@
             color: var(--text-primary);
             user-select: none;
         }
-
-
 
         .timeline-nav:hover {
             opacity: 0.9 !important;
@@ -1042,38 +1006,19 @@
         }
         
         [data-theme="light"] .timeline-panel:hover .timeline-nav {
-            opacity: 0.8; /* Slightly more opaque in bright mode */
-        }
-        
-        /* Keep dark mode as-is (they already look good) */
-        [data-theme="dark"] .timeline-nav {
-            /* Existing styles work well in cozy mode */
+            opacity: 0.8;
         }
 
         .timeline-nav.left {
-            left: 12px; /* Slightly more inset for better symmetry */
+            left: 12px;
         }
 
         .timeline-nav.right {
-            right: 12px; /* Slightly more inset for better symmetry */
+            right: 12px;
         }
 
         .timeline-panel:hover .timeline-nav {
             opacity: 0.6;
-        }
-
-        /* Remove the header wrapper positioning */
-        .timeline-header-wrapper {
-            flex-shrink: 0;
-            overflow-x: auto;
-            overflow-y: hidden; /* Ensure no vertical scrolling */
-            padding-left: 20px;
-            padding-right: 20px;
-            height: 80px; /* Fixed height to prevent any vertical movement */
-            /* Hide horizontal scrollbar */
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* Internet Explorer 10+ */
-            transition: opacity 0.1s ease;
         }
 
         /* Smooth scrolling container */
@@ -1082,16 +1027,16 @@
             scroll-behavior: smooth;
         }
 
-        /* Theme-specific scroll animations */
         [data-theme="light"] .timeline-header-wrapper,
         [data-theme="light"] .timeline-content-wrapper {
-            scroll-behavior: auto; /* We'll handle this with JS for snappy animation */
+            scroll-behavior: auto;
         }
 
         [data-theme="dark"] .timeline-header-wrapper,
         [data-theme="dark"] .timeline-content-wrapper {
-            scroll-behavior: smooth; /* Native smooth for cozy mode */
+            scroll-behavior: smooth;
         }
+
         @media (max-width: 1200px) {
             :root {
                 --label-width: 6em;
@@ -1108,6 +1053,177 @@
                 --button-width: 5em;
                 --month-card-min-width: 5em;
             }
+        }
+
+        /* JSON Editor Modal Styles */
+        .json-editor-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .json-editor-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .json-editor-modal {
+            background: var(--surface-primary);
+            border-radius: 16px;
+            width: 90%;
+            height: 80%;
+            max-width: 1000px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .json-editor-overlay.active .json-editor-modal {
+            transform: scale(1);
+        }
+
+        .json-editor-header {
+            padding: 20px;
+            border-bottom: 2px solid var(--primary-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface-secondary);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .json-editor-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .json-editor-close {
+            background: rgba(231, 76, 60, 0.2);
+            color: #E74C3C;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .json-editor-close:hover {
+            background: rgba(231, 76, 60, 0.3);
+            transform: scale(1.1);
+        }
+
+        .json-editor-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .json-editor-textarea {
+            flex: 1;
+            background: var(--surface-secondary);
+            border: 2px solid var(--primary-blue);
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            color: var(--text-primary);
+            resize: none;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .json-editor-textarea:focus {
+            border-color: var(--primary-sky);
+            box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.2);
+        }
+
+        [data-theme="dark"] .json-editor-textarea {
+            background: rgba(20, 15, 25, 0.9);
+            border-color: var(--accent-cool);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .json-editor-textarea:focus {
+            border-color: var(--accent-cool);
+            box-shadow: 0 0 0 3px rgba(155, 185, 224, 0.3);
+        }
+
+        .json-editor-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .json-editor-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .json-editor-btn.primary {
+            background: var(--primary-sky);
+            color: white;
+        }
+
+        .json-editor-btn.primary:hover {
+            background: var(--primary-blue);
+            transform: translateY(-1px);
+        }
+
+        .json-editor-btn.secondary {
+            background: var(--surface-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .json-editor-btn.secondary:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .json-editor-status {
+            font-size: 12px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .json-editor-status.valid {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27AE60;
+        }
+
+        .json-editor-status.invalid {
+            background: rgba(231, 76, 60, 0.2);
+            color: #E74C3C;
         }
     </style>
 </head>
@@ -1135,9 +1251,17 @@
                             <div class="control-main">🌙</div>
                             <div class="control-sub">Cozy</div>
                         </div>
-                        <div class="left-header-cell control-header-cell" onclick="saveProject()">
-                            <div class="control-main">💾</div>
-                            <div class="control-sub">Save Project</div>
+                        <div class="left-header-cell control-header-cell" onclick="importProject()">
+                            <div class="control-main">📂</div>
+                            <div class="control-sub">Import</div>
+                        </div>
+                        <div class="left-header-cell control-header-cell" onclick="exportProject()">
+                            <div class="control-main">📁</div>
+                            <div class="control-sub">Export</div>
+                        </div>
+                        <div class="left-header-cell control-header-cell" onclick="openJSONEditor()">
+                            <div class="control-main">⚙️</div>
+                            <div class="control-sub">JSON Editor</div>
                         </div>
                     </div>
                     <div class="left-header-spacer"></div>
@@ -1164,6 +1288,33 @@
                     <div class="timeline-content" id="timelineContent">
                         <!-- Generated by JavaScript -->
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JSON Editor Modal -->
+    <div class="json-editor-overlay" id="jsonEditorOverlay">
+        <div class="json-editor-modal">
+            <div class="json-editor-header">
+                <h3 class="json-editor-title">📝 JSON Project Editor</h3>
+                <button class="json-editor-close" onclick="closeJSONEditor()">×</button>
+            </div>
+            <div class="json-editor-content">
+                <textarea 
+                    class="json-editor-textarea" 
+                    id="jsonEditorTextarea" 
+                    placeholder="Edit your project JSON data here...
+
+💡 Keyboard shortcuts:
+• Tab = Indent (4 spaces)
+• Shift+Tab = Unindent  
+• Shift+Tab (globally) = Switch back to planner"></textarea>
+                <div class="json-editor-actions">
+                    <div class="json-editor-status" id="jsonEditorStatus">Ready</div>
+                    <button class="json-editor-btn secondary" onclick="formatJSON()">🎨 Format JSON</button>
+                    <button class="json-editor-btn secondary" onclick="validateJSON()">✅ Validate</button>
+                    <button class="json-editor-btn primary" onclick="applyJSONChanges()">💾 Apply Changes</button>
                 </div>
             </div>
         </div>
@@ -1218,11 +1369,83 @@
 
         // Initialize the application
         function init() {
-            loadProjectData();
-            initializeProjectName();
+            // Try to load saved data first
+            const wasRestored = loadFromStorage();
+            
+            // If nothing was restored, run normal init
+            if (!wasRestored) {
+                loadProjectData();
+                initializeProjectName();
+            } else {
+                // Just update the title if we restored data
+                document.querySelector('.project-title').textContent = projectData.projectName || 'Project';
+                document.title = projectData.projectName || 'Project';
+            }
+            
             loadTheme();
             updateLayout();
             setupScrollSync();
+        }
+
+        // Storage and file management
+        function showSaveIndicator(message) {
+            let indicator = document.getElementById('saveIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'saveIndicator';
+                indicator.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: var(--primary-sky);
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    font-weight: 500;
+                    z-index: 1000;
+                    opacity: 0;
+                    transform: translateY(10px);
+                    transition: all 0.3s ease;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(indicator);
+            }
+            
+            indicator.textContent = message;
+            indicator.style.opacity = '1';
+            indicator.style.transform = 'translateY(0)';
+            
+            setTimeout(() => {
+                indicator.style.opacity = '0';
+                indicator.style.transform = 'translateY(10px)';
+            }, 1500);
+        }
+        
+        function autoSaveToStorage() {
+            try {
+                localStorage.setItem('projectPlannerData', JSON.stringify(projectData));
+                showSaveIndicator('✓ Saved');
+                console.log('✅ Auto-saved');
+            } catch (error) {
+                showSaveIndicator('⚠ Save failed');
+                console.warn('⚠️ Auto-save failed:', error);
+            }
+        }
+        
+        function loadFromStorage() {
+            try {
+                const savedData = localStorage.getItem('projectPlannerData');
+                if (savedData) {
+                    projectData = JSON.parse(savedData);
+                    console.log('✅ Loaded from localStorage');
+                    showSaveIndicator('↻ Restored');
+                    return true;
+                }
+            } catch (error) {
+                console.warn('⚠️ Failed to load from localStorage');
+            }
+            return false;
         }
 
         // Load and apply saved theme
@@ -1401,7 +1624,7 @@
             updateTimelineHeader();
             updateContent();
             renderGanttBars();
-            autoSave();
+            autoSaveToStorage();
         }
 
         // Update left panel header with current date info
@@ -1447,42 +1670,34 @@
             let leftHtml = '';
             let timelineHtml = '';
             
-            console.log('Starting content generation...');
-            
             // Render phases and actions
             projectData.phases.forEach((phase, phaseIndex) => {
-                console.log(`Rendering phase ${phaseIndex}: ${phase.name}`);
                 // Phase row
                 leftHtml += renderLeftPhaseRow(phase);
-                timelineHtml += renderTimelineRow(months, currentMonth, currentYear);
+                timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'phase');
                 
                 if (!phase.collapsed) {
                     // Action rows
                     phase.actions.forEach((action, actionIndex) => {
-                        console.log(`  Rendering action ${actionIndex}: ${action.name}`);
                         leftHtml += renderLeftActionRow(action);
-                        timelineHtml += renderTimelineRow(months, currentMonth, currentYear);
+                        timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'action');
                     });
                     
-                    // Add action row - NO TIMELINE ROW
-                    console.log(`  Adding 'Add Action' row for phase ${phaseIndex}`);
+                    // Add action row WITH TIMELINE ROW (for visual breathing space)
                     leftHtml += renderLeftAddActionRow(phase.id);
-                    // No timeline row for add action
+                    timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'add-action');
                 }
             });
             
-            // Add phase row - NO TIMELINE ROW
-            console.log('Adding "Add Phase" row');
+            // Add phase row WITH TIMELINE ROW (for visual breathing space)
             leftHtml += renderLeftAddPhaseRow();
-            // No timeline row for add phase
-            
-            console.log('Final leftHtml:', leftHtml);
+            timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'add-phase');
             
             leftContent.innerHTML = leftHtml;
             timelineContent.innerHTML = timelineHtml;
         }
 
-        // Render left panel phase row - UPDATED
+        // Render left panel phase row
         function renderLeftPhaseRow(phase) {
             const hasActions = phase.actions && phase.actions.length > 0;
             
@@ -1513,7 +1728,7 @@
             `;
         }
 
-        // Render left panel action row - UPDATED
+        // Render left panel action row
         function renderLeftActionRow(action) {
             return `
                 <div class="left-row action-row" data-action-id="${action.id}">
@@ -1535,7 +1750,7 @@
             `;
         }
 
-        // Render left panel add action row - UPDATED
+        // Render left panel add action row
         function renderLeftAddActionRow(phaseId) {
             return `
                 <div class="left-row add-action-row" onclick="createAction(${phaseId})">
@@ -1546,7 +1761,7 @@
             `;
         }
 
-        // Render left panel add phase row - UPDATED
+        // Render left panel add phase row
         function renderLeftAddPhaseRow() {
             return `
                 <div class="left-row add-phase-row" onclick="createPhase()">
@@ -1558,9 +1773,12 @@
         }
 
         // Render timeline row (unified for all row types)
-        function renderTimelineRow(months, currentMonth, currentYear) {
+        function renderTimelineRow(months, currentMonth, currentYear, rowType = 'default') {
+            const rowClass = rowType === 'add-action' ? 'timeline-row add-action-timeline' : 
+                           rowType === 'add-phase' ? 'timeline-row add-phase-timeline' : 'timeline-row';
+            
             return `
-                <div class="timeline-row">
+                <div class="${rowClass}">
                     ${months.map(month => `
                         <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
                              data-month="${month.month}" data-year="${month.year}"></div>
@@ -1578,7 +1796,7 @@
             const timelineRows = document.querySelectorAll('#timelineContent .timeline-row');
             let rowIndex = 0;
             
-            // Render phase gantt bars
+            // Render phase and action gantt bars
             projectData.phases.forEach(phase => {
                 const timelineRow = timelineRows[rowIndex];
                 if (timelineRow) {
@@ -1587,7 +1805,7 @@
                         renderGanttBar(timelineRow, phase.startWeek, duration, 'phase-bar', months, `${duration}w`);
                     }
                 }
-                rowIndex++;
+                rowIndex++; // Move to next row (phase row)
                 
                 if (!phase.collapsed) {
                     // Render action gantt bars
@@ -1596,13 +1814,15 @@
                         if (actionTimelineRow) {
                             renderGanttBar(actionTimelineRow, action.startWeek, action.duration, 'action-bar', months, '', action.id);
                         }
-                        rowIndex++;
+                        rowIndex++; // Move to next row (action row)
                     });
                     
-                    // Skip add action row
-                    rowIndex++;
+                    // Skip add action row (no gantt bar needed)
+                    rowIndex++; // Move past add action row
                 }
             });
+            
+            // Skip add phase row (no gantt bar needed)
         }
 
         // Render individual gantt bar
@@ -1880,6 +2100,8 @@
                 const newDuration = Math.max(1, Math.min(12, action.duration + delta));
                 if (newDuration !== action.duration) {
                     action.duration = newDuration;
+                    // Ensure completed weeks don't exceed new duration
+                    action.completedWeeks = Math.min(action.completedWeeks, newDuration);
                     recalculatePhaseActionWeeks(action.phaseId);
                     updateLayout();
                 }
@@ -1892,6 +2114,8 @@
             
             if (action && newDuration !== action.duration) {
                 action.duration = newDuration;
+                // Ensure completed weeks don't exceed new duration
+                action.completedWeeks = Math.min(action.completedWeeks, newDuration);
                 recalculatePhaseActionWeeks(action.phaseId);
                 updateLayout();
             }
@@ -1955,7 +2179,30 @@
             }
         }
 
-        // Placeholder functions for new control interactions
+        // Task progress functions
+        function incrementTaskProgress(actionId) {
+            const action = findActionById(actionId);
+            if (!action || action.completedWeeks >= action.duration) return;
+            
+            action.completedWeeks++;
+            
+            // Re-render gantt bars to update progress
+            renderGanttBars();
+            autoSaveToStorage();
+        }
+        
+        function completeTaskInstantly(actionId) {
+            const action = findActionById(actionId);
+            if (!action) return;
+            
+            action.completedWeeks = action.duration;
+            
+            // Re-render gantt bars to update progress
+            renderGanttBars();
+            autoSaveToStorage();
+        }
+
+        // Date selector functions
         function openStartDateSelector() {
             const button = event.currentTarget;
             const rect = button.getBoundingClientRect();
@@ -2191,153 +2438,18 @@
             }
         }
 
-        // Utility functions
-        function findActionById(actionId) {
-            for (const phase of projectData.phases) {
-                if (phase.actions) {
-                    const action = phase.actions.find(a => a.id === actionId);
-                    if (action) return action;
-                }
-            }
-            return null;
-        }
-
-        function handleInlineEdit(event, id, value, type) {
-            if (event.key === 'Enter') {
-                event.target.blur();
-            } else if (event.key === 'Escape') {
-                updateLayout();
-            }
-        }
-
-        function editProjectTitle(titleEl) {
-            titleEl.contentEditable = true;
-            titleEl.focus();
+        // Export and import functions
+        function generateFileName(projectName) {
+            const sanitized = (projectName || 'project')
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, '')
+                .replace(/\s+/g, '_')
+                .replace(/_{2,}/g, '_')
+                .replace(/^_|_$/g, '');
             
-            const range = document.createRange();
-            range.selectNodeContents(titleEl);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            
-            titleEl.addEventListener('blur', function() {
-                titleEl.contentEditable = false;
-                const newTitle = titleEl.textContent.trim() || 'Project';
-                titleEl.textContent = newTitle;
-                document.title = newTitle;
-                projectData.projectName = newTitle;
-                autoSave();
-            }, { once: true });
-            
-            titleEl.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    titleEl.blur();
-                }
-            });
-        }
-
-                // 1. SAVE INDICATOR
-        function showSaveIndicator(message) {
-            let indicator = document.getElementById('saveIndicator');
-            if (!indicator) {
-                indicator = document.createElement('div');
-                indicator.id = 'saveIndicator';
-                indicator.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    background: var(--primary-sky);
-                    color: white;
-                    padding: 6px 12px;
-                    border-radius: 15px;
-                    font-size: 12px;
-                    font-weight: 500;
-                    z-index: 1000;
-                    opacity: 0;
-                    transform: translateY(10px);
-                    transition: all 0.3s ease;
-                    pointer-events: none;
-                `;
-                document.body.appendChild(indicator);
-            }
-            
-            indicator.textContent = message;
-            indicator.style.opacity = '1';
-            indicator.style.transform = 'translateY(0)';
-            
-            setTimeout(() => {
-                indicator.style.opacity = '0';
-                indicator.style.transform = 'translateY(10px)';
-            }, 1500);
+            return `${sanitized}_project.html`;
         }
         
-        // 2. AUTO-SAVE TO LOCALSTORAGE
-        function autoSave() {
-            try {
-                localStorage.setItem('projectPlannerData', JSON.stringify(projectData));
-                showSaveIndicator('✓ Saved');
-                console.log('✅ Auto-saved');
-            } catch (error) {
-                showSaveIndicator('⚠ Save failed');
-                console.warn('⚠️ Auto-save failed:', error);
-            }
-        }
-        
-        // 3. LOAD FROM LOCALSTORAGE OR DEFAULTS
-        function loadProject() {
-            try {
-                const savedData = localStorage.getItem('projectPlannerData');
-                if (savedData) {
-                    projectData = JSON.parse(savedData);
-                    console.log('✅ Loaded from localStorage');
-                    showSaveIndicator('↻ Restored');
-                    return true;
-                }
-            } catch (error) {
-                console.warn('⚠️ Failed to load from localStorage');
-            }
-            
-            // Load defaults if no saved data
-            console.log('📄 Loading defaults');
-            loadDefaultProject();
-            return false;
-        }
-        
-        // 4. LOAD DEFAULT PROJECT DATA
-        function loadDefaultProject() {
-            const currentDate = new Date();
-            const currentMonth = currentDate.getMonth();
-            const currentYear = currentDate.getFullYear();
-            
-            let startMonth = currentMonth - 1;
-            let startYear = currentYear;
-            if (startMonth < 0) {
-                startMonth = 11;
-                startYear = currentYear - 1;
-            }
-            
-            let endMonth = currentMonth + 4;
-            let endYear = currentYear;
-            if (endMonth > 11) {
-                endMonth = endMonth - 12;
-                endYear = currentYear + 1;
-            }
-            
-            projectData = {
-                projectName: "New Project",
-                startMonth: startMonth,
-                startYear: startYear,
-                endMonth: endMonth,
-                endYear: endYear,
-                phases: [],
-                totalWeeks: 52,
-                phaseIdCounter: 0,
-                actionIdCounter: 0
-            };
-        }
-        
-        // 5. EXPORT PROJECT (DOWNLOAD)
         function exportProject() {
             try {
                 // Create a clean HTML file with current data embedded
@@ -2367,7 +2479,6 @@
             }
         }
         
-        // 6. IMPORT PROJECT (FILE UPLOAD)
         function importProject() {
             const input = document.createElement('input');
             input.type = 'file';
@@ -2409,85 +2520,6 @@
             
             input.click();
         }
-        
-        // 7. REPLACE EXISTING FUNCTIONS
-        
-        // Replace loadProjectData with our localStorage-first approach
-        window.loadProjectData = loadProject;
-        
-        // Replace saveProject with export
-        window.saveProject = exportProject;
-        
-        // Enhance updateLayout to auto-save
-        const originalUpdateLayout = window.updateLayout;
-        window.updateLayout = function() {
-            originalUpdateLayout.call(this);
-            autoSave();
-        };
-        
-        // 8. ADD IMPORT BUTTON TO HEADER
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add import button next to save button
-            setTimeout(() => {
-                const headerControls = document.querySelector('.left-panel-header > div:nth-child(2)');
-                if (headerControls) {
-                    const importButton = document.createElement('div');
-                    importButton.className = 'left-header-cell control-header-cell';
-                    importButton.innerHTML = '<div class="control-main">📂</div><div         class="control-sub">Import</div>';
-                    importButton.onclick = importProject;
-                    importButton.title = 'Import Project File';
-                    
-                    // Insert before save button (last button)
-                    const saveButton = headerControls.lastElementChild;
-                    headerControls.insertBefore(importButton, saveButton);
-                    
-                    // Update save button text
-                    saveButton.innerHTML = '<div class="control-main">📁</div><div       class="control-sub">Export</div>';
-                    saveButton.title = 'Export Project File';
-                }
-            }, 100);
-        });
-        
-        // 9. UTILITY FUNCTIONS
-        function generateFileName(projectName) {
-            const sanitized = (projectName || 'project')
-                .toLowerCase()
-                .replace(/[^a-z0-9\s]/g, '')
-                .replace(/\s+/g, '_')
-                .replace(/_{2,}/g, '_')
-                .replace(/^_|_$/g, '');
-            
-            return `${sanitized}_project.html`;
-        }
-        
-        // 10. DEBUG HELPERS
-        window.projectDebug = {
-            exportData: () => console.log('Current data:', JSON.stringify(projectData, null, 2)),
-            clearData: () => {
-                localStorage.removeItem('projectPlannerData');
-                console.log('🗑️ Cleared localStorage');
-                location.reload();
-            },
-            checkStorage: () => {
-                const data = localStorage.getItem('projectPlannerData');
-                console.log('localStorage:', data ? 'Has data' : 'Empty');
-                return data;
-            }
-        };
-        
-        console.log('🛠️ Debug: projectDebug.exportData(), projectDebug.clearData(), projectDebug.checkStorage()')       ;
-        
-
-        function generateFileName(projectName) {
-            const sanitized = projectName
-                .toLowerCase()
-                .replace(/[^a-z0-9\s]/g, '')
-                .replace(/\s+/g, '_')
-                .replace(/_{2,}/g, '_')
-                .replace(/^_|_$/g, '');
-            
-            return `${sanitized}_project.html`;
-        }
 
         // Smooth timeline scrolling functions
         function getCardWidth() {
@@ -2495,13 +2527,13 @@
             if (timelineCell) {
                 const style = window.getComputedStyle(timelineCell);
                 const width = timelineCell.offsetWidth;
-                const gap = parseFloat(style.marginRight) || 1; // Gap between cells
+                const gap = parseFloat(style.marginRight) || 1;
                 return width + gap;
             }
             // Fallback to CSS variable
             const rootStyles = getComputedStyle(document.documentElement);
             const cardMinWidth = rootStyles.getPropertyValue('--month-card-min-width').trim();
-            return parseInt(cardMinWidth) * 16 + 1; // Convert em to px (assuming 16px base) + gap
+            return parseInt(cardMinWidth) * 16 + 1;
         }
 
         function scrollTimelineLeft() {
@@ -2509,10 +2541,8 @@
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
             
             if (currentTheme === 'dark') {
-                // Cozy mode - smooth and relaxing
                 smoothScrollTimeline(-cardWidth, 600, 'cozy');
             } else {
-                // Bright mode - quick and snappy
                 smoothScrollTimeline(-cardWidth, 400, 'bright');
             }
         }
@@ -2522,10 +2552,8 @@
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
             
             if (currentTheme === 'dark') {
-                // Cozy mode - smooth and relaxing
                 smoothScrollTimeline(cardWidth, 600, 'cozy');
             } else {
-                // Bright mode - quick and snappy
                 smoothScrollTimeline(cardWidth, 400, 'bright');
             }
         }
@@ -2553,12 +2581,10 @@
                 // Apply easing curves
                 let easedProgress;
                 if (style === 'cozy') {
-                    // New cozy curve: slow start, gentle acceleration, very smooth settle
                     const t = progress;
-                    easedProgress = t * t * (3 - 2 * t); // Smoothstep function
+                    easedProgress = t * t * (3 - 2 * t);
                 } else {
-                    // Snappy ease-out with slight overshoot for bright mode
-                    const c = 1.2; // Overshoot factor
+                    const c = 1.2;
                     easedProgress = progress < 1 ? 
                         1 - Math.pow(1 - progress, 3) : 
                         1 + c * Math.pow(progress - 1, 3);
@@ -2575,7 +2601,6 @@
                     // Animation complete
                     headerWrapper.isAnimating = false;
                     contentWrapper.isAnimating = false;
-                    // Ensure we end exactly on target
                     headerWrapper.scrollLeft = targetScrollLeft;
                     contentWrapper.scrollLeft = targetScrollLeft;
                 }
@@ -2584,110 +2609,7 @@
             requestAnimationFrame(animate);
         }
 
-        function incrementTaskProgress(actionId) {
-            const action = findActionById(actionId);
-            if (!action || action.completedWeeks >= action.duration) return;
-            
-            action.completedWeeks++;
-            
-            // Re-render gantt bars to update progress
-            renderGanttBars();
-            autoSave();
-        }
-        
-        function completeTaskInstantly(actionId) {
-            const action = findActionById(actionId);
-            if (!action) return;
-            
-            action.completedWeeks = action.duration;
-            
-            // Re-render gantt bars to update progress
-            renderGanttBars();
-            autoSave();
-        }
-        
-        function createCompletionParticles(ganttBar) {
-            const rect = ganttBar.getBoundingClientRect();
-            const particleContainer = document.createElement('div');
-            
-            // Position container at the center of the gantt bar
-            particleContainer.style.left = rect.left + rect.width / 2 + 'px';
-            particleContainer.style.top = rect.top + rect.height / 2 + 'px';
-            
-            document.body.appendChild(particleContainer);
-            
-            // Create 8 particles
-            for (let i = 0; i < 8; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                // Random direction and distance
-                const angle = (i / 8) * Math.PI * 2;
-                const distance = 50 + Math.random() * 30;
-                const x = Math.cos(angle) * distance;
-                const y = Math.sin(angle) * distance;
-                
-                particle.style.setProperty('--particle-x', x + 'px');
-                particle.style.setProperty('--particle-y', y + 'px');
-                
-                particleContainer.appendChild(particle);
-            }
-            
-            // Remove particles after animation
-            setTimeout(() => {
-                document.body.removeChild(particleContainer);
-            }, 800);
-        }
-        
-        function createInstantCompletionParticles(ganttBar) {
-            const rect = ganttBar.getBoundingClientRect();
-            const particleContainer = document.createElement('div');
-            particleContainer.className = 'completion-particles';
-            
-            // Position container at the center of the gantt bar
-            particleContainer.style.left = rect.left + rect.width / 2 + 'px';
-            particleContainer.style.top = rect.top + rect.height / 2 + 'px';
-            
-            document.body.appendChild(particleContainer);
-            
-            // Create 16 particles for more impressive effect
-            for (let i = 0; i < 16; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                // Enhanced particles with different colors
-                const colors = ['#2ECC71', '#3498DB', '#9B59B6', '#F39C12', '#E74C3C'];
-                particle.style.background = `radial-gradient(circle, ${colors[i % colors.length]}, ${colors[(i + 1) % colors.length]})`;
-                
-                // Random direction and distance
-                const angle = (i / 16) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-                const distance = 70 + Math.random() * 50;
-                const x = Math.cos(angle) * distance;
-                const y = Math.sin(angle) * distance;
-                
-                particle.style.setProperty('--particle-x', x + 'px');
-                particle.style.setProperty('--particle-y', y + 'px');
-                
-                // Stagger the animation start
-                particle.style.animationDelay = (i * 0.05) + 's';
-                
-                particleContainer.appendChild(particle);
-            }
-            
-            // Remove particles after animation
-            setTimeout(() => {
-                document.body.removeChild(particleContainer);
-            }, 1200);
-        }
-
-        // Initialize when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-
-        // Synchronize vertical scrolling between left and right panels
+        // Synchronize scrolling between left and right panels
         function setupScrollSync() {
             const leftContent = document.getElementById('leftPanelContent');
             const rightContent = document.getElementById('timelineContent');
@@ -2734,98 +2656,287 @@
             contentWrapper.addEventListener('scroll', () => {
                 syncHorizontalScroll(contentWrapper, headerWrapper);
             });
-            // 1. SIMPLE SAVE INDICATOR
-            function showSaveIndicator(message) {
-                let indicator = document.getElementById('saveIndicator');
-                if (!indicator) {
-                    indicator = document.createElement('div');
-                    indicator.id = 'saveIndicator';
-                    indicator.style.cssText = `
-                        position: fixed;
-                        bottom: 20px;
-                        right: 20px;
-                        background: var(--primary-sky);
-                        color: white;
-                        padding: 6px 12px;
-                        border-radius: 15px;
-                        font-size: 12px;
-                        font-weight: 500;
-                        z-index: 1000;
-                        opacity: 0;
-                        transform: translateY(10px);
-                        transition: all 0.3s ease;
-                        pointer-events: none;
-                    `;
-                    document.body.appendChild(indicator);
-                }
-                
-                indicator.textContent = message;
-                indicator.style.opacity = '1';
-                indicator.style.transform = 'translateY(0)';
-                
-                // Hide after 1.5 seconds
-                setTimeout(() => {
-                    indicator.style.opacity = '0';
-                    indicator.style.transform = 'translateY(10px)';
-                }, 1500);
-            }
-            
-            // 2. AUTO-SAVE FUNCTION
-            function autoSaveToStorage() {
-                try {
-                    localStorage.setItem('projectPlannerData', JSON.stringify(projectData));
-                    showSaveIndicator('✓ Saved');
-                    console.log('✅ Auto-saved');
-                } catch (error) {
-                    showSaveIndicator('⚠ Save failed');
-                    console.warn('⚠️ Auto-save failed:', error);
+        }
+
+        // Utility functions
+        function findActionById(actionId) {
+            for (const phase of projectData.phases) {
+                if (phase.actions) {
+                    const action = phase.actions.find(a => a.id === actionId);
+                    if (action) return action;
                 }
             }
+            return null;
+        }
+
+        function handleInlineEdit(event, id, value, type) {
+            if (event.key === 'Enter') {
+                event.target.blur();
+            } else if (event.key === 'Escape') {
+                updateLayout();
+            }
+        }
+
+        function editProjectTitle(titleEl) {
+            titleEl.contentEditable = true;
+            titleEl.focus();
             
-            // 3. LOAD FROM STORAGE
-            function loadFromStorage() {
-                try {
-                    const savedData = localStorage.getItem('projectPlannerData');
-                    if (savedData) {
-                        projectData = JSON.parse(savedData);
-                        document.querySelector('.project-title').textContent = projectData.projectName || 'Project';
-                        document.title = projectData.projectName || 'Project';
-                        showSaveIndicator('↻ Restored');
-                        console.log('✅ Project restored from storage');
-                        return true;
+            const range = document.createRange();
+            range.selectNodeContents(titleEl);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            titleEl.addEventListener('blur', function() {
+                titleEl.contentEditable = false;
+                const newTitle = titleEl.textContent.trim() || 'Project';
+                titleEl.textContent = newTitle;
+                document.title = newTitle;
+                projectData.projectName = newTitle;
+                autoSaveToStorage();
+            }, { once: true });
+            
+            titleEl.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    titleEl.blur();
+                }
+            });
+        }
+
+        // Debug helpers
+        window.projectDebug = {
+            exportData: () => console.log('Current data:', JSON.stringify(projectData, null, 2)),
+            clearData: () => {
+                localStorage.removeItem('projectPlannerData');
+                console.log('🗑️ Cleared localStorage');
+                location.reload();
+            },
+            checkStorage: () => {
+                const data = localStorage.getItem('projectPlannerData');
+                console.log('localStorage:', data ? 'Has data' : 'Empty');
+                return data;
+            }
+        };
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // Setup JSON Editor Tab Key Functionality
+        function setupJSONEditorTabSupport() {
+            const textarea = document.getElementById('jsonEditorTextarea');
+            if (!textarea) return;
+
+            textarea.addEventListener('keydown', function(e) {
+                // Handle Tab key for indentation
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    const selectedText = this.value.substring(start, end);
+                    
+                    if (e.shiftKey) {
+                        // Shift+Tab: Remove indentation
+                        if (selectedText.includes('\n')) {
+                            // Multi-line selection
+                            const lines = selectedText.split('\n');
+                            const unindentedLines = lines.map(line => 
+                                line.startsWith('    ') ? line.substring(4) :
+                                line.startsWith('\t') ? line.substring(1) : line
+                            );
+                            const newText = unindentedLines.join('\n');
+                            
+                            this.setRangeText(newText, start, end, 'end');
+                        } else {
+                            // Single line - move to previous indentation level
+                            const lineStart = this.value.lastIndexOf('\n', start - 1) + 1;
+                            const lineText = this.value.substring(lineStart, start);
+                            
+                            if (lineText.endsWith('    ')) {
+                                this.setRangeText('', start - 4, start, 'end');
+                            } else if (lineText.endsWith('\t')) {
+                                this.setRangeText('', start - 1, start, 'end');
+                            }
+                        }
+                    } else {
+                        // Tab: Add indentation
+                        if (selectedText.includes('\n')) {
+                            // Multi-line selection - indent each line
+                            const lines = selectedText.split('\n');
+                            const indentedLines = lines.map(line => '    ' + line);
+                            const newText = indentedLines.join('\n');
+                            
+                            this.setRangeText(newText, start, end, 'end');
+                        } else {
+                            // Single position - insert 4 spaces
+                            this.setRangeText('    ', start, end, 'end');
+                        }
                     }
-                } catch (error) {
-                    console.warn('⚠️ Failed to load from storage:', error);
+                }
+                
+                // Auto-validate JSON as user types (debounced)
+                clearTimeout(this.validateTimer);
+                this.validateTimer = setTimeout(() => {
+                    validateJSON(true); // Silent validation
+                }, 500);
+            });
+
+            // Also validate on paste
+            textarea.addEventListener('paste', function() {
+                setTimeout(() => {
+                    validateJSON(true);
+                }, 100);
+            });
+        }
+
+        // JSON Editor Functions
+        function openJSONEditor() {
+            const overlay = document.getElementById('jsonEditorOverlay');
+            const textarea = document.getElementById('jsonEditorTextarea');
+            
+            // Populate with current project data
+            textarea.value = JSON.stringify(projectData, null, 4);
+            
+            // Show modal
+            overlay.classList.add('active');
+            
+            // Setup tab support if not already done
+            if (!textarea.hasTabSupport) {
+                setupJSONEditorTabSupport();
+                textarea.hasTabSupport = true;
+            }
+            
+            // Focus textarea
+            setTimeout(() => {
+                textarea.focus();
+                validateJSON(true);
+            }, 100);
+        }
+
+        function closeJSONEditor() {
+            const overlay = document.getElementById('jsonEditorOverlay');
+            overlay.classList.remove('active');
+        }
+
+        function formatJSON() {
+            const textarea = document.getElementById('jsonEditorTextarea');
+            const statusEl = document.getElementById('jsonEditorStatus');
+            
+            try {
+                const parsed = JSON.parse(textarea.value);
+                textarea.value = JSON.stringify(parsed, null, 4);
+                statusEl.textContent = '🎨 Formatted!';
+                statusEl.className = 'json-editor-status valid';
+                
+                setTimeout(() => {
+                    statusEl.textContent = 'Ready';
+                    statusEl.className = 'json-editor-status';
+                }, 2000);
+            } catch (error) {
+                statusEl.textContent = `❌ Invalid JSON: ${error.message}`;
+                statusEl.className = 'json-editor-status invalid';
+            }
+        }
+
+        function validateJSON(silent = false) {
+            const textarea = document.getElementById('jsonEditorTextarea');
+            const statusEl = document.getElementById('jsonEditorStatus');
+            
+            if (!textarea.value.trim()) {
+                if (!silent) {
+                    statusEl.textContent = 'Empty';
+                    statusEl.className = 'json-editor-status';
                 }
                 return false;
             }
             
-            // 4. ENHANCE YOUR EXISTING FUNCTIONS
-            
-            // Replace your existing updateLayout function
-            const originalUpdateLayout = updateLayout;
-            updateLayout = function() {
-                originalUpdateLayout();
-                autoSaveToStorage(); // Auto-save after every change
-            };
-            
-            // Replace your existing init function  
-            const originalInit = init;
-            init = function() {
-                // Try to load saved data first
-                const wasRestored = loadFromStorage();
-                
-                // If nothing was restored, run normal init
-                if (!wasRestored) {
-                    originalInit();
-                } else {
-                    // Just run the essential parts if we restored data
-                    loadTheme();
-                    updateLayout();
-                    setupScrollSync();
+            try {
+                JSON.parse(textarea.value);
+                if (!silent) {
+                    statusEl.textContent = '✅ Valid JSON';
+                    statusEl.className = 'json-editor-status valid';
                 }
-            };
+                return true;
+            } catch (error) {
+                if (!silent) {
+                    statusEl.textContent = `❌ Invalid: ${error.message.substring(0, 50)}...`;
+                    statusEl.className = 'json-editor-status invalid';
+                }
+                return false;
+            }
         }
+
+        function applyJSONChanges() {
+            const textarea = document.getElementById('jsonEditorTextarea');
+            const statusEl = document.getElementById('jsonEditorStatus');
+            
+            try {
+                const newData = JSON.parse(textarea.value);
+                
+                // Validate that it has the required structure
+                if (!newData.projectName || !Array.isArray(newData.phases)) {
+                    throw new Error('Invalid project structure. Must have projectName and phases array.');
+                }
+                
+                // Apply the changes
+                projectData = newData;
+                
+                // Update the UI
+                document.querySelector('.project-title').textContent = projectData.projectName || 'Project';
+                document.title = projectData.projectName || 'Project';
+                updateLayout();
+                
+                // Close the modal
+                closeJSONEditor();
+                
+                // Show success message
+                showSaveIndicator('✅ JSON Applied');
+                
+            } catch (error) {
+                statusEl.textContent = `❌ Error: ${error.message}`;
+                statusEl.className = 'json-editor-status invalid';
+                alert(`Cannot apply changes: ${error.message}`);
+            }
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const overlay = document.getElementById('jsonEditorOverlay');
+            if (e.target === overlay) {
+                closeJSONEditor();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const overlay = document.getElementById('jsonEditorOverlay');
+                if (overlay.classList.contains('active')) {
+                    closeJSONEditor();
+                }
+            }
+            
+            // Shift+Tab toggles between planner mode and JSON editor mode
+            if (e.key === 'Tab' && e.shiftKey) {
+                e.preventDefault();
+                const overlay = document.getElementById('jsonEditorOverlay');
+                
+                if (overlay.classList.contains('active')) {
+                    closeJSONEditor();
+                } else {
+                    openJSONEditor();
+                }
+            }
+        });
+
+        console.log('🛠️ Debug: projectDebug.exportData(), projectDebug.clearData(), projectDebug.checkStorage()');
+        console.log('📝 JSON Editor: Press Shift+Tab to toggle between planner and JSON editor modes!');
+        console.log('⚡ In JSON editor: Tab = indent, Shift+Tab = unindent, Shift+Tab (global) = switch modes');
     </script>
 </body>
 </html>
