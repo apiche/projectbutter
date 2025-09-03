@@ -1037,193 +1037,71 @@
             scroll-behavior: smooth;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 75rem) {
             :root {
                 --label-width: 6em;
                 --control-width: 3.5em;
                 --button-width: 6em;
                 --month-card-min-width: 6em;
+                --left-panel-width: 20rem;
+            }
+            
+            .control-header-cell {
+                width: 3rem;
+                height: 2.75rem;
+            }
+            
+            .control-header-cell .control-main {
+                font-size: 0.6875rem;
+            }
+            
+            .control-header-cell .control-sub {
+                font-size: 0.5rem;
             }
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 56.25rem) {
             :root {
                 --label-width: 5em;
                 --control-width: 3em;
                 --button-width: 5em;
                 --month-card-min-width: 5em;
+                --left-panel-width: 17.5rem;
+            }
+            
+            .control-header-cell {
+                width: 2.75rem;
+                height: 2.5rem;
+            }
+            
+            .control-header-cell .control-main {
+                font-size: 0.625rem;
+            }
+            
+            .control-header-cell .control-sub {
+                font-size: 0.4375rem;
             }
         }
 
-        /* JSON Editor Modal Styles */
-        .json-editor-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .json-editor-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .json-editor-modal {
-            background: var(--surface-primary);
-            border-radius: 16px;
-            width: 90%;
-            height: 80%;
-            max-width: 1000px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .json-editor-overlay.active .json-editor-modal {
-            transform: scale(1);
-        }
-
-        .json-editor-header {
-            padding: 20px;
-            border-bottom: 2px solid var(--primary-blue);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--surface-secondary);
-            border-radius: 16px 16px 0 0;
-        }
-
-        .json-editor-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .json-editor-close {
-            background: rgba(231, 76, 60, 0.2);
-            color: #E74C3C;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
-
-        .json-editor-close:hover {
-            background: rgba(231, 76, 60, 0.3);
-            transform: scale(1.1);
-        }
-
-        .json-editor-content {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .json-editor-textarea {
-            flex: 1;
-            background: var(--surface-secondary);
-            border: 2px solid var(--primary-blue);
-            border-radius: 12px;
-            padding: 16px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 14px;
-            line-height: 1.4;
-            color: var(--text-primary);
-            resize: none;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        .json-editor-textarea:focus {
-            border-color: var(--primary-sky);
-            box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.2);
-        }
-
-        [data-theme="dark"] .json-editor-textarea {
-            background: rgba(20, 15, 25, 0.9);
-            border-color: var(--accent-cool);
-            color: var(--text-primary);
-        }
-
-        [data-theme="dark"] .json-editor-textarea:focus {
-            border-color: var(--accent-cool);
-            box-shadow: 0 0 0 3px rgba(155, 185, 224, 0.3);
-        }
-
-        .json-editor-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .json-editor-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-        }
-
-        .json-editor-btn.primary {
-            background: var(--primary-sky);
-            color: white;
-        }
-
-        .json-editor-btn.primary:hover {
-            background: var(--primary-blue);
-            transform: translateY(-1px);
-        }
-
-        .json-editor-btn.secondary {
-            background: var(--surface-secondary);
-            color: var(--text-primary);
-            border: 2px solid var(--primary-blue);
-        }
-
-        .json-editor-btn.secondary:hover {
-            background: var(--primary-blue);
-            color: white;
-        }
-
-        .json-editor-status {
-            font-size: 12px;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-
-        .json-editor-status.valid {
-            background: rgba(46, 204, 113, 0.2);
-            color: #27AE60;
-        }
-
-        .json-editor-status.invalid {
-            background: rgba(231, 76, 60, 0.2);
-            color: #E74C3C;
+        @media (max-width: 37.5rem) {
+            .planner-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .control-header-cell {
+                width: 2.5rem;
+                height: 2.25rem;
+            }
+            
+            .control-header-cell .control-sub {
+                display: none;
+            }
+            
+            .control-header-cell .control-main {
+                font-size: 0.75rem;
+                margin-bottom: 0;
+            }
         }
     </style>
 </head>
@@ -1259,10 +1137,6 @@
                             <div class="control-main">📁</div>
                             <div class="control-sub">Export</div>
                         </div>
-                        <div class="left-header-cell control-header-cell" onclick="openJSONEditor()">
-                            <div class="control-main">⚙️</div>
-                            <div class="control-sub">JSON Editor</div>
-                        </div>
                     </div>
                     <div class="left-header-spacer"></div>
                 </div>
@@ -1288,33 +1162,6 @@
                     <div class="timeline-content" id="timelineContent">
                         <!-- Generated by JavaScript -->
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JSON Editor Modal -->
-    <div class="json-editor-overlay" id="jsonEditorOverlay">
-        <div class="json-editor-modal">
-            <div class="json-editor-header">
-                <h3 class="json-editor-title">📝 JSON Project Editor</h3>
-                <button class="json-editor-close" onclick="closeJSONEditor()">×</button>
-            </div>
-            <div class="json-editor-content">
-                <textarea 
-                    class="json-editor-textarea" 
-                    id="jsonEditorTextarea" 
-                    placeholder="Edit your project JSON data here...
-
-💡 Keyboard shortcuts:
-• Tab = Indent (4 spaces)
-• Shift+Tab = Unindent  
-• Shift+Tab (globally) = Switch back to planner"></textarea>
-                <div class="json-editor-actions">
-                    <div class="json-editor-status" id="jsonEditorStatus">Ready</div>
-                    <button class="json-editor-btn secondary" onclick="formatJSON()">🎨 Format JSON</button>
-                    <button class="json-editor-btn secondary" onclick="validateJSON()">✅ Validate</button>
-                    <button class="json-editor-btn primary" onclick="applyJSONChanges()">💾 Apply Changes</button>
                 </div>
             </div>
         </div>
@@ -1739,11 +1586,11 @@
                     <div class="duration-selector">
                         <div class="selector-label">Weeks Long</div>
                         <div class="selector-controls">
-                            <button class="selector-btn duration-btn" onclick="adjustActionDuration(${action.id}, -1)">‹</button>
+                            <button class="selector-btn duration-btn" onclick="console.log('Action decrease clicked'); adjustActionDuration(${action.id}, -1)">‹</button>
                             <input type="number" class="selector-input" value="${action.duration}" 
-                                   onchange="setActionDuration(${action.id}, this.value)" 
+                                   onchange="console.log('Action input changed'); setActionDuration(${action.id}, this.value)" 
                                    min="1" max="12">
-                            <button class="selector-btn duration-btn" onclick="adjustActionDuration(${action.id}, 1)">›</button>
+                            <button class="selector-btn duration-btn" onclick="console.log('Action increase clicked'); adjustActionDuration(${action.id}, 1)">›</button>
                         </div>
                     </div>
                 </div>
@@ -1789,15 +1636,26 @@
 
         // Render gantt bars
         function renderGanttBars() {
-            // Clear existing gantt bars
-            document.querySelectorAll('.gantt-bar').forEach(bar => bar.remove());
+            // Clear ALL existing gantt bars thoroughly
+            document.querySelectorAll('.gantt-bar').forEach(bar => {
+                bar.remove();
+            });
+            
+            // Also clear any bars that might be stuck in timeline rows
+            document.querySelectorAll('#timelineContent .timeline-row').forEach(row => {
+                row.querySelectorAll('.gantt-bar').forEach(bar => bar.remove());
+            });
             
             const months = generateTimelineMonths();
             const timelineRows = document.querySelectorAll('#timelineContent .timeline-row');
             let rowIndex = 0;
             
-            // Render phase and action gantt bars
-            projectData.phases.forEach(phase => {
+            console.log(`🎯 Rendering Gantt bars for ${projectData.phases.length} phases`);
+            
+            // Render phase and action gantt bars in the exact same order as the DOM
+            projectData.phases.forEach((phase, phaseIndex) => {
+                console.log(`📊 Phase ${phaseIndex}: "${phase.name}" at row ${rowIndex}`);
+                
                 const timelineRow = timelineRows[rowIndex];
                 if (timelineRow) {
                     const duration = calculatePhaseDuration(phase);
@@ -1809,7 +1667,9 @@
                 
                 if (!phase.collapsed) {
                     // Render action gantt bars
-                    phase.actions.forEach(action => {
+                    phase.actions.forEach((action, actionIndex) => {
+                        console.log(`  📋 Action ${actionIndex}: "${action.name}" at row ${rowIndex}`);
+                        
                         const actionTimelineRow = timelineRows[rowIndex];
                         if (actionTimelineRow) {
                             renderGanttBar(actionTimelineRow, action.startWeek, action.duration, 'action-bar', months, '', action.id);
@@ -1821,6 +1681,8 @@
                     rowIndex++; // Move past add action row
                 }
             });
+            
+            console.log(`✅ Gantt rendering complete. Used ${rowIndex} rows.`);
             
             // Skip add phase row (no gantt bar needed)
         }
@@ -2921,22 +2783,34 @@
                 }
             }
             
-            // Shift+Tab toggles between planner mode and JSON editor mode
-            if (e.key === 'Tab' && e.shiftKey) {
-                e.preventDefault();
-                const overlay = document.getElementById('jsonEditorOverlay');
+            // Tab key toggles JSON editor mode
+            if (e.key === 'Tab') {
+                // Only if we're not inside a form element or the JSON editor itself
+                const activeElement = document.activeElement;
+                const isInFormElement = activeElement && (
+                    activeElement.tagName === 'INPUT' ||
+                    activeElement.tagName === 'TEXTAREA' ||
+                    activeElement.tagName === 'SELECT' ||
+                    activeElement.contentEditable === 'true'
+                );
                 
-                if (overlay.classList.contains('active')) {
-                    closeJSONEditor();
-                } else {
-                    openJSONEditor();
+                if (!isInFormElement) {
+                    e.preventDefault();
+                    const overlay = document.getElementById('jsonEditorOverlay');
+                    
+                    if (overlay.classList.contains('active')) {
+                        closeJSONEditor();
+                    } else {
+                        openJSONEditor();
+                    }
                 }
             }
         });
 
         console.log('🛠️ Debug: projectDebug.exportData(), projectDebug.clearData(), projectDebug.checkStorage()');
         console.log('📝 JSON Editor: Press Shift+Tab to toggle between planner and JSON editor modes!');
-        console.log('⚡ In JSON editor: Tab = indent, Shift+Tab = unindent, Shift+Tab (global) = switch modes');
+        console.log('📋 LLM Workflow: Click "Copy Format" → Ask LLM to generate project → Paste into JSON editor!');
+        console.log('💾 File Management: Duplicate HTML file and rename for different projects (localStorage saves per filename)');
     </script>
 </body>
 </html>
