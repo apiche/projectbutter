@@ -1103,6 +1103,194 @@
                 margin-bottom: 0;
             }
         }
+        /* JSON Editor Modal Styles */
+.json-editor-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .json-editor-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .json-editor-modal {
+            background: var(--surface-primary);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 55rem;  /* rem units instead of px */
+            height: 85vh;      /* Viewport height - good! */
+            max-height: 85vh;  /* Fallback */
+            min-height: 50vh;  /* Viewport units instead of pixels */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .json-editor-overlay.active .json-editor-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .json-editor-header {
+            padding: 20px 24px;
+            border-bottom: 2px solid var(--primary-blue);
+            background: var(--surface-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .json-editor-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .json-editor-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(231, 76, 60, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #E74C3C;
+            transition: all 0.3s ease;
+        }
+
+        .json-editor-close:hover {
+            background: rgba(231, 76, 60, 0.3);
+            transform: scale(1.1);
+        }
+
+        .json-editor-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .json-editor-textarea {
+            flex: 1;
+            border: none;
+            background: var(--surface-primary);
+            color: var(--text-primary);
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px;
+            resize: none;
+            outline: none;
+            tab-size: 4;
+            white-space: pre;
+            overflow-wrap: normal;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-blue) transparent;
+        }
+
+        .json-editor-textarea::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .json-editor-textarea::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .json-editor-textarea::-webkit-scrollbar-thumb {
+            background: var(--primary-blue);
+            border-radius: 4px;
+        }
+
+        .json-editor-footer {
+            padding: 16px 24px;
+            background: var(--surface-secondary);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            gap: 12px;
+        }
+
+        .json-editor-status {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        .json-editor-status.valid {
+            color: #27AE60;
+        }
+
+        .json-editor-status.invalid {
+            color: #E74C3C;
+        }
+
+        .json-editor-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .json-editor-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 80px;
+        }
+
+        .json-editor-btn.secondary {
+            background: var(--surface-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .json-editor-btn.secondary:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .json-editor-btn.primary {
+            background: var(--primary-sky);
+            color: white;
+        }
+
+        .json-editor-btn.primary:hover {
+            background: var(--primary-navy);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(93, 173, 226, 0.4);
+        }
+
+        [data-theme="dark"] .json-editor-textarea {
+            background: var(--surface-secondary);
+        }
+
     </style>
 </head>
 <body>
@@ -1169,106 +1357,108 @@
 
     <!-- PROJECT DATA -->
     <script id="projectData" type="application/json">
-    {
-        "projectName": "Project",
-        "startMonth": 6,
-        "startYear": 2025,
-        "endMonth": 0,
-        "endYear": 2026,
-        "phases": [
-            {
-                "id": 0,
-                "name": "Phase 1",
-                "startWeek": 1,
-                "collapsed": false,
-                "actions": [
-                    {
-                        "id": 0,
-                        "name": "Action 1",
-                        "duration": 4,
-                        "startWeek": 1,
-                        "phaseId": 0,
-                        "completedWeeks": 0,
-                        "status": "not-started"
-                    },
-                    {
-                        "id": 1,
-                        "name": "Action 2", 
-                        "duration": 3,
-                        "startWeek": 5,
-                        "phaseId": 0,
-                        "completedWeeks": 0,
-                        "status": "not-started"
-                    }
-                ]
-            }
-        ],
-        "totalWeeks": 52,
-        "phaseIdCounter": 1,
-        "actionIdCounter": 2
-    }
+        {
+            "projectName": "Project",
+            "startMonth": 6,
+            "startYear": 2025,
+            "endMonth": 0,
+            "endYear": 2026,
+            "phases": [
+                {
+                    "id": 0,
+                    "name": "Phase 1",
+                    "startWeek": 1,
+                    "collapsed": false,
+                    "actions": [
+                        {
+                            "id": 0,
+                            "name": "Action 1",
+                            "duration": 4,
+                            "startWeek": 1,
+                            "phaseId": 0,
+                            "completedWeeks": 0,
+                            "status": "not-started"
+                        },
+                        {
+                            "id": 1,
+                            "name": "Action 2", 
+                            "duration": 3,
+                            "startWeek": 5,
+                            "phaseId": 0,
+                            "completedWeeks": 0,
+                            "status": "not-started"
+                        }
+                    ]
+                }
+            ],
+            "totalWeeks": 52,
+            "phaseIdCounter": 1,
+            "actionIdCounter": 2
+        }
     </script>
 
     <script>
         let projectData = {};
         let monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-        // Initialize the application
-        function init() {
-            // Try to load saved data first
+                // Initialize the application
+         function init() {
+                    // Try to load saved data first
             const wasRestored = loadFromStorage();
-            
-            // If nothing was restored, run normal init
+
+                    // If nothing was restored, run normal init
             if (!wasRestored) {
                 loadProjectData();
+                validateProjectData();
                 initializeProjectName();
             } else {
-                // Just update the title if we restored data
+                        // Just update the title if we restored data
+                validateProjectData();
                 document.querySelector('.project-title').textContent = projectData.projectName || 'Project';
                 document.title = projectData.projectName || 'Project';
             }
-            
+
             loadTheme();
             updateLayout();
             setupScrollSync();
         }
 
-        // Storage and file management
+                // Storage and file management
         function showSaveIndicator(message) {
             let indicator = document.getElementById('saveIndicator');
             if (!indicator) {
                 indicator = document.createElement('div');
                 indicator.id = 'saveIndicator';
                 indicator.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    background: var(--primary-sky);
-                    color: white;
-                    padding: 6px 12px;
-                    border-radius: 15px;
-                    font-size: 12px;
-                    font-weight: 500;
-                    z-index: 1000;
-                    opacity: 0;
-                    transform: translateY(10px);
-                    transition: all 0.3s ease;
-                    pointer-events: none;
+                            position: fixed;
+                            bottom: 20px;
+                            right: 20px;
+                            background: var(--primary-sky);
+                            color: white;
+                            padding: 6px 12px;
+                            border-radius: 15px;
+                            font-size: 12px;
+                            font-weight: 500;
+                            z-index: 1000;
+                            opacity: 0;
+                            transform: translateY(10px);
+                            transition: all 0.3s ease;
+                            pointer-events: none;
                 `;
                 document.body.appendChild(indicator);
             }
-            
+
             indicator.textContent = message;
             indicator.style.opacity = '1';
             indicator.style.transform = 'translateY(0)';
-            
+
             setTimeout(() => {
                 indicator.style.opacity = '0';
                 indicator.style.transform = 'translateY(10px)';
             }, 1500);
         }
-        
+
         function autoSaveToStorage() {
             try {
                 localStorage.setItem('projectPlannerData', JSON.stringify(projectData));
@@ -1279,7 +1469,7 @@
                 console.warn('⚠️ Auto-save failed:', error);
             }
         }
-        
+
         function loadFromStorage() {
             try {
                 const savedData = localStorage.getItem('projectPlannerData');
@@ -1295,40 +1485,40 @@
             return false;
         }
 
-        // Load and apply saved theme
+                // Load and apply saved theme
         function loadTheme() {
             const savedTheme = localStorage.getItem('projectPlannerTheme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeButton();
         }
 
-        // Toggle between light and dark themes
+                // Toggle between light and dark themes
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
+
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('projectPlannerTheme', newTheme);
             updateThemeButton();
         }
 
-        // Update theme button appearance
+                // Update theme button appearance
         function updateThemeButton() {
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
             const themeButtons = document.querySelectorAll('.control-header-cell');
-            
-            // Find the theme button (3rd button)
+
+                    // Find the theme button (3rd button)
             if (themeButtons.length >= 3) {
                 const themeButton = themeButtons[2];
                 if (currentTheme === 'dark') {
-                    themeButton.innerHTML = '<div class="control-main">☀️</div><div class="control-sub">Bright Mode</div>';
+                    themeButton.innerHTML = '<div class="control-main">☀️</div><div class="control-sub">Bright</div>';
                 } else {
-                    themeButton.innerHTML = '<div class="control-main">🌙</div><div class="control-sub">Cozy Mode</div>';
+                    themeButton.innerHTML = '<div class="control-main">🌙</div><div class="control-sub">Dark</div>';
                 }
             }
         }
 
-        // Load project data from embedded JSON
+                // Load project data from embedded JSON
         function loadProjectData() {
             try {
                 const dataScript = document.getElementById('projectData');
@@ -1339,22 +1529,22 @@
                 const currentDate = new Date();
                 const currentMonth = currentDate.getMonth();
                 const currentYear = currentDate.getFullYear();
-                
-                // Start one month before current, end 4 months after current
+
+                        // Start one month before current, end 4 months after current
                 let startMonth = currentMonth - 1;
                 let startYear = currentYear;
                 if (startMonth < 0) {
                     startMonth = 11;
                     startYear = currentYear - 1;
                 }
-                
+
                 let endMonth = currentMonth + 4;
                 let endYear = currentYear;
                 if (endMonth > 11) {
                     endMonth = endMonth - 12;
                     endYear = currentYear + 1;
                 }
-                
+
                 projectData = {
                     projectName: "Project",
                     startMonth: startMonth,
@@ -1369,300 +1559,321 @@
             }
         }
 
-        // Initialize project name from filename
+                // Initialize project name from filename
         function initializeProjectName() {
             let projectName = projectData.projectName || 'Project';
-            
+
             if (typeof window !== 'undefined' && window.location) {
                 const filename = window.location.pathname.split('/').pop();
                 if (filename && filename.includes('.html')) {
                     const baseName = filename.replace('.html', '');
                     projectName = baseName
-                        .split('_')
-                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                        .join(' ');
+                    .split('_')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' ');
                 }
             }
-            
+
             document.querySelector('.project-title').textContent = projectName;
             document.title = projectName;
             projectData.projectName = projectName;
         }
 
-        // Calculate weeks in a month
+                // Calculate weeks in a month
         function getWeeksInMonth(year, month) {
             const firstDay = new Date(year, month, 1);
             let weekCount = 0;
             let currentDate = new Date(firstDay);
-            
+
             while (currentDate.getMonth() === month) {
                 const weekStart = new Date(currentDate);
                 weekStart.setDate(currentDate.getDate() - currentDate.getDay());
-                
+
                 const weekEnd = new Date(weekStart);
                 weekEnd.setDate(weekStart.getDate() + 6);
-                
+
                 let daysInMonth = 0;
                 for (let d = new Date(weekStart); d <= weekEnd; d.setDate(d.getDate() + 1)) {
                     if (d.getMonth() === month) {
                         daysInMonth++;
                     }
                 }
-                
+
                 if (daysInMonth >= 4) {
                     weekCount++;
                 }
-                
+
                 currentDate.setDate(currentDate.getDate() + 7);
             }
-            
+
             return weekCount;
         }
 
-        // Calculate total weeks in project
+                // Calculate total weeks in project
         function calculateTotalWeeks() {
             let totalWeeks = 0;
             let currentMonth = projectData.startMonth;
             let currentYear = projectData.startYear;
-            
+
             while (currentYear < projectData.endYear || 
-                   (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
+               (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
                 totalWeeks += getWeeksInMonth(currentYear, currentMonth);
-                currentMonth++;
-                if (currentMonth > 11) {
-                    currentMonth = 0;
-                    currentYear++;
-                }
-            }
-            
-            return totalWeeks;
-        }
-
-        // Generate timeline months array
-        function generateTimelineMonths() {
-            const months = [];
-            let currentMonth = projectData.startMonth;
-            let currentYear = projectData.startYear;
-            
-            while (currentYear < projectData.endYear || 
-                   (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
-                months.push({
-                    month: currentMonth,
-                    year: currentYear,
-                    name: monthNames[currentMonth],
-                    weeks: getWeeksInMonth(currentYear, currentMonth)
-                });
-                
-                currentMonth++;
-                if (currentMonth > 11) {
-                    currentMonth = 0;
-                    currentYear++;
-                }
-            }
-            
-            return months;
-        }
-
-        // Update entire layout
-        function updateLayout() {
-            projectData.totalWeeks = calculateTotalWeeks();
-            
-            updateLeftPanelHeader();
-            updateTimelineHeader();
-            updateContent();
-            renderGanttBars();
-            autoSaveToStorage();
-        }
-
-        // Update left panel header with current date info
-        function updateLeftPanelHeader() {
-            const currentYear = new Date().getFullYear();
-            const startMonth = projectData.startYear === currentYear ? 
-                monthNames[projectData.startMonth] : 
-                `${monthNames[projectData.startMonth]}${projectData.startYear.toString().slice(-2)}`;
-            const endMonth = projectData.endYear === currentYear ? 
-                monthNames[projectData.endMonth] : 
-                `${monthNames[projectData.endMonth]}${projectData.endYear.toString().slice(-2)}`;
-            
-            const headerCells = document.querySelectorAll('.left-panel-header .control-header-cell');
-            if (headerCells.length >= 3) {
-                headerCells[0].innerHTML = `<div class="control-main">${startMonth}</div><div class="control-sub">Start Month</div>`;
-                headerCells[1].innerHTML = `<div class="control-main">${endMonth}</div><div class="control-sub">End Month</div>`;
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
             }
         }
 
-        // Update timeline header with month cards
-        function updateTimelineHeader() {
-            const header = document.getElementById('timelineHeader');
-            const months = generateTimelineMonths();
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            
-            header.innerHTML = months.map(month => `
-                <div class="month-header-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}">
-                    <div class="month-header">${month.name}${month.year !== new Date().getFullYear() ? month.year.toString().slice(-2) : ''}</div>
-                    <div class="month-weeks">${month.weeks}w</div>
-                </div>
-            `).join('');
-        }
+        return totalWeeks;
+    }
 
-        // Update unified content using grid system
-        function updateContent() {
-            const leftContent = document.getElementById('leftPanelContent');
-            const timelineContent = document.getElementById('timelineContent');
-            const months = generateTimelineMonths();
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            
-            let leftHtml = '';
-            let timelineHtml = '';
-            
-            // Render phases and actions
-            projectData.phases.forEach((phase, phaseIndex) => {
-                // Phase row
-                leftHtml += renderLeftPhaseRow(phase);
-                timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'phase');
-                
-                if (!phase.collapsed) {
-                    // Action rows
-                    phase.actions.forEach((action, actionIndex) => {
-                        leftHtml += renderLeftActionRow(action);
-                        timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'action');
-                    });
-                    
-                    // Add action row WITH TIMELINE ROW (for visual breathing space)
-                    leftHtml += renderLeftAddActionRow(phase.id);
-                    timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'add-action');
-                }
+                // Generate timeline months array
+    function generateTimelineMonths() {
+        const months = [];
+        let currentMonth = projectData.startMonth;
+        let currentYear = projectData.startYear;
+
+        while (currentYear < projectData.endYear || 
+           (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
+            months.push({
+                month: currentMonth,
+                year: currentYear,
+                name: monthNames[currentMonth],
+                weeks: getWeeksInMonth(currentYear, currentMonth)
             });
-            
-            // Add phase row WITH TIMELINE ROW (for visual breathing space)
-            leftHtml += renderLeftAddPhaseRow();
-            timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'add-phase');
-            
-            leftContent.innerHTML = leftHtml;
-            timelineContent.innerHTML = timelineHtml;
-        }
 
-        // Render left panel phase row
-        function renderLeftPhaseRow(phase) {
-            const hasActions = phase.actions && phase.actions.length > 0;
-            
-            return `
-                <div class="left-row phase-row" data-phase-id="${phase.id}">
-                    <div class="row-label">
-                        <div class="phase-label">
-                            ${hasActions ? 
-                                '<button class="delete-btn" disabled title="Cannot delete phase with actions"></button>' :
-                                `<button class="delete-btn" onclick="deletePhase(${phase.id})" title="Delete Phase"></button>`
-                            }
-                            <button class="collapse-btn ${phase.collapsed ? 'collapsed' : ''}" 
-                                    onclick="togglePhaseCollapse(${phase.id})"></button>
-                            <span class="phase-name" onclick="editPhaseName(${phase.id})">${phase.name}</span>
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+    }
+
+    return months;
+}
+
+                // Replace the existing updateLayout function with this fixed version
+function updateLayout() {
+    projectData.totalWeeks = calculateTotalWeeks();
+
+    updateLeftPanelHeader();
+    updateTimelineHeader();
+    updateContent();
+
+                    // Add a small delay to ensure DOM elements are fully rendered
+                    // before attempting to render Gantt bars
+    requestAnimationFrame(() => {
+        renderGanttBars();
+    });
+
+    autoSaveToStorage();
+}
+
+                // Update left panel header with current date info
+function updateLeftPanelHeader() {
+    const currentYear = new Date().getFullYear();
+    const startMonth = projectData.startYear === currentYear ? 
+    monthNames[projectData.startMonth] : 
+`${monthNames[projectData.startMonth]}${projectData.startYear.toString().slice(-2)}`;
+const endMonth = projectData.endYear === currentYear ? 
+monthNames[projectData.endMonth] : 
+`${monthNames[projectData.endMonth]}${projectData.endYear.toString().slice(-2)}`;
+
+const headerCells = document.querySelectorAll('.left-panel-header .control-header-cell');
+if (headerCells.length >= 3) {
+    headerCells[0].innerHTML = `<div class="control-main">${startMonth}</div><div class="control-sub">Start Month</div>`;
+    headerCells[1].innerHTML = `<div class="control-main">${endMonth}</div><div class="control-sub">End Month</div>`;
+}
+}
+
+                // Update timeline header with month cards
+function updateTimelineHeader() {
+    const header = document.getElementById('timelineHeader');
+    const months = generateTimelineMonths();
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    header.innerHTML = months.map(month => `
+                        <div class="month-header-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}">
+                            <div class="month-header">${month.name}${month.year !== new Date().getFullYear() ? month.year.toString().slice(-2) : ''}</div>
+                            <div class="month-weeks">${month.weeks}w</div>
                         </div>
-                    </div>
-                    <div class="week-selector">
-                        <div class="selector-label">Start Week</div>
-                        <div class="selector-controls">
-                            <button class="selector-btn" onclick="adjustPhaseStartWeek(${phase.id}, -1)">‹</button>
-                            <input type="number" class="selector-input" value="${phase.startWeek}" 
-                                   onchange="setPhaseStartWeek(${phase.id}, this.value)" 
-                                   min="1" max="${projectData.totalWeeks}">
-                            <button class="selector-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
+    `).join('');
+}
+
+                // Update unified content using grid system
+function updateContent() {
+    const leftContent = document.getElementById('leftPanelContent');
+    const timelineContent = document.getElementById('timelineContent');
+    const months = generateTimelineMonths();
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    let leftHtml = '';
+    let timelineHtml = '';
+
+                    // Render phases and actions
+    projectData.phases.forEach((phase, phaseIndex) => {
+                        // Phase row
+        leftHtml += renderLeftPhaseRow(phase);
+        timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'phase');
+
+        if (!phase.collapsed) {
+                            // Action rows
+            phase.actions.forEach((action, actionIndex) => {
+                leftHtml += renderLeftActionRow(action);
+                timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'action');
+            });
+
+                            // Add action row WITH TIMELINE ROW (for visual breathing space)
+            leftHtml += renderLeftAddActionRow(phase.id);
+            timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'add-action');
+        }
+    });
+
+                    // Add phase row WITH TIMELINE ROW (for visual breathing space)
+    leftHtml += renderLeftAddPhaseRow();
+    timelineHtml += renderTimelineRow(months, currentMonth, currentYear, 'add-phase');
+
+    leftContent.innerHTML = leftHtml;
+    timelineContent.innerHTML = timelineHtml;
+}
+
+                // Render left panel phase row
+function renderLeftPhaseRow(phase) {
+    const hasActions = phase.actions && phase.actions.length > 0;
+
+    return `
+                        <div class="left-row phase-row" data-phase-id="${phase.id}">
+                            <div class="row-label">
+                                <div class="phase-label">
+                                    ${hasActions ? 
+                                        '<button class="delete-btn" disabled title="Cannot delete phase with actions"></button>' :
+                                        `<button class="delete-btn" onclick="deletePhase(${phase.id})" title="Delete Phase"></button>`
+                                    }
+                                    <button class="collapse-btn ${phase.collapsed ? 'collapsed' : ''}" 
+                                            onclick="togglePhaseCollapse(${phase.id})"></button>
+                                    <span class="phase-name" onclick="editPhaseName(${phase.id})">${phase.name}</span>
+                                </div>
+                            </div>
+                            <div class="week-selector">
+                                <div class="selector-label">Start Week</div>
+                                <div class="selector-controls">
+                                    <button class="selector-btn" onclick="adjustPhaseStartWeek(${phase.id}, -1)">‹</button>
+                                    <input type="number" class="selector-input" value="${phase.startWeek}" 
+                                           onchange="setPhaseStartWeek(${phase.id}, this.value)" 
+                                           min="1" max="${projectData.totalWeeks}">
+                                    <button class="selector-btn" onclick="adjustPhaseStartWeek(${phase.id}, 1)">›</button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            `;
-        }
+                                    `;
+                                }
 
-        // Render left panel action row
-        function renderLeftActionRow(action) {
-            return `
-                <div class="left-row action-row" data-action-id="${action.id}">
-                    <div class="row-label action-label">
-                        <button class="delete-btn" onclick="deleteAction(${action.id})" title="Delete Action"></button>
-                        <span class="action-name" onclick="editActionName(${action.id})">${action.name}</span>
-                    </div>
-                    <div class="duration-selector">
-                        <div class="selector-label">Weeks Long</div>
-                        <div class="selector-controls">
-                            <button class="selector-btn duration-btn" onclick="console.log('Action decrease clicked'); adjustActionDuration(${action.id}, -1)">‹</button>
-                            <input type="number" class="selector-input" value="${action.duration}" 
-                                   onchange="console.log('Action input changed'); setActionDuration(${action.id}, this.value)" 
-                                   min="1" max="12">
-                            <button class="selector-btn duration-btn" onclick="console.log('Action increase clicked'); adjustActionDuration(${action.id}, 1)">›</button>
+                // Render left panel action row
+                                function renderLeftActionRow(action) {
+                                    return `
+                        <div class="left-row action-row" data-action-id="${action.id}">
+                            <div class="row-label action-label">
+                                <button class="delete-btn" onclick="deleteAction(${action.id})" title="Delete Action"></button>
+                                <span class="action-name" onclick="editActionName(${action.id})">${action.name}</span>
+                            </div>
+                            <div class="duration-selector">
+                                <div class="selector-label">Weeks Long</div>
+                                <div class="selector-controls">
+                                    <button class="selector-btn duration-btn" onclick="console.log('Action decrease clicked'); adjustActionDuration(${action.id}, -1)">‹</button>
+                                    <input type="number" class="selector-input" value="${action.duration}" 
+                                           onchange="console.log('Action input changed'); setActionDuration(${action.id}, this.value)" 
+                                           min="1" max="12">
+                                    <button class="selector-btn duration-btn" onclick="console.log('Action increase clicked'); adjustActionDuration(${action.id}, 1)">›</button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            `;
-        }
+                                    `;
+                                }
 
-        // Render left panel add action row
-        function renderLeftAddActionRow(phaseId) {
-            return `
-                <div class="left-row add-action-row" onclick="createAction(${phaseId})">
-                    <div class="row-label">
-                        <div class="add-row-content">+ Add Action</div>
-                    </div>
-                </div>
-            `;
-        }
+                // Render left panel add action row
+                                function renderLeftAddActionRow(phaseId) {
+                                    return `
+                        <div class="left-row add-action-row" onclick="createAction(${phaseId})">
+                            <div class="row-label">
+                                <div class="add-row-content">+ Add Action</div>
+                            </div>
+                        </div>
+                                    `;
+                                }
 
-        // Render left panel add phase row
-        function renderLeftAddPhaseRow() {
-            return `
-                <div class="left-row add-phase-row" onclick="createPhase()">
-                    <div class="row-label">
-                        <div class="add-row-content">+ Add Phase</div>
-                    </div>
-                </div>
-            `;
-        }
+                // Render left panel add phase row
+                                function renderLeftAddPhaseRow() {
+                                    return `
+                        <div class="left-row add-phase-row" onclick="createPhase()">
+                            <div class="row-label">
+                                <div class="add-row-content">+ Add Phase</div>
+                            </div>
+                        </div>
+                                    `;
+                                }
 
-        // Render timeline row (unified for all row types)
-        function renderTimelineRow(months, currentMonth, currentYear, rowType = 'default') {
-            const rowClass = rowType === 'add-action' ? 'timeline-row add-action-timeline' : 
-                           rowType === 'add-phase' ? 'timeline-row add-phase-timeline' : 'timeline-row';
-            
-            return `
-                <div class="${rowClass}">
-                    ${months.map(month => `
-                        <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
-                             data-month="${month.month}" data-year="${month.year}"></div>
-                    `).join('')}
-                </div>
-            `;
-        }
+                // Render timeline row (unified for all row types)
+                                function renderTimelineRow(months, currentMonth, currentYear, rowType = 'default') {
+                                    const rowClass = rowType === 'add-action' ? 'timeline-row add-action-timeline' : 
+                                    rowType === 'add-phase' ? 'timeline-row add-phase-timeline' : 'timeline-row';
 
-        // Render gantt bars
-        function renderGanttBars() {
+                                    return `
+                        <div class="${rowClass}">
+                                        ${months.map(month => `
+                                <div class="timeline-cell ${month.month === currentMonth && month.year === currentYear ? 'current-month' : ''}"
+                                     data-month="${month.month}" data-year="${month.year}"></div>
+                                            `).join('')}
+                        </div>
+                                    `;
+                                }
+
+                // Also update the renderGanttBars function to handle edge cases better
+                // Also add this safety check to the renderGanttBars function
+                                function renderGanttBars() {
+            // Safety check - make sure timeline content exists
+                                    const timelineContent = document.getElementById('timelineContent');
+                                    if (!timelineContent) {
+                                        console.warn('⚠️ Timeline content not found, skipping Gantt bar rendering');
+                                        return;
+                                    }
+
             // Clear ALL existing gantt bars thoroughly
-            document.querySelectorAll('.gantt-bar').forEach(bar => {
-                bar.remove();
-            });
-            
+                                    document.querySelectorAll('.gantt-bar').forEach(bar => {
+                                        bar.remove();
+                                    });
+
             // Also clear any bars that might be stuck in timeline rows
-            document.querySelectorAll('#timelineContent .timeline-row').forEach(row => {
-                row.querySelectorAll('.gantt-bar').forEach(bar => bar.remove());
-            });
-            
-            const months = generateTimelineMonths();
-            const timelineRows = document.querySelectorAll('#timelineContent .timeline-row');
-            let rowIndex = 0;
-            
-            console.log(`🎯 Rendering Gantt bars for ${projectData.phases.length} phases`);
-            
+                                    timelineContent.querySelectorAll('.timeline-row').forEach(row => {
+                                        row.querySelectorAll('.gantt-bar').forEach(bar => bar.remove());
+                                    });
+
+                                    const months = generateTimelineMonths();
+                                    const timelineRows = timelineContent.querySelectorAll('.timeline-row');
+
+            // Safety check - make sure we have timeline rows
+                                    if (timelineRows.length === 0) {
+                                        console.warn('⚠️ No timeline rows found, skipping Gantt bar rendering');
+                                        return;
+                                    }
+
+                                    let rowIndex = 0;
+
+                                    console.log(`🎯 Rendering Gantt bars for ${projectData.phases.length} phases`);
+
             // Render phase and action gantt bars in the exact same order as the DOM
-            projectData.phases.forEach((phase, phaseIndex) => {
-                console.log(`📊 Phase ${phaseIndex}: "${phase.name}" at row ${rowIndex}`);
-                
-                const timelineRow = timelineRows[rowIndex];
-                if (timelineRow) {
-                    const duration = calculatePhaseDuration(phase);
-                    if (duration > 0) {
-                        renderGanttBar(timelineRow, phase.startWeek, duration, 'phase-bar', months, `${duration}w`);
-                    }
-                }
+                                    projectData.phases.forEach((phase, phaseIndex) => {
+                                        console.log(`📊 Phase ${phaseIndex}: "${phase.name}" at row ${rowIndex}`);
+
+                                        const timelineRow = timelineRows[rowIndex];
+                                        if (timelineRow && rowIndex < timelineRows.length) {
+                                            const duration = calculatePhaseDuration(phase);
+                                            if (duration > 0) {
+                                                renderGanttBar(timelineRow, phase.startWeek, duration, 'phase-bar', months, `${duration}w`);
+                                            }
+                                        }
                 rowIndex++; // Move to next row (phase row)
                 
                 if (!phase.collapsed) {
@@ -1671,7 +1882,7 @@
                         console.log(`  📋 Action ${actionIndex}: "${action.name}" at row ${rowIndex}`);
                         
                         const actionTimelineRow = timelineRows[rowIndex];
-                        if (actionTimelineRow) {
+                        if (actionTimelineRow && rowIndex < timelineRows.length) {
                             renderGanttBar(actionTimelineRow, action.startWeek, action.duration, 'action-bar', months, '', action.id);
                         }
                         rowIndex++; // Move to next row (action row)
@@ -1681,1136 +1892,1246 @@
                     rowIndex++; // Move past add action row
                 }
             });
-            
-            console.log(`✅ Gantt rendering complete. Used ${rowIndex} rows.`);
-            
-            // Skip add phase row (no gantt bar needed)
-        }
 
-        // Render individual gantt bar
-        function renderGanttBar(row, startWeek, duration, className, months, text = '', actionId = null) {
-            const bar = document.createElement('div');
-            bar.className = `gantt-bar ${className}`;
-            
-            const monthCells = row.querySelectorAll('.timeline-cell');
-            if (monthCells.length === 0) return;
-            
-            // Calculate which month and position within month for start week
-            let cumulativeWeeks = 0;
-            let startMonthIndex = 0;
-            let startWeekInMonth = 0;
-            
-            for (let i = 0; i < months.length; i++) {
-                if (cumulativeWeeks + months[i].weeks >= startWeek) {
-                    startMonthIndex = i;
-                    startWeekInMonth = startWeek - cumulativeWeeks - 1;
-                    break;
+                                    console.log(`✅ Gantt rendering complete. Used ${rowIndex} rows.`);
+                                }
+
+                // Render individual gantt bar
+                                function renderGanttBar(row, startWeek, duration, className, months, text = '', actionId = null) {
+                                    const bar = document.createElement('div');
+                                    bar.className = `gantt-bar ${className}`;
+
+                                    const monthCells = row.querySelectorAll('.timeline-cell');
+                                    if (monthCells.length === 0) return;
+
+                    // Calculate which month and position within month for start week
+                                    let cumulativeWeeks = 0;
+                                    let startMonthIndex = 0;
+                                    let startWeekInMonth = 0;
+
+                                    for (let i = 0; i < months.length; i++) {
+                                        if (cumulativeWeeks + months[i].weeks >= startWeek) {
+                                            startMonthIndex = i;
+                                            startWeekInMonth = startWeek - cumulativeWeeks - 1;
+                                            break;
+                                        }
+                                        cumulativeWeeks += months[i].weeks;
+                                    }
+
+                    // Calculate end position
+                                    const endWeek = startWeek + duration - 1;
+                                    cumulativeWeeks = 0;
+                                    let endMonthIndex = 0;
+                                    let endWeekInMonth = 0;
+
+                                    for (let i = 0; i < months.length; i++) {
+                                        if (cumulativeWeeks + months[i].weeks >= endWeek) {
+                                            endMonthIndex = i;
+                                            endWeekInMonth = endWeek - cumulativeWeeks;
+                                            break;
+                                        }
+                                        cumulativeWeeks += months[i].weeks;
+                                    }
+
+                    // Get the actual month cells for positioning
+                                    const startCell = monthCells[startMonthIndex];
+                                    const endCell = monthCells[endMonthIndex];
+
+                                    if (!startCell || !endCell) return;
+
+                    // Calculate position within the timeline
+                                    const startCellRect = startCell.getBoundingClientRect();
+                                    const endCellRect = endCell.getBoundingClientRect();
+                                    const rowRect = row.getBoundingClientRect();
+
+                    // Position within start cell based on week within month
+                                    const startCellWidth = startCellRect.width;
+                                    const startPositionInCell = (startWeekInMonth / months[startMonthIndex].weeks) * startCellWidth;
+
+                    // Position within end cell based on week within month  
+                                    const endCellWidth = endCellRect.width;
+                                    const endPositionInCell = (endWeekInMonth / months[endMonthIndex].weeks) * endCellWidth;
+
+                    // Calculate final position and width
+                                    const leftPosition = startCellRect.left - rowRect.left + startPositionInCell;
+                                    const rightPosition = endCellRect.left - rowRect.left + endPositionInCell;
+                                    const barWidth = rightPosition - leftPosition;
+
+                    // Position the bar to overlay the timeline cells
+                                    const timelineCellTop = startCellRect.top - rowRect.top;
+
+                                    bar.style.left = `${leftPosition}px`;
+                                    bar.style.width = `${barWidth}px`;
+                                    bar.style.top = `${timelineCellTop + (startCellRect.height / 2)}px`;
+                                    bar.style.transform = 'translateY(-50%)';
+                                    bar.style.position = 'absolute';
+
+                    // Add text if provided
+                                    if (text) {
+                                        bar.textContent = text;
+                                    }
+
+                    // Add click handlers for action bars
+                                    if (className === 'action-bar' && actionId !== null) {
+                                        const action = findActionById(actionId);
+
+                                        if (action) {
+                            // Update progress visualization
+                                            const progressPercent = (action.completedWeeks / action.duration) * 100;
+                                            bar.style.setProperty('--progress-width', `${progressPercent}%`);
+
+                            // Add completed class if fully completed
+                                            if (action.completedWeeks >= action.duration) {
+                                                bar.classList.add('completed');
+                                            }
+
+                            // Add click and hold handlers
+                                            let holdTimer = null;
+                                            let isHolding = false;
+
+                                            const startHold = (e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+
+                                                if (action.completedWeeks >= action.duration) return;
+
+                                                isHolding = true;
+                                                bar.classList.add('charging');
+
+                                                holdTimer = setTimeout(() => {
+                                                    if (isHolding) {
+                                                        completeTaskInstantly(actionId);
+                                                    }
+                                                }, 800);
+                                            };
+
+                                            const endHold = (e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+
+                                                if (!isHolding) return;
+
+                                                isHolding = false;
+                                                bar.classList.remove('charging');
+
+                                                if (holdTimer) {
+                                                    clearTimeout(holdTimer);
+                                                    holdTimer = null;
+
+                                                    if (action.completedWeeks < action.duration) {
+                                                        incrementTaskProgress(actionId);
+                                                    }
+                                                }
+                                            };
+
+                            // Mouse events
+                                            bar.addEventListener('mousedown', startHold);
+                                            bar.addEventListener('mouseup', endHold);
+                                            bar.addEventListener('mouseleave', endHold);
+
+                            // Touch events for mobile
+                                            bar.addEventListener('touchstart', startHold);
+                                            bar.addEventListener('touchend', endHold);
+                                            bar.addEventListener('touchcancel', endHold);
+                                        }
+                                    }
+
+                                    row.style.position = 'relative';
+                                    row.appendChild(bar);
+                                }
+
+                // Calculate phase duration
+                                function calculatePhaseDuration(phase) {
+                                    if (!phase.actions || phase.actions.length === 0) {
+                                        return 0;
+                                    }
+
+                    // Calculate the end week of each action, but cap it at project bounds
+                                    const actionEndWeeks = phase.actions.map(action => {
+                                        const actionEndWeek = action.startWeek + action.duration;
+                        // Don't let actions extend beyond the project timeline
+                                        return Math.min(actionEndWeek, projectData.totalWeeks + 1);
+                                    });
+
+                                    const phaseEndWeek = Math.max(...actionEndWeeks);
+
+                    // Ensure phase duration is reasonable and within project bounds
+                                    const duration = Math.max(0, phaseEndWeek - phase.startWeek);
+                                    const maxPossibleDuration = Math.max(0, projectData.totalWeeks + 1 - phase.startWeek);
+
+                                    return Math.min(duration, maxPossibleDuration);
+                                }
+
+                // Update the recalculatePhaseActionWeeks function to include validation
+                                function recalculatePhaseActionWeeks(phaseId) {
+                                    const phase = projectData.phases.find(p => p.id === phaseId);
+                                    if (!phase || !phase.actions) return;
+
+                    // Validate phase bounds first
+                                    validatePhaseBounds(phase);
+
+                                    let currentWeek = phase.startWeek;
+                                    phase.actions.forEach(action => {
+                                        action.startWeek = currentWeek;
+
+                        // Validate this action's bounds
+                                        validateActionBounds(action);
+
+                                        currentWeek += action.duration;
+
+                        // If we're going beyond project bounds, stop here
+                                        if (currentWeek > projectData.totalWeeks + 1) {
+                                            return;
+                                        }
+                                    });
+                                }
+
+                // Phase management functions
+                                function togglePhaseCollapse(phaseId) {
+                                    const phase = projectData.phases.find(p => p.id === phaseId);
+                                    if (phase) {
+                                        phase.collapsed = !phase.collapsed;
+                                        updateLayout();
+                                    }
+                                }
+
+                                function editPhaseName(phaseId) {
+                                    const phase = projectData.phases.find(p => p.id === phaseId);
+                                    const phaseNameEl = document.querySelector(`[data-phase-id="${phaseId}"] .phase-name`);
+
+                                    if (phase && phaseNameEl) {
+                                        const currentName = phase.name;
+                                        phaseNameEl.innerHTML = `<input type="text" class="inline-input" value="${currentName}" 
+                            onblur="savePhaseName(${phaseId}, this.value)" 
+                            onkeydown="handleInlineEdit(event, ${phaseId}, this.value, 'phase')"
+                                        style="width: 100%; margin: 0;">`;
+
+                                        const input = phaseNameEl.querySelector('input');
+                                        input.focus();
+                                        input.select();
+                                    }
+                                }
+
+                                function savePhaseName(phaseId, newName) {
+                                    const phase = projectData.phases.find(p => p.id === phaseId);
+                                    if (phase && newName.trim()) {
+                                        phase.name = newName.trim();
+                                        updateLayout();
+                                    }
+                                }
+
+                // Update the adjustPhaseStartWeek function to include validation
+                                function adjustPhaseStartWeek(phaseId, delta) {
+                                    const phase = projectData.phases.find(p => p.id === phaseId);
+                                    if (phase) {
+                                        const newStartWeek = Math.max(1, Math.min(projectData.totalWeeks, phase.        startWeek + delta));
+                                        if (newStartWeek !== phase.startWeek) {
+                                            phase.startWeek = newStartWeek;
+
+                            // Validate and recalculate
+                                            validatePhaseBounds(phase);
+                                            recalculatePhaseActionWeeks(phaseId);
+                                            updateLayout();
+                                        }
+                                    }
+                                }
+
+                // Update the setPhaseStartWeek function to include validation
+                                function setPhaseStartWeek(phaseId, value) {
+                                    const phase = projectData.phases.find(p => p.id === phaseId);
+                                    const newStartWeek = parseInt(value) || 1;
+
+                                    if (phase && newStartWeek !== phase.startWeek) {
+                                        phase.startWeek = Math.max(1, Math.min(projectData.totalWeeks, newStartWeek));
+
+                        // Validate and recalculate
+                                        validatePhaseBounds(phase);
+                                        recalculatePhaseActionWeeks(phaseId);
+                                        updateLayout();
+                                    }
+                                }
+
+                                function createPhase() {
+                                    const nextStartWeek = projectData.phases.length > 0 
+                                    ? Math.max(...projectData.phases.map(p => p.startWeek + calculatePhaseDuration(p)))
+                                    : 1;
+
+                                    const newPhase = {
+                                        id: projectData.phaseIdCounter++,
+                                        name: `Phase ${projectData.phases.length + 1}`,
+                                        startWeek: Math.min(nextStartWeek, projectData.totalWeeks),
+                                        collapsed: false,
+                                        actions: []
+                                    };
+
+                                    projectData.phases.push(newPhase);
+                                    updateLayout();
+
+                                    setTimeout(() => editPhaseName(newPhase.id), 100);
+                                }
+
+                // Action management functions
+                                function editActionName(actionId) {
+                                    const action = findActionById(actionId);
+                                    const actionNameEl = document.querySelector(`[data-action-id="${actionId}"] .action-name`);
+
+                                    if (action && actionNameEl) {
+                                        const currentName = action.name;
+                                        actionNameEl.innerHTML = `<input type="text" class="inline-input" value="${currentName}" 
+                            onblur="saveActionName(${actionId}, this.value)" 
+                            onkeydown="handleInlineEdit(event, ${actionId}, this.value, 'action')"
+                                        style="width: 100%; margin: 0;">`;
+
+                                        const input = actionNameEl.querySelector('input');
+                                        input.focus();
+                                        input.select();
+                                    }
+                                }
+
+                                function saveActionName(actionId, newName) {
+                                    const action = findActionById(actionId);
+                                    if (action && newName.trim()) {
+                                        action.name = newName.trim();
+                                        updateLayout();
+                                    }
+                                }
+
+                // Update the adjustActionDuration function to include validation
+                                function adjustActionDuration(actionId, delta) {
+                                    const action = findActionById(actionId);
+                                    if (action) {
+                                        const newDuration = Math.max(1, Math.min(12, action.duration + delta));
+                                        if (newDuration !== action.duration) {
+                                            action.duration = newDuration;
+
+                            // Validate action bounds
+                                            validateActionBounds(action);
+
+                                            recalculatePhaseActionWeeks(action.phaseId);
+                                            updateLayout();
+                                        }
+                                    }
+                                }        
+
+                // Update the setActionDuration function to include validation
+                                function setActionDuration(actionId, value) {
+                                    const action = findActionById(actionId);
+                                    const newDuration = Math.max(1, Math.min(12, parseInt(value) || 1));
+
+                                    if (action && newDuration !== action.duration) {
+                                        action.duration = newDuration;
+
+                        // Validate action bounds
+                                        validateActionBounds(action);
+
+                                        recalculatePhaseActionWeeks(action.phaseId);
+                                        updateLayout();
+                                    }
+                                }
+
+                                function createAction(phaseId) {
+                                    const phase = projectData.phases.find(p => p.id === phaseId);
+                                    if (!phase) return;
+
+                                    const newAction = {
+                                        id: projectData.actionIdCounter++,
+                                        name: `Action ${(phase.actions?.length || 0) + 1}`,
+                                        duration: 2,
+                                        startWeek: 1,
+                                        phaseId: phaseId,
+                                        completedWeeks: 0,
+                                        status: 'not-started'
+                                    };
+
+                                    if (!phase.actions) phase.actions = [];
+                                    phase.actions.push(newAction);
+
+                                    recalculatePhaseActionWeeks(phaseId);
+                                    updateLayout();
+
+                                    setTimeout(() => editActionName(newAction.id), 100);
+                                }
+
+                                function deletePhase(phaseId) {
+                                    const phase = projectData.phases.find(p => p.id === phaseId);
+                                    if (!phase) return;
+
+                    // Check if phase has actions
+                                    if (phase.actions && phase.actions.length > 0) {
+                                        alert('Cannot delete phase with actions. Please delete all actions first.');
+                                        return;
+                                    }
+
+                                    if (confirm('Are you sure you want to delete this phase?')) {
+                                        const phaseIndex = projectData.phases.findIndex(p => p.id === phaseId);
+                                        if (phaseIndex !== -1) {
+                                            projectData.phases.splice(phaseIndex, 1);
+                                            updateLayout();
+                                        }
+                                    }
+                                }
+
+                                function deleteAction(actionId) {
+                                    if (confirm('Are you sure you want to delete this action?')) {
+                                        for (const phase of projectData.phases) {
+                                            if (phase.actions) {
+                                                const actionIndex = phase.actions.findIndex(a => a.id === actionId);
+                                                if (actionIndex !== -1) {
+                                                    phase.actions.splice(actionIndex, 1);
+                                                    recalculatePhaseActionWeeks(phase.id);
+                                                    updateLayout();
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                // Task progress functions
+                                function incrementTaskProgress(actionId) {
+                                    const action = findActionById(actionId);
+                                    if (!action || action.completedWeeks >= action.duration) return;
+
+                                    action.completedWeeks++;
+
+                    // Re-render gantt bars to update progress
+                                    renderGanttBars();
+                                    autoSaveToStorage();
+                                }
+
+                                function completeTaskInstantly(actionId) {
+                                    const action = findActionById(actionId);
+                                    if (!action) return;
+
+                                    action.completedWeeks = action.duration;
+
+                    // Re-render gantt bars to update progress
+                                    renderGanttBars();
+                                    autoSaveToStorage();
+                                }
+
+                // Date selector functions
+                                function openStartDateSelector() {
+                                    const button = event.currentTarget;
+                                    const rect = button.getBoundingClientRect();
+
+                    // Create dropdown
+                                    const dropdown = document.createElement('div');
+                                    dropdown.className = 'month-dropdown';
+                                    dropdown.style.position = 'fixed';
+                                    dropdown.style.left = rect.left + 'px';
+                                    dropdown.style.top = rect.bottom + 5 + 'px';
+                                    dropdown.style.zIndex = '1000';
+                                    dropdown.style.background = 'white';
+                                    dropdown.style.border = '2px solid var(--primary-sky)';
+                                    dropdown.style.borderRadius = '8px';
+                                    dropdown.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.15)';
+                                    dropdown.style.padding = '8px';
+                                    dropdown.style.minWidth = rect.width + 'px';
+                                    dropdown.style.maxHeight = '300px';
+                                    dropdown.style.overflowY = 'auto';
+
+                                    const currentYear = new Date().getFullYear();
+                                    const nextYear = currentYear + 1;
+
+                    // Create year sections
+                                    [currentYear, nextYear].forEach(year => {
+                        // Year header
+                                        const yearHeader = document.createElement('div');
+                                        yearHeader.textContent = year.toString();
+                                        yearHeader.style.padding = '4px 12px';
+                                        yearHeader.style.fontSize = '12px';
+                                        yearHeader.style.fontWeight = '700';
+                                        yearHeader.style.color = 'var(--text-secondary)';
+                                        yearHeader.style.borderBottom = '1px solid var(--surface-secondary)';
+                                        yearHeader.style.marginBottom = '4px';
+                                        dropdown.appendChild(yearHeader);
+
+                        // Month options for this year
+                                        monthNames.forEach((monthName, monthIndex) => {
+                                            const option = document.createElement('div');
+                                            const displayName = year === currentYear ? monthName : `${monthName}${year.toString().slice(-2)}`;
+                                            option.textContent = displayName;
+                                            option.style.padding = '8px 12px';
+                                            option.style.cursor = 'pointer';
+                                            option.style.borderRadius = '4px';
+                                            option.style.fontSize = '14px';
+                                            option.style.fontWeight = '600';
+                                            option.style.color = 'var(--text-primary)';
+                                            option.style.transition = 'all 0.2s ease';
+                                            option.style.marginLeft = '8px';
+
+                                            if (year === projectData.startYear && monthIndex === projectData.startMonth) {
+                                                option.style.background = 'var(--primary-sky)';
+                                                option.style.color = 'white';
+                                            }
+
+                                            option.addEventListener('mouseenter', () => {
+                                                if (!(year === projectData.startYear && monthIndex === projectData.startMonth)) {
+                                                    option.style.background = 'var(--surface-secondary)';
+                                                }
+                                            });
+
+                                            option.addEventListener('mouseleave', () => {
+                                                if (!(year === projectData.startYear && monthIndex === projectData.startMonth)) {
+                                                    option.style.background = 'transparent';
+                                                }
+                                            });
+
+                                            option.addEventListener('click', () => {
+                                                setStartMonth(monthIndex, year);
+                                                document.body.removeChild(dropdown);
+                                            });
+
+                                            dropdown.appendChild(option);
+                                        });
+
+                        // Add spacing between years
+                                        if (year === currentYear) {
+                                            const spacer = document.createElement('div');
+                                            spacer.style.height = '8px';
+                                            dropdown.appendChild(spacer);
+                                        }
+                                    });
+
+                    // Close dropdown when clicking outside
+const closeDropdown = (e) => {
+    if (!dropdown.contains(e.target) && e.target !== button) {
+        if (document.body.contains(dropdown)) {
+            document.body.removeChild(dropdown);
+        }
+        document.removeEventListener('click', closeDropdown);
+    }
+};
+
+setTimeout(() => {
+    document.addEventListener('click', closeDropdown);
+}, 100);
+
+document.body.appendChild(dropdown);
+}
+
+function openEndDateSelector() {
+    const button = event.currentTarget;
+    const rect = button.getBoundingClientRect();
+
+                    // Create dropdown
+    const dropdown = document.createElement('div');
+    dropdown.className = 'month-dropdown';
+    dropdown.style.position = 'fixed';
+    dropdown.style.left = rect.left + 'px';
+    dropdown.style.top = rect.bottom + 5 + 'px';
+    dropdown.style.zIndex = '1000';
+    dropdown.style.background = 'white';
+    dropdown.style.border = '2px solid var(--primary-sky)';
+    dropdown.style.borderRadius = '8px';
+    dropdown.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.15)';
+    dropdown.style.padding = '8px';
+    dropdown.style.minWidth = rect.width + 'px';
+    dropdown.style.maxHeight = '300px';
+    dropdown.style.overflowY = 'auto';
+
+    const currentYear = new Date().getFullYear();
+    const nextYear = currentYear + 1;
+
+                    // Create year sections
+    [currentYear, nextYear].forEach(year => {
+                        // Year header
+        const yearHeader = document.createElement('div');
+        yearHeader.textContent = year.toString();
+        yearHeader.style.padding = '4px 12px';
+        yearHeader.style.fontSize = '12px';
+        yearHeader.style.fontWeight = '700';
+        yearHeader.style.color = 'var(--text-secondary)';
+        yearHeader.style.borderBottom = '1px solid var(--surface-secondary)';
+        yearHeader.style.marginBottom = '4px';
+        dropdown.appendChild(yearHeader);
+
+                        // Month options for this year
+        monthNames.forEach((monthName, monthIndex) => {
+            const option = document.createElement('div');
+            const displayName = year === currentYear ? monthName : `${monthName}${year.toString().slice(-2)}`;
+            option.textContent = displayName;
+            option.style.padding = '8px 12px';
+            option.style.cursor = 'pointer';
+            option.style.borderRadius = '4px';
+            option.style.fontSize = '14px';
+            option.style.fontWeight = '600';
+            option.style.color = 'var(--text-primary)';
+            option.style.transition = 'all 0.2s ease';
+            option.style.marginLeft = '8px';
+
+                            // Check if this option is before the start date
+            const isBeforeStart = year < projectData.startYear || 
+            (year === projectData.startYear && monthIndex < projectData.startMonth);
+
+            if (isBeforeStart) {
+                option.style.opacity = '0.4';
+                option.style.cursor = 'not-allowed';
+                option.style.color = 'var(--text-secondary)';
+            } else {
+                if (year === projectData.endYear && monthIndex === projectData.endMonth) {
+                    option.style.background = 'var(--primary-sky)';
+                    option.style.color = 'white';
                 }
-                cumulativeWeeks += months[i].weeks;
-            }
-            
-            // Calculate end position
-            const endWeek = startWeek + duration - 1;
-            cumulativeWeeks = 0;
-            let endMonthIndex = 0;
-            let endWeekInMonth = 0;
-            
-            for (let i = 0; i < months.length; i++) {
-                if (cumulativeWeeks + months[i].weeks >= endWeek) {
-                    endMonthIndex = i;
-                    endWeekInMonth = endWeek - cumulativeWeeks;
-                    break;
-                }
-                cumulativeWeeks += months[i].weeks;
-            }
-            
-            // Get the actual month cells for positioning
-            const startCell = monthCells[startMonthIndex];
-            const endCell = monthCells[endMonthIndex];
-            
-            if (!startCell || !endCell) return;
-            
-            // Calculate position within the timeline
-            const startCellRect = startCell.getBoundingClientRect();
-            const endCellRect = endCell.getBoundingClientRect();
-            const rowRect = row.getBoundingClientRect();
-            
-            // Position within start cell based on week within month
-            const startCellWidth = startCellRect.width;
-            const startPositionInCell = (startWeekInMonth / months[startMonthIndex].weeks) * startCellWidth;
-            
-            // Position within end cell based on week within month  
-            const endCellWidth = endCellRect.width;
-            const endPositionInCell = (endWeekInMonth / months[endMonthIndex].weeks) * endCellWidth;
-            
-            // Calculate final position and width
-            const leftPosition = startCellRect.left - rowRect.left + startPositionInCell;
-            const rightPosition = endCellRect.left - rowRect.left + endPositionInCell;
-            const barWidth = rightPosition - leftPosition;
-            
-            // Position the bar to overlay the timeline cells
-            const timelineCellTop = startCellRect.top - rowRect.top;
-            
-            bar.style.left = `${leftPosition}px`;
-            bar.style.width = `${barWidth}px`;
-            bar.style.top = `${timelineCellTop + (startCellRect.height / 2)}px`;
-            bar.style.transform = 'translateY(-50%)';
-            bar.style.position = 'absolute';
-            
-            // Add text if provided
-            if (text) {
-                bar.textContent = text;
-            }
-            
-            // Add click handlers for action bars
-            if (className === 'action-bar' && actionId !== null) {
-                const action = findActionById(actionId);
-                
-                if (action) {
-                    // Update progress visualization
-                    const progressPercent = (action.completedWeeks / action.duration) * 100;
-                    bar.style.setProperty('--progress-width', `${progressPercent}%`);
-                    
-                    // Add completed class if fully completed
-                    if (action.completedWeeks >= action.duration) {
-                        bar.classList.add('completed');
+
+                option.addEventListener('mouseenter', () => {
+                    if (!(year === projectData.endYear && monthIndex === projectData.endMonth)) {
+                        option.style.background = 'var(--surface-secondary)';
                     }
-                    
-                    // Add click and hold handlers
-                    let holdTimer = null;
-                    let isHolding = false;
-                    
-                    const startHold = (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        if (action.completedWeeks >= action.duration) return;
-                        
-                        isHolding = true;
-                        bar.classList.add('charging');
-                        
-                        holdTimer = setTimeout(() => {
-                            if (isHolding) {
-                                completeTaskInstantly(actionId);
-                            }
-                        }, 800);
-                    };
-                    
-                    const endHold = (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        if (!isHolding) return;
-                        
-                        isHolding = false;
-                        bar.classList.remove('charging');
-                        
-                        if (holdTimer) {
-                            clearTimeout(holdTimer);
-                            holdTimer = null;
-                            
-                            if (action.completedWeeks < action.duration) {
-                                incrementTaskProgress(actionId);
-                            }
-                        }
-                    };
-                    
-                    // Mouse events
-                    bar.addEventListener('mousedown', startHold);
-                    bar.addEventListener('mouseup', endHold);
-                    bar.addEventListener('mouseleave', endHold);
-                    
-                    // Touch events for mobile
-                    bar.addEventListener('touchstart', startHold);
-                    bar.addEventListener('touchend', endHold);
-                    bar.addEventListener('touchcancel', endHold);
-                }
-            }
-            
-            row.style.position = 'relative';
-            row.appendChild(bar);
-        }
-
-        // Calculate phase duration
-        function calculatePhaseDuration(phase) {
-            if (!phase.actions || phase.actions.length === 0) {
-                return 0;
-            }
-            
-            const endWeeks = phase.actions.map(action => action.startWeek + action.duration);
-            const phaseEndWeek = Math.max(...endWeeks);
-            return Math.max(0, phaseEndWeek - phase.startWeek);
-        }
-
-        // Recalculate all action start weeks in a phase
-        function recalculatePhaseActionWeeks(phaseId) {
-            const phase = projectData.phases.find(p => p.id === phaseId);
-            if (!phase || !phase.actions) return;
-            
-            let currentWeek = phase.startWeek;
-            phase.actions.forEach(action => {
-                action.startWeek = currentWeek;
-                currentWeek += action.duration;
-            });
-        }
-
-        // Phase management functions
-        function togglePhaseCollapse(phaseId) {
-            const phase = projectData.phases.find(p => p.id === phaseId);
-            if (phase) {
-                phase.collapsed = !phase.collapsed;
-                updateLayout();
-            }
-        }
-
-        function editPhaseName(phaseId) {
-            const phase = projectData.phases.find(p => p.id === phaseId);
-            const phaseNameEl = document.querySelector(`[data-phase-id="${phaseId}"] .phase-name`);
-            
-            if (phase && phaseNameEl) {
-                const currentName = phase.name;
-                phaseNameEl.innerHTML = `<input type="text" class="inline-input" value="${currentName}" 
-                    onblur="savePhaseName(${phaseId}, this.value)" 
-                    onkeydown="handleInlineEdit(event, ${phaseId}, this.value, 'phase')"
-                    style="width: 100%; margin: 0;">`;
-                
-                const input = phaseNameEl.querySelector('input');
-                input.focus();
-                input.select();
-            }
-        }
-
-        function savePhaseName(phaseId, newName) {
-            const phase = projectData.phases.find(p => p.id === phaseId);
-            if (phase && newName.trim()) {
-                phase.name = newName.trim();
-                updateLayout();
-            }
-        }
-
-        function adjustPhaseStartWeek(phaseId, delta) {
-            const phase = projectData.phases.find(p => p.id === phaseId);
-            if (phase) {
-                const newStartWeek = Math.max(1, Math.min(projectData.totalWeeks, phase.startWeek + delta));
-                if (newStartWeek !== phase.startWeek) {
-                    phase.startWeek = newStartWeek;
-                    recalculatePhaseActionWeeks(phaseId);
-                    updateLayout();
-                }
-            }
-        }
-
-        function setPhaseStartWeek(phaseId, value) {
-            const phase = projectData.phases.find(p => p.id === phaseId);
-            const newStartWeek = parseInt(value) || 1;
-            
-            if (phase && newStartWeek !== phase.startWeek) {
-                phase.startWeek = Math.max(1, Math.min(projectData.totalWeeks, newStartWeek));
-                recalculatePhaseActionWeeks(phaseId);
-                updateLayout();
-            }
-        }
-
-        function createPhase() {
-            const nextStartWeek = projectData.phases.length > 0 
-                ? Math.max(...projectData.phases.map(p => p.startWeek + calculatePhaseDuration(p)))
-                : 1;
-            
-            const newPhase = {
-                id: projectData.phaseIdCounter++,
-                name: `Phase ${projectData.phases.length + 1}`,
-                startWeek: Math.min(nextStartWeek, projectData.totalWeeks),
-                collapsed: false,
-                actions: []
-            };
-            
-            projectData.phases.push(newPhase);
-            updateLayout();
-            
-            setTimeout(() => editPhaseName(newPhase.id), 100);
-        }
-
-        // Action management functions
-        function editActionName(actionId) {
-            const action = findActionById(actionId);
-            const actionNameEl = document.querySelector(`[data-action-id="${actionId}"] .action-name`);
-            
-            if (action && actionNameEl) {
-                const currentName = action.name;
-                actionNameEl.innerHTML = `<input type="text" class="inline-input" value="${currentName}" 
-                    onblur="saveActionName(${actionId}, this.value)" 
-                    onkeydown="handleInlineEdit(event, ${actionId}, this.value, 'action')"
-                    style="width: 100%; margin: 0;">`;
-                
-                const input = actionNameEl.querySelector('input');
-                input.focus();
-                input.select();
-            }
-        }
-
-        function saveActionName(actionId, newName) {
-            const action = findActionById(actionId);
-            if (action && newName.trim()) {
-                action.name = newName.trim();
-                updateLayout();
-            }
-        }
-
-        function adjustActionDuration(actionId, delta) {
-            const action = findActionById(actionId);
-            if (action) {
-                const newDuration = Math.max(1, Math.min(12, action.duration + delta));
-                if (newDuration !== action.duration) {
-                    action.duration = newDuration;
-                    // Ensure completed weeks don't exceed new duration
-                    action.completedWeeks = Math.min(action.completedWeeks, newDuration);
-                    recalculatePhaseActionWeeks(action.phaseId);
-                    updateLayout();
-                }
-            }
-        }
-
-        function setActionDuration(actionId, value) {
-            const action = findActionById(actionId);
-            const newDuration = Math.max(1, Math.min(12, parseInt(value) || 1));
-            
-            if (action && newDuration !== action.duration) {
-                action.duration = newDuration;
-                // Ensure completed weeks don't exceed new duration
-                action.completedWeeks = Math.min(action.completedWeeks, newDuration);
-                recalculatePhaseActionWeeks(action.phaseId);
-                updateLayout();
-            }
-        }
-
-        function createAction(phaseId) {
-            const phase = projectData.phases.find(p => p.id === phaseId);
-            if (!phase) return;
-            
-            const newAction = {
-                id: projectData.actionIdCounter++,
-                name: `Action ${(phase.actions?.length || 0) + 1}`,
-                duration: 2,
-                startWeek: 1,
-                phaseId: phaseId,
-                completedWeeks: 0,
-                status: 'not-started'
-            };
-            
-            if (!phase.actions) phase.actions = [];
-            phase.actions.push(newAction);
-            
-            recalculatePhaseActionWeeks(phaseId);
-            updateLayout();
-            
-            setTimeout(() => editActionName(newAction.id), 100);
-        }
-
-        function deletePhase(phaseId) {
-            const phase = projectData.phases.find(p => p.id === phaseId);
-            if (!phase) return;
-            
-            // Check if phase has actions
-            if (phase.actions && phase.actions.length > 0) {
-                alert('Cannot delete phase with actions. Please delete all actions first.');
-                return;
-            }
-            
-            if (confirm('Are you sure you want to delete this phase?')) {
-                const phaseIndex = projectData.phases.findIndex(p => p.id === phaseId);
-                if (phaseIndex !== -1) {
-                    projectData.phases.splice(phaseIndex, 1);
-                    updateLayout();
-                }
-            }
-        }
-
-        function deleteAction(actionId) {
-            if (confirm('Are you sure you want to delete this action?')) {
-                for (const phase of projectData.phases) {
-                    if (phase.actions) {
-                        const actionIndex = phase.actions.findIndex(a => a.id === actionId);
-                        if (actionIndex !== -1) {
-                            phase.actions.splice(actionIndex, 1);
-                            recalculatePhaseActionWeeks(phase.id);
-                            updateLayout();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Task progress functions
-        function incrementTaskProgress(actionId) {
-            const action = findActionById(actionId);
-            if (!action || action.completedWeeks >= action.duration) return;
-            
-            action.completedWeeks++;
-            
-            // Re-render gantt bars to update progress
-            renderGanttBars();
-            autoSaveToStorage();
-        }
-        
-        function completeTaskInstantly(actionId) {
-            const action = findActionById(actionId);
-            if (!action) return;
-            
-            action.completedWeeks = action.duration;
-            
-            // Re-render gantt bars to update progress
-            renderGanttBars();
-            autoSaveToStorage();
-        }
-
-        // Date selector functions
-        function openStartDateSelector() {
-            const button = event.currentTarget;
-            const rect = button.getBoundingClientRect();
-            
-            // Create dropdown
-            const dropdown = document.createElement('div');
-            dropdown.className = 'month-dropdown';
-            dropdown.style.position = 'fixed';
-            dropdown.style.left = rect.left + 'px';
-            dropdown.style.top = rect.bottom + 5 + 'px';
-            dropdown.style.zIndex = '1000';
-            dropdown.style.background = 'white';
-            dropdown.style.border = '2px solid var(--primary-sky)';
-            dropdown.style.borderRadius = '8px';
-            dropdown.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.15)';
-            dropdown.style.padding = '8px';
-            dropdown.style.minWidth = rect.width + 'px';
-            dropdown.style.maxHeight = '300px';
-            dropdown.style.overflowY = 'auto';
-            
-            const currentYear = new Date().getFullYear();
-            const nextYear = currentYear + 1;
-            
-            // Create year sections
-            [currentYear, nextYear].forEach(year => {
-                // Year header
-                const yearHeader = document.createElement('div');
-                yearHeader.textContent = year.toString();
-                yearHeader.style.padding = '4px 12px';
-                yearHeader.style.fontSize = '12px';
-                yearHeader.style.fontWeight = '700';
-                yearHeader.style.color = 'var(--text-secondary)';
-                yearHeader.style.borderBottom = '1px solid var(--surface-secondary)';
-                yearHeader.style.marginBottom = '4px';
-                dropdown.appendChild(yearHeader);
-                
-                // Month options for this year
-                monthNames.forEach((monthName, monthIndex) => {
-                    const option = document.createElement('div');
-                    const displayName = year === currentYear ? monthName : `${monthName}${year.toString().slice(-2)}`;
-                    option.textContent = displayName;
-                    option.style.padding = '8px 12px';
-                    option.style.cursor = 'pointer';
-                    option.style.borderRadius = '4px';
-                    option.style.fontSize = '14px';
-                    option.style.fontWeight = '600';
-                    option.style.color = 'var(--text-primary)';
-                    option.style.transition = 'all 0.2s ease';
-                    option.style.marginLeft = '8px';
-                    
-                    if (year === projectData.startYear && monthIndex === projectData.startMonth) {
-                        option.style.background = 'var(--primary-sky)';
-                        option.style.color = 'white';
-                    }
-                    
-                    option.addEventListener('mouseenter', () => {
-                        if (!(year === projectData.startYear && monthIndex === projectData.startMonth)) {
-                            option.style.background = 'var(--surface-secondary)';
-                        }
-                    });
-                    
-                    option.addEventListener('mouseleave', () => {
-                        if (!(year === projectData.startYear && monthIndex === projectData.startMonth)) {
-                            option.style.background = 'transparent';
-                        }
-                    });
-                    
-                    option.addEventListener('click', () => {
-                        setStartMonth(monthIndex, year);
-                        document.body.removeChild(dropdown);
-                    });
-                    
-                    dropdown.appendChild(option);
                 });
-                
-                // Add spacing between years
-                if (year === currentYear) {
-                    const spacer = document.createElement('div');
-                    spacer.style.height = '8px';
-                    dropdown.appendChild(spacer);
-                }
-            });
-            
-            // Close dropdown when clicking outside
-            const closeDropdown = (e) => {
-                if (!dropdown.contains(e.target) && e.target !== button) {
-                    if (document.body.contains(dropdown)) {
-                        document.body.removeChild(dropdown);
-                    }
-                    document.removeEventListener('click', closeDropdown);
-                }
-            };
-            
-            setTimeout(() => {
-                document.addEventListener('click', closeDropdown);
-            }, 100);
-            
-            document.body.appendChild(dropdown);
-        }
 
-        function openEndDateSelector() {
-            const button = event.currentTarget;
-            const rect = button.getBoundingClientRect();
-            
-            // Create dropdown
-            const dropdown = document.createElement('div');
-            dropdown.className = 'month-dropdown';
-            dropdown.style.position = 'fixed';
-            dropdown.style.left = rect.left + 'px';
-            dropdown.style.top = rect.bottom + 5 + 'px';
-            dropdown.style.zIndex = '1000';
-            dropdown.style.background = 'white';
-            dropdown.style.border = '2px solid var(--primary-sky)';
-            dropdown.style.borderRadius = '8px';
-            dropdown.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.15)';
-            dropdown.style.padding = '8px';
-            dropdown.style.minWidth = rect.width + 'px';
-            dropdown.style.maxHeight = '300px';
-            dropdown.style.overflowY = 'auto';
-            
-            const currentYear = new Date().getFullYear();
-            const nextYear = currentYear + 1;
-            
-            // Create year sections
-            [currentYear, nextYear].forEach(year => {
-                // Year header
-                const yearHeader = document.createElement('div');
-                yearHeader.textContent = year.toString();
-                yearHeader.style.padding = '4px 12px';
-                yearHeader.style.fontSize = '12px';
-                yearHeader.style.fontWeight = '700';
-                yearHeader.style.color = 'var(--text-secondary)';
-                yearHeader.style.borderBottom = '1px solid var(--surface-secondary)';
-                yearHeader.style.marginBottom = '4px';
-                dropdown.appendChild(yearHeader);
-                
-                // Month options for this year
-                monthNames.forEach((monthName, monthIndex) => {
-                    const option = document.createElement('div');
-                    const displayName = year === currentYear ? monthName : `${monthName}${year.toString().slice(-2)}`;
-                    option.textContent = displayName;
-                    option.style.padding = '8px 12px';
-                    option.style.cursor = 'pointer';
-                    option.style.borderRadius = '4px';
-                    option.style.fontSize = '14px';
-                    option.style.fontWeight = '600';
-                    option.style.color = 'var(--text-primary)';
-                    option.style.transition = 'all 0.2s ease';
-                    option.style.marginLeft = '8px';
-                    
-                    // Check if this option is before the start date
-                    const isBeforeStart = year < projectData.startYear || 
-                                         (year === projectData.startYear && monthIndex < projectData.startMonth);
-                    
-                    if (isBeforeStart) {
-                        option.style.opacity = '0.4';
-                        option.style.cursor = 'not-allowed';
-                        option.style.color = 'var(--text-secondary)';
-                    } else {
-                        if (year === projectData.endYear && monthIndex === projectData.endMonth) {
-                            option.style.background = 'var(--primary-sky)';
-                            option.style.color = 'white';
-                        }
-                        
-                        option.addEventListener('mouseenter', () => {
-                            if (!(year === projectData.endYear && monthIndex === projectData.endMonth)) {
-                                option.style.background = 'var(--surface-secondary)';
-                            }
-                        });
-                        
-                        option.addEventListener('mouseleave', () => {
-                            if (!(year === projectData.endYear && monthIndex === projectData.endMonth)) {
-                                option.style.background = 'transparent';
-                            }
-                        });
-                        
-                        option.addEventListener('click', () => {
-                            if (!isBeforeStart) {
-                                setEndMonth(monthIndex, year);
-                                document.body.removeChild(dropdown);
-                            }
-                        });
+                option.addEventListener('mouseleave', () => {
+                    if (!(year === projectData.endYear && monthIndex === projectData.endMonth)) {
+                        option.style.background = 'transparent';
                     }
-                    
-                    dropdown.appendChild(option);
                 });
-                
-                // Add spacing between years
-                if (year === currentYear) {
-                    const spacer = document.createElement('div');
-                    spacer.style.height = '8px';
-                    dropdown.appendChild(spacer);
-                }
-            });
-            
-            // Close dropdown when clicking outside
-            const closeDropdown = (e) => {
-                if (!dropdown.contains(e.target) && e.target !== button) {
-                    if (document.body.contains(dropdown)) {
+
+                option.addEventListener('click', () => {
+                    if (!isBeforeStart) {
+                        setEndMonth(monthIndex, year);
                         document.body.removeChild(dropdown);
                     }
-                    document.removeEventListener('click', closeDropdown);
-                }
-            };
-            
-            setTimeout(() => {
-                document.addEventListener('click', closeDropdown);
-            }, 100);
-            
-            document.body.appendChild(dropdown);
-        }
-
-        function setStartMonth(monthIndex, year) {
-            projectData.startMonth = monthIndex;
-            projectData.startYear = year;
-            
-            // Adjust end month if it's now before start month
-            if (projectData.endYear < projectData.startYear || 
-                (projectData.endYear === projectData.startYear && projectData.endMonth < projectData.startMonth)) {
-                projectData.endMonth = projectData.startMonth;
-                projectData.endYear = projectData.startYear;
+                });
             }
-            
-            updateLayout();
-        }
 
-        function setEndMonth(monthIndex, year) {
-            if (year > projectData.startYear || 
-                (year === projectData.startYear && monthIndex >= projectData.startMonth)) {
-                projectData.endMonth = monthIndex;
-                projectData.endYear = year;
-                updateLayout();
+            dropdown.appendChild(option);
+        });
+
+                        // Add spacing between years
+        if (year === currentYear) {
+            const spacer = document.createElement('div');
+            spacer.style.height = '8px';
+            dropdown.appendChild(spacer);
+        }
+    });
+
+                    // Close dropdown when clicking outside
+    const closeDropdown = (e) => {
+        if (!dropdown.contains(e.target) && e.target !== button) {
+            if (document.body.contains(dropdown)) {
+                document.body.removeChild(dropdown);
             }
+            document.removeEventListener('click', closeDropdown);
+        }
+    };
+
+    setTimeout(() => {
+        document.addEventListener('click', closeDropdown);
+    }, 100);
+
+    document.body.appendChild(dropdown);
+}
+
+function setStartMonth(monthIndex, year) {
+    projectData.startMonth = monthIndex;
+    projectData.startYear = year;
+
+                    // Adjust end month if it's now before start month
+    if (projectData.endYear < projectData.startYear || 
+        (projectData.endYear === projectData.startYear && projectData.endMonth < projectData.startMonth)) {
+        projectData.endMonth = projectData.startMonth;
+    projectData.endYear = projectData.startYear;
+}
+
+updateLayout();
+}
+
+function setEndMonth(monthIndex, year) {
+    if (year > projectData.startYear || 
+        (year === projectData.startYear && monthIndex >= projectData.startMonth)) {
+        projectData.endMonth = monthIndex;
+    projectData.endYear = year;
+    updateLayout();
+}
+}
+
+                // Export and import functions
+function generateFileName(projectName) {
+    const sanitized = (projectName || 'project')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '_')
+    .replace(/_{2,}/g, '_')
+    .replace(/^_|_$/g, '');
+
+    return `${sanitized}_project.html`;
+}
+
+function exportProject() {
+    try {
+                        // Create a clean HTML file with current data embedded
+        const dataScript = document.getElementById('projectData');
+        if (dataScript) {
+            dataScript.textContent = '\n    ' + JSON.stringify(projectData, null, 4) + '\n    ';
         }
 
-        // Export and import functions
-        function generateFileName(projectName) {
-            const sanitized = (projectName || 'project')
-                .toLowerCase()
-                .replace(/[^a-z0-9\s]/g, '')
-                .replace(/\s+/g, '_')
-                .replace(/_{2,}/g, '_')
-                .replace(/^_|_$/g, '');
-            
-            return `${sanitized}_project.html`;
-        }
-        
-        function exportProject() {
+        const htmlContent = document.documentElement.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+
+        const filename = generateFileName(projectData.projectName);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showSaveIndicator('📁 Exported');
+        console.log('📁 Project exported');
+    } catch (error) {
+        console.error('Export failed:', error);
+        showSaveIndicator('⚠ Export failed');
+    }
+}
+
+function importProject() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.html';
+
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
             try {
-                // Create a clean HTML file with current data embedded
-                const dataScript = document.getElementById('projectData');
+                                // Parse the HTML to extract project data
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(e.target.result, 'text/html');
+                const dataScript = doc.getElementById('projectData');
+
                 if (dataScript) {
-                    dataScript.textContent = '\n    ' + JSON.stringify(projectData, null, 4) + '\n    ';
+                    const importedData = JSON.parse(dataScript.textContent);
+                    projectData = importedData;
+
+                                    // Update UI
+                    initializeProjectName();
+                    updateLayout();
+
+                    showSaveIndicator('📂 Imported');
+                    console.log('📂 Project imported');
+                } else {
+                    throw new Error('No project data found in file');
                 }
-                
-                const htmlContent = document.documentElement.outerHTML;
-                const blob = new Blob([htmlContent], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                
-                const filename = generateFileName(projectData.projectName);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                showSaveIndicator('📁 Exported');
-                console.log('📁 Project exported');
             } catch (error) {
-                console.error('Export failed:', error);
-                showSaveIndicator('⚠ Export failed');
-            }
-        }
-        
-        function importProject() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.html';
-            
-            input.onchange = function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        // Parse the HTML to extract project data
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(e.target.result, 'text/html');
-                        const dataScript = doc.getElementById('projectData');
-                        
-                        if (dataScript) {
-                            const importedData = JSON.parse(dataScript.textContent);
-                            projectData = importedData;
-                            
-                            // Update UI
-                            initializeProjectName();
-                            updateLayout();
-                            
-                            showSaveIndicator('📂 Imported');
-                            console.log('📂 Project imported');
-                        } else {
-                            throw new Error('No project data found in file');
-                        }
-                    } catch (error) {
-                        console.error('Import failed:', error);
-                        showSaveIndicator('⚠ Import failed');
-                        alert('Failed to import project. Make sure it\'s a valid project file.');
-                    }
-                };
-                reader.readAsText(file);
-            };
-            
-            input.click();
-        }
-
-        // Smooth timeline scrolling functions
-        function getCardWidth() {
-            const timelineCell = document.querySelector('.timeline-cell');
-            if (timelineCell) {
-                const style = window.getComputedStyle(timelineCell);
-                const width = timelineCell.offsetWidth;
-                const gap = parseFloat(style.marginRight) || 1;
-                return width + gap;
-            }
-            // Fallback to CSS variable
-            const rootStyles = getComputedStyle(document.documentElement);
-            const cardMinWidth = rootStyles.getPropertyValue('--month-card-min-width').trim();
-            return parseInt(cardMinWidth) * 16 + 1;
-        }
-
-        function scrollTimelineLeft() {
-            const cardWidth = getCardWidth();
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-            
-            if (currentTheme === 'dark') {
-                smoothScrollTimeline(-cardWidth, 600, 'cozy');
-            } else {
-                smoothScrollTimeline(-cardWidth, 400, 'bright');
-            }
-        }
-
-        function scrollTimelineRight() {
-            const cardWidth = getCardWidth();
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-            
-            if (currentTheme === 'dark') {
-                smoothScrollTimeline(cardWidth, 600, 'cozy');
-            } else {
-                smoothScrollTimeline(cardWidth, 400, 'bright');
-            }
-        }
-
-        function smoothScrollTimeline(distance, duration, style) {
-            const headerWrapper = document.querySelector('.timeline-header-wrapper');
-            const contentWrapper = document.querySelector('.timeline-content-wrapper');
-            
-            if (!headerWrapper || !contentWrapper) return;
-            
-            const startScrollLeft = headerWrapper.scrollLeft;
-            const targetScrollLeft = Math.max(0, startScrollLeft + distance);
-            
-            // Prevent multiple simultaneous animations
-            if (headerWrapper.isAnimating) return;
-            headerWrapper.isAnimating = true;
-            contentWrapper.isAnimating = true;
-            
-            const startTime = performance.now();
-            
-            function animate(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                // Apply easing curves
-                let easedProgress;
-                if (style === 'cozy') {
-                    const t = progress;
-                    easedProgress = t * t * (3 - 2 * t);
-                } else {
-                    const c = 1.2;
-                    easedProgress = progress < 1 ? 
-                        1 - Math.pow(1 - progress, 3) : 
-                        1 + c * Math.pow(progress - 1, 3);
-                }
-                
-                const currentScrollLeft = startScrollLeft + (targetScrollLeft - startScrollLeft) * easedProgress;
-                
-                headerWrapper.scrollLeft = currentScrollLeft;
-                contentWrapper.scrollLeft = currentScrollLeft;
-                
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    // Animation complete
-                    headerWrapper.isAnimating = false;
-                    contentWrapper.isAnimating = false;
-                    headerWrapper.scrollLeft = targetScrollLeft;
-                    contentWrapper.scrollLeft = targetScrollLeft;
-                }
-            }
-            
-            requestAnimationFrame(animate);
-        }
-
-        // Synchronize scrolling between left and right panels
-        function setupScrollSync() {
-            const leftContent = document.getElementById('leftPanelContent');
-            const rightContent = document.getElementById('timelineContent');
-            const headerWrapper = document.querySelector('.timeline-header-wrapper');
-            const contentWrapper = document.querySelector('.timeline-content-wrapper');
-            
-            let isScrollingVertical = false;
-            let isScrollingHorizontal = false;    
-
-            // Sync vertical scrolling between left and right panels
-            function syncVerticalScroll(source, target) {
-                if (isScrollingVertical) return;
-                isScrollingVertical = true;
-                target.scrollTop = source.scrollTop;
-                requestAnimationFrame(() => {
-                    isScrollingVertical = false;
-                });
-            }
-            
-            // Sync horizontal scrolling between header and content
-            function syncHorizontalScroll(source, target) {
-                if (isScrollingHorizontal) return;
-                isScrollingHorizontal = true;
-                target.scrollLeft = source.scrollLeft;
-                requestAnimationFrame(() => {
-                    isScrollingHorizontal = false;
-                });
-            }
-                        
-            // Vertical scroll sync
-            leftContent.addEventListener('scroll', () => {
-                syncVerticalScroll(leftContent, rightContent);
-            });
-            
-            rightContent.addEventListener('scroll', () => {
-                syncVerticalScroll(rightContent, leftContent);
-            });
-            
-            // Horizontal scroll sync
-            headerWrapper.addEventListener('scroll', () => {
-                syncHorizontalScroll(headerWrapper, contentWrapper);
-            });
-            
-            contentWrapper.addEventListener('scroll', () => {
-                syncHorizontalScroll(contentWrapper, headerWrapper);
-            });
-        }
-
-        // Utility functions
-        function findActionById(actionId) {
-            for (const phase of projectData.phases) {
-                if (phase.actions) {
-                    const action = phase.actions.find(a => a.id === actionId);
-                    if (action) return action;
-                }
-            }
-            return null;
-        }
-
-        function handleInlineEdit(event, id, value, type) {
-            if (event.key === 'Enter') {
-                event.target.blur();
-            } else if (event.key === 'Escape') {
-                updateLayout();
-            }
-        }
-
-        function editProjectTitle(titleEl) {
-            titleEl.contentEditable = true;
-            titleEl.focus();
-            
-            const range = document.createRange();
-            range.selectNodeContents(titleEl);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            
-            titleEl.addEventListener('blur', function() {
-                titleEl.contentEditable = false;
-                const newTitle = titleEl.textContent.trim() || 'Project';
-                titleEl.textContent = newTitle;
-                document.title = newTitle;
-                projectData.projectName = newTitle;
-                autoSaveToStorage();
-            }, { once: true });
-            
-            titleEl.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    titleEl.blur();
-                }
-            });
-        }
-
-        // Debug helpers
-        window.projectDebug = {
-            exportData: () => console.log('Current data:', JSON.stringify(projectData, null, 2)),
-            clearData: () => {
-                localStorage.removeItem('projectPlannerData');
-                console.log('🗑️ Cleared localStorage');
-                location.reload();
-            },
-            checkStorage: () => {
-                const data = localStorage.getItem('projectPlannerData');
-                console.log('localStorage:', data ? 'Has data' : 'Empty');
-                return data;
+                console.error('Import failed:', error);
+                showSaveIndicator('⚠ Import failed');
+                alert('Failed to import project. Make sure it\'s a valid project file.');
             }
         };
+        reader.readAsText(file);
+    };
 
-        // Initialize when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
+    input.click();
+}
+
+                // Smooth timeline scrolling functions
+function getCardWidth() {
+    const timelineCell = document.querySelector('.timeline-cell');
+    if (timelineCell) {
+        const style = window.getComputedStyle(timelineCell);
+        const width = timelineCell.offsetWidth;
+        const gap = parseFloat(style.marginRight) || 1;
+        return width + gap;
+    }
+                    // Fallback to CSS variable
+    const rootStyles = getComputedStyle(document.documentElement);
+    const cardMinWidth = rootStyles.getPropertyValue('--month-card-min-width').trim();
+    return parseInt(cardMinWidth) * 16 + 1;
+}
+
+function scrollTimelineLeft() {
+    const cardWidth = getCardWidth();
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+
+    if (currentTheme === 'dark') {
+        smoothScrollTimeline(-cardWidth, 600, 'dark');
+    } else {
+        smoothScrollTimeline(-cardWidth, 400, 'bright');
+    }
+}
+
+function scrollTimelineRight() {
+    const cardWidth = getCardWidth();
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+
+    if (currentTheme === 'dark') {
+        smoothScrollTimeline(cardWidth, 600, 'cozy');
+    } else {
+        smoothScrollTimeline(cardWidth, 400, 'bright');
+    }
+}
+
+function smoothScrollTimeline(distance, duration, style) {
+    const headerWrapper = document.querySelector('.timeline-header-wrapper');
+    const contentWrapper = document.querySelector('.timeline-content-wrapper');
+
+    if (!headerWrapper || !contentWrapper) return;
+
+    const startScrollLeft = headerWrapper.scrollLeft;
+    const targetScrollLeft = Math.max(0, startScrollLeft + distance);
+
+                    // Prevent multiple simultaneous animations
+    if (headerWrapper.isAnimating) return;
+    headerWrapper.isAnimating = true;
+    contentWrapper.isAnimating = true;
+
+    const startTime = performance.now();
+
+    function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+                        // Apply easing curves
+        let easedProgress;
+        if (style === 'cozy') {
+            const t = progress;
+            easedProgress = t * t * (3 - 2 * t);
         } else {
-            init();
+            const c = 1.2;
+            easedProgress = progress < 1 ? 
+            1 - Math.pow(1 - progress, 3) : 
+            1 + c * Math.pow(progress - 1, 3);
         }
 
-        // Setup JSON Editor Tab Key Functionality
-        function setupJSONEditorTabSupport() {
-            const textarea = document.getElementById('jsonEditorTextarea');
-            if (!textarea) return;
+        const currentScrollLeft = startScrollLeft + (targetScrollLeft - startScrollLeft) * easedProgress;
 
-            textarea.addEventListener('keydown', function(e) {
-                // Handle Tab key for indentation
-                if (e.key === 'Tab') {
-                    e.preventDefault();
-                    
-                    const start = this.selectionStart;
-                    const end = this.selectionEnd;
-                    const selectedText = this.value.substring(start, end);
-                    
-                    if (e.shiftKey) {
-                        // Shift+Tab: Remove indentation
-                        if (selectedText.includes('\n')) {
-                            // Multi-line selection
-                            const lines = selectedText.split('\n');
-                            const unindentedLines = lines.map(line => 
-                                line.startsWith('    ') ? line.substring(4) :
-                                line.startsWith('\t') ? line.substring(1) : line
-                            );
-                            const newText = unindentedLines.join('\n');
-                            
-                            this.setRangeText(newText, start, end, 'end');
-                        } else {
-                            // Single line - move to previous indentation level
-                            const lineStart = this.value.lastIndexOf('\n', start - 1) + 1;
-                            const lineText = this.value.substring(lineStart, start);
-                            
-                            if (lineText.endsWith('    ')) {
-                                this.setRangeText('', start - 4, start, 'end');
-                            } else if (lineText.endsWith('\t')) {
-                                this.setRangeText('', start - 1, start, 'end');
-                            }
-                        }
-                    } else {
-                        // Tab: Add indentation
-                        if (selectedText.includes('\n')) {
-                            // Multi-line selection - indent each line
-                            const lines = selectedText.split('\n');
-                            const indentedLines = lines.map(line => '    ' + line);
-                            const newText = indentedLines.join('\n');
-                            
-                            this.setRangeText(newText, start, end, 'end');
-                        } else {
-                            // Single position - insert 4 spaces
-                            this.setRangeText('    ', start, end, 'end');
-                        }
+        headerWrapper.scrollLeft = currentScrollLeft;
+        contentWrapper.scrollLeft = currentScrollLeft;
+
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        } else {
+                            // Animation complete
+            headerWrapper.isAnimating = false;
+            contentWrapper.isAnimating = false;
+            headerWrapper.scrollLeft = targetScrollLeft;
+            contentWrapper.scrollLeft = targetScrollLeft;
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+                // Synchronize scrolling between left and right panels
+function setupScrollSync() {
+    const leftContent = document.getElementById('leftPanelContent');
+    const rightContent = document.getElementById('timelineContent');
+    const headerWrapper = document.querySelector('.timeline-header-wrapper');
+    const contentWrapper = document.querySelector('.timeline-content-wrapper');
+
+    let isScrollingVertical = false;
+    let isScrollingHorizontal = false;    
+
+                    // Sync vertical scrolling between left and right panels
+    function syncVerticalScroll(source, target) {
+        if (isScrollingVertical) return;
+        isScrollingVertical = true;
+        target.scrollTop = source.scrollTop;
+        requestAnimationFrame(() => {
+            isScrollingVertical = false;
+        });
+    }
+
+                    // Sync horizontal scrolling between header and content
+    function syncHorizontalScroll(source, target) {
+        if (isScrollingHorizontal) return;
+        isScrollingHorizontal = true;
+        target.scrollLeft = source.scrollLeft;
+        requestAnimationFrame(() => {
+            isScrollingHorizontal = false;
+        });
+    }
+
+                    // Vertical scroll sync
+    leftContent.addEventListener('scroll', () => {
+        syncVerticalScroll(leftContent, rightContent);
+    });
+
+    rightContent.addEventListener('scroll', () => {
+        syncVerticalScroll(rightContent, leftContent);
+    });
+
+                    // Horizontal scroll sync
+    headerWrapper.addEventListener('scroll', () => {
+        syncHorizontalScroll(headerWrapper, contentWrapper);
+    });
+
+    contentWrapper.addEventListener('scroll', () => {
+        syncHorizontalScroll(contentWrapper, headerWrapper);
+    });
+}
+
+                // Utility functions
+function findActionById(actionId) {
+    for (const phase of projectData.phases) {
+        if (phase.actions) {
+            const action = phase.actions.find(a => a.id === actionId);
+            if (action) return action;
+        }
+    }
+    return null;
+}
+
+                // Add this new function to validate and constrain action positions
+function validateActionBounds(action) {
+                    // Ensure action starts within project timeline
+    action.startWeek = Math.max(1, Math.min(action.startWeek, projectData.totalWeeks));
+
+                    // Ensure action duration is reasonable
+    action.duration = Math.max(1, Math.min(action.duration, 12));
+
+                    // If action would extend beyond project, reduce duration to fit
+    const maxDuration = Math.max(1, projectData.totalWeeks - action.startWeek + 1);
+    action.duration = Math.min(action.duration, maxDuration);
+
+                    // Ensure completed weeks don't exceed new duration
+    action.completedWeeks = Math.min(action.completedWeeks || 0, action.duration);
+}
+
+                // Add this new function to validate phase bounds
+function validatePhaseBounds(phase) {
+                    // Ensure phase starts within project timeline
+    phase.startWeek = Math.max(1, Math.min(phase.startWeek, projectData.totalWeeks));
+
+                    // Validate all actions in the phase
+    if (phase.actions) {
+        phase.actions.forEach(validateActionBounds);
+    }
+}
+
+                // Add this function to validate entire project data on load
+function validateProjectData() {
+    console.log('🔍 Validating project data...');
+
+                    // Ensure total weeks is reasonable
+    projectData.totalWeeks = Math.max(4, Math.min(104, projectData.totalWeeks || 52));
+
+                    // Validate all phases
+    if (projectData.phases) {
+        projectData.phases.forEach(phase => {
+            validatePhaseBounds(phase);
+        });
+    }
+
+    console.log('✅ Project data validation complete');
+}                                                                                                                                                                
+
+function editProjectTitle(titleEl) {
+    titleEl.contentEditable = true;
+    titleEl.focus();
+
+    const range = document.createRange();
+    range.selectNodeContents(titleEl);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    titleEl.addEventListener('blur', function() {
+        titleEl.contentEditable = false;
+        const newTitle = titleEl.textContent.trim() || 'Project';
+        titleEl.textContent = newTitle;
+        document.title = newTitle;
+        projectData.projectName = newTitle;
+        autoSaveToStorage();
+    }, { once: true });
+
+    titleEl.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            titleEl.blur();
+        }
+    });
+}
+
+                // Debug helpers
+window.projectDebug = {
+    exportData: () => console.log('Current data:', JSON.stringify(projectData, null, 2)),
+    clearData: () => {
+        localStorage.removeItem('projectPlannerData');
+        console.log('🗑️ Cleared localStorage');
+        location.reload();
+    },
+    checkStorage: () => {
+        const data = localStorage.getItem('projectPlannerData');
+        console.log('localStorage:', data ? 'Has data' : 'Empty');
+        return data;
+    }
+};
+
+                // Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+
+                // Setup JSON Editor Tab Key Functionality
+function setupJSONEditorTabSupport() {
+    const textarea = document.getElementById('jsonEditorTextarea');
+    if (!textarea) return;
+
+    textarea.addEventListener('keydown', function(e) {
+                        // Handle Tab key for indentation
+        if (e.key === 'Tab') {
+            e.preventDefault();
+
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            const selectedText = this.value.substring(start, end);
+
+            if (e.shiftKey) {
+                                // Shift+Tab: Remove indentation
+                if (selectedText.includes('\n')) {
+                                    // Multi-line selection
+                    const lines = selectedText.split('\n');
+                    const unindentedLines = lines.map(line => 
+                        line.startsWith('    ') ? line.substring(4) :
+                        line.startsWith('\t') ? line.substring(1) : line
+                        );
+                    const newText = unindentedLines.join('\n');
+
+                    this.setRangeText(newText, start, end, 'end');
+                } else {
+                                    // Single line - move to previous indentation level
+                    const lineStart = this.value.lastIndexOf('\n', start - 1) + 1;
+                    const lineText = this.value.substring(lineStart, start);
+
+                    if (lineText.endsWith('    ')) {
+                        this.setRangeText('', start - 4, start, 'end');
+                    } else if (lineText.endsWith('\t')) {
+                        this.setRangeText('', start - 1, start, 'end');
                     }
                 }
-                
-                // Auto-validate JSON as user types (debounced)
-                clearTimeout(this.validateTimer);
-                this.validateTimer = setTimeout(() => {
-                    validateJSON(true); // Silent validation
-                }, 500);
-            });
+            } else {
+                                // Tab: Add indentation
+                if (selectedText.includes('\n')) {
+                                    // Multi-line selection - indent each line
+                    const lines = selectedText.split('\n');
+                    const indentedLines = lines.map(line => '    ' + line);
+                    const newText = indentedLines.join('\n');
 
-            // Also validate on paste
-            textarea.addEventListener('paste', function() {
-                setTimeout(() => {
-                    validateJSON(true);
-                }, 100);
-            });
-        }
-
-        // JSON Editor Functions
-        function openJSONEditor() {
-            const overlay = document.getElementById('jsonEditorOverlay');
-            const textarea = document.getElementById('jsonEditorTextarea');
-            
-            // Populate with current project data
-            textarea.value = JSON.stringify(projectData, null, 4);
-            
-            // Show modal
-            overlay.classList.add('active');
-            
-            // Setup tab support if not already done
-            if (!textarea.hasTabSupport) {
-                setupJSONEditorTabSupport();
-                textarea.hasTabSupport = true;
-            }
-            
-            // Focus textarea
-            setTimeout(() => {
-                textarea.focus();
-                validateJSON(true);
-            }, 100);
-        }
-
-        function closeJSONEditor() {
-            const overlay = document.getElementById('jsonEditorOverlay');
-            overlay.classList.remove('active');
-        }
-
-        function formatJSON() {
-            const textarea = document.getElementById('jsonEditorTextarea');
-            const statusEl = document.getElementById('jsonEditorStatus');
-            
-            try {
-                const parsed = JSON.parse(textarea.value);
-                textarea.value = JSON.stringify(parsed, null, 4);
-                statusEl.textContent = '🎨 Formatted!';
-                statusEl.className = 'json-editor-status valid';
-                
-                setTimeout(() => {
-                    statusEl.textContent = 'Ready';
-                    statusEl.className = 'json-editor-status';
-                }, 2000);
-            } catch (error) {
-                statusEl.textContent = `❌ Invalid JSON: ${error.message}`;
-                statusEl.className = 'json-editor-status invalid';
+                    this.setRangeText(newText, start, end, 'end');
+                } else {
+                                    // Single position - insert 4 spaces
+                    this.setRangeText('    ', start, end, 'end');
+                }
             }
         }
 
-        function validateJSON(silent = false) {
-            const textarea = document.getElementById('jsonEditorTextarea');
-            const statusEl = document.getElementById('jsonEditorStatus');
-            
-            if (!textarea.value.trim()) {
-                if (!silent) {
-                    statusEl.textContent = 'Empty';
-                    statusEl.className = 'json-editor-status';
-                }
-                return false;
-            }
-            
-            try {
-                JSON.parse(textarea.value);
-                if (!silent) {
-                    statusEl.textContent = '✅ Valid JSON';
-                    statusEl.className = 'json-editor-status valid';
-                }
-                return true;
-            } catch (error) {
-                if (!silent) {
-                    statusEl.textContent = `❌ Invalid: ${error.message.substring(0, 50)}...`;
-                    statusEl.className = 'json-editor-status invalid';
-                }
-                return false;
-            }
+                        // Auto-validate JSON as user types (debounced)
+        clearTimeout(this.validateTimer);
+        this.validateTimer = setTimeout(() => {
+                            validateJSON(true); // Silent validation
+                        }, 500);
+    });
+
+                    // Also validate on paste
+    textarea.addEventListener('paste', function() {
+        setTimeout(() => {
+            validateJSON(true);
+        }, 100);
+    });
+}
+
+                // JSON Editor Functions
+function openJSONEditor() {
+    const overlay = document.getElementById('jsonEditorOverlay');
+    const textarea = document.getElementById('jsonEditorTextarea');
+
+                    // Populate with current project data
+    textarea.value = JSON.stringify(projectData, null, 4);
+
+                    // Show modal
+    overlay.classList.add('active');
+
+                    // Setup tab support if not already done
+    if (!textarea.hasTabSupport) {
+        setupJSONEditorTabSupport();
+        textarea.hasTabSupport = true;
+    }
+
+                    // Focus textarea
+    setTimeout(() => {
+        textarea.focus();
+        validateJSON(true);
+    }, 100);
+}
+
+function closeJSONEditor() {
+    const overlay = document.getElementById('jsonEditorOverlay');
+    overlay.classList.remove('active');
+}
+
+function formatJSON() {
+    const textarea = document.getElementById('jsonEditorTextarea');
+    const statusEl = document.getElementById('jsonEditorStatus');
+
+    try {
+        const parsed = JSON.parse(textarea.value);
+        textarea.value = JSON.stringify(parsed, null, 4);
+        statusEl.textContent = '🎨 Formatted!';
+        statusEl.className = 'json-editor-status valid';
+
+        setTimeout(() => {
+            statusEl.textContent = 'Ready';
+            statusEl.className = 'json-editor-status';
+        }, 2000);
+    } catch (error) {
+        statusEl.textContent = `❌ Invalid JSON: ${error.message}`;
+        statusEl.className = 'json-editor-status invalid';
+    }
+}
+
+function validateJSON(silent = false) {
+    const textarea = document.getElementById('jsonEditorTextarea');
+    const statusEl = document.getElementById('jsonEditorStatus');
+
+    if (!textarea.value.trim()) {
+        if (!silent) {
+            statusEl.textContent = 'Empty';
+            statusEl.className = 'json-editor-status';
+        }
+        return false;
+    }
+
+    try {
+        JSON.parse(textarea.value);
+        if (!silent) {
+            statusEl.textContent = '✅ Valid JSON';
+            statusEl.className = 'json-editor-status valid';
+        }
+        return true;
+    } catch (error) {
+        if (!silent) {
+            statusEl.textContent = `❌ Invalid: ${error.message.substring(0, 50)}...`;
+            statusEl.className = 'json-editor-status invalid';
+        }
+        return false;
+    }
+}
+
+function applyJSONChanges() {
+    const textarea = document.getElementById('jsonEditorTextarea');
+    const statusEl = document.getElementById('jsonEditorStatus');
+
+    try {
+        const newData = JSON.parse(textarea.value);
+
+                        // Validate that it has the required structure
+        if (!newData.projectName || !Array.isArray(newData.phases)) {
+            throw new Error('Invalid project structure. Must have projectName and phases array.');
         }
 
-        function applyJSONChanges() {
-            const textarea = document.getElementById('jsonEditorTextarea');
-            const statusEl = document.getElementById('jsonEditorStatus');
-            
-            try {
-                const newData = JSON.parse(textarea.value);
-                
-                // Validate that it has the required structure
-                if (!newData.projectName || !Array.isArray(newData.phases)) {
-                    throw new Error('Invalid project structure. Must have projectName and phases array.');
-                }
-                
-                // Apply the changes
-                projectData = newData;
-                
-                // Update the UI
-                document.querySelector('.project-title').textContent = projectData.projectName || 'Project';
-                document.title = projectData.projectName || 'Project';
-                updateLayout();
-                
-                // Close the modal
-                closeJSONEditor();
-                
-                // Show success message
-                showSaveIndicator('✅ JSON Applied');
-                
-            } catch (error) {
-                statusEl.textContent = `❌ Error: ${error.message}`;
-                statusEl.className = 'json-editor-status invalid';
-                alert(`Cannot apply changes: ${error.message}`);
-            }
+                        // Apply the changes
+        projectData = newData;
+
+                        // Update the UI
+        document.querySelector('.project-title').textContent = projectData.projectName || 'Project';
+        document.title = projectData.projectName || 'Project';
+        updateLayout();
+
+                        // Close the modal
+        closeJSONEditor();
+
+                        // Show success message
+        showSaveIndicator('✅ JSON Applied');
+
+    } catch (error) {
+        statusEl.textContent = `❌ Error: ${error.message}`;
+        statusEl.className = 'json-editor-status invalid';
+        alert(`Cannot apply changes: ${error.message}`);
+    }
+}
+
+                // Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const overlay = document.getElementById('jsonEditorOverlay');
+    if (e.target === overlay) {
+        closeJSONEditor();
+    }
+});
+
+        // Replace the existing keydown event listener with this improved version
+document.addEventListener('keydown', function(e) {
+    const overlay = document.getElementById('jsonEditorOverlay');
+    const isEditorOpen = overlay && overlay.classList.contains('active');
+
+            // Escape key always closes the JSON editor
+    if (e.key === 'Escape' && isEditorOpen) {
+        e.preventDefault();
+        closeJSONEditor();
+        return;
+    }
+
+            // Shift+Tab toggles JSON editor mode
+    if (e.key === 'Tab' && e.shiftKey) {
+        e.preventDefault();
+
+                // If JSON editor is open, always close it with Shift+Tab
+        if (isEditorOpen) {
+            closeJSONEditor();
+            return;
         }
 
-        // Close modal when clicking outside
-        document.addEventListener('click', function(e) {
-            const overlay = document.getElementById('jsonEditorOverlay');
-            if (e.target === overlay) {
-                closeJSONEditor();
-            }
-        });
+                // Only check for form elements if we're trying to OPEN the editor
+        const activeElement = document.activeElement;
+        const isInFormElement = activeElement && (
+            activeElement.tagName === 'INPUT' ||
+            (activeElement.tagName === 'TEXTAREA' && activeElement.id !== 'jsonEditorTextarea') ||
+            activeElement.tagName === 'SELECT' ||
+            activeElement.contentEditable === 'true'
+            );
 
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const overlay = document.getElementById('jsonEditorOverlay');
-                if (overlay.classList.contains('active')) {
-                    closeJSONEditor();
-                }
-            }
-            
-            // Tab key toggles JSON editor mode
-            if (e.key === 'Tab') {
-                // Only if we're not inside a form element or the JSON editor itself
-                const activeElement = document.activeElement;
-                const isInFormElement = activeElement && (
-                    activeElement.tagName === 'INPUT' ||
-                    activeElement.tagName === 'TEXTAREA' ||
-                    activeElement.tagName === 'SELECT' ||
-                    activeElement.contentEditable === 'true'
-                );
-                
-                if (!isInFormElement) {
-                    e.preventDefault();
-                    const overlay = document.getElementById('jsonEditorOverlay');
-                    
-                    if (overlay.classList.contains('active')) {
-                        closeJSONEditor();
-                    } else {
-                        openJSONEditor();
-                    }
-                }
-            }
-        });
+                // Open the editor if we're not in a form element
+        if (!isInFormElement) {
+            openJSONEditor();
+        }
+    }
+});
 
         console.log('🛠️ Debug: projectDebug.exportData(), projectDebug.clearData(), projectDebug.checkStorage()');
         console.log('📝 JSON Editor: Press Shift+Tab to toggle between planner and JSON editor modes!');
         console.log('📋 LLM Workflow: Click "Copy Format" → Ask LLM to generate project → Paste into JSON editor!');
         console.log('💾 File Management: Duplicate HTML file and rename for different projects (localStorage saves per filename)');
     </script>
+    <!-- JSON Editor Modal -->
+<div id="jsonEditorOverlay" class="json-editor-overlay">
+    <div class="json-editor-modal">
+        <div class="json-editor-header">
+            <h3 class="json-editor-title">📝 JSON Editor</h3>
+            <button class="json-editor-close" onclick="closeJSONEditor()" title="Close Editor">×</button>
+        </div>
+        
+        <div class="json-editor-content">
+            <textarea 
+                id="jsonEditorTextarea" 
+                class="json-editor-textarea" 
+                placeholder="Project JSON data will appear here..."
+                spellcheck="false"
+            ></textarea>
+        </div>
+        
+        <div class="json-editor-footer">
+            <div id="jsonEditorStatus" class="json-editor-status">Ready</div>
+            
+            <div class="json-editor-actions">
+                <button class="json-editor-btn secondary" onclick="formatJSON()" title="Format JSON">
+                    🎨 Format
+                </button>
+                <button class="json-editor-btn secondary" onclick="validateJSON()" title="Validate JSON">
+                    ✅ Validate  
+                </button>
+                <button class="json-editor-btn primary" onclick="applyJSONChanges()" title="Apply Changes">
+                    💾 Apply
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
