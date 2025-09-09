@@ -70,16 +70,16 @@
             padding: 0;
             box-sizing: border-box;
             transition: background-color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
-            color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
-            border-color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
-            box-shadow 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+                       color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
+                       border-color 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), 
+                       box-shadow 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
         [data-theme="light"] * {
             transition: background-color 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
-            color 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
-            border-color 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
-            box-shadow 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                       color 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
+                       border-color 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), 
+                       box-shadow 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         body {
@@ -1404,17 +1404,17 @@
             "actionIdCounter": 2
         }
 
-
+    
 
     </script>
 
     <script>
         let projectData = {};
         let monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
                 // Initialize the application
-           function init() {
+         function init() {
                     // Try to load saved data first
             const wasRestored = loadFromStorage();
 
@@ -1627,7 +1627,7 @@
             let currentYear = projectData.startYear;
 
             while (currentYear < projectData.endYear || 
-             (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
+               (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
                 totalWeeks += getWeeksInMonth(currentYear, currentMonth);
             currentMonth++;
             if (currentMonth > 11) {
@@ -1646,7 +1646,7 @@
         let currentYear = projectData.startYear;
 
         while (currentYear < projectData.endYear || 
-         (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
+           (currentYear === projectData.endYear && currentMonth <= projectData.endMonth)) {
             months.push({
                 month: currentMonth,
                 year: currentYear,
@@ -1996,114 +1996,44 @@ function renderLeftPhaseRow(phase) {
                                                 bar.classList.add('completed');
                                             }
 
-                            // Add click and hold handlers for action bars
-                                            if (className === 'action-bar' && actionId !== null) {
-                                                const action = findActionById(actionId);
-                                                
-                                                if (action) {
-        // Add action ID as data attribute for easier targeting
-                                                    bar.setAttribute('data-action-id', actionId);
-                                                    
-        // Update progress visualization
-                                                    const progressPercent = (action.completedWeeks / action.duration) * 100;
-                                                    bar.style.setProperty('--progress-width', `${progressPercent}%`);
-                                                    
-        // Add completed class if fully completed
-                                                    if (action.completedWeeks >= action.duration) {
-                                                        bar.classList.add('completed');
+                            // Add click and hold handlers
+                                            let holdTimer = null;
+                                            let isHolding = false;
+
+                                            const startHold = (e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+
+                                                if (action.completedWeeks >= action.duration) return;
+
+                                                isHolding = true;
+                                                bar.classList.add('charging');
+
+                                                holdTimer = setTimeout(() => {
+                                                    if (isHolding) {
+                                                        completeTaskInstantly(actionId);
                                                     }
-                                                    
-        // Add click and hold handlers
-                                                    let holdTimer = null;
-                                                    let isHolding = false;
-                                                    let clickStartTime = 0;
-                                                    
-                                                    const startHold = (e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        
-                                                        clickStartTime = Date.now();
-                                                        
-            // Check for Shift+click to decrement
-                                                        if (e.shiftKey) {
-                                                            if (action.completedWeeks > 0) {
-                                                                decrementTaskProgress(actionId);
-                                                            }
-                                                            return;
-                                                        }
-                                                        
-                                                        if (action.completedWeeks >= action.duration) return;
-                                                        
-                                                        isHolding = true;
-                                                        bar.classList.add('charging');
-                                                        
-                                                        holdTimer = setTimeout(() => {
-                                                            if (isHolding) {
-                                                                completeTaskInstantly(actionId);
-                                                            }
-                                                        }, 800);
-                                                    };
-                                                    
-                                                    const endHold = (e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        
-                                                        if (!isHolding) return;
-                                                        
-                                                        isHolding = false;
-                                                        bar.classList.remove('charging');
-                                                        
-                                                        if (holdTimer) {
-                                                            clearTimeout(holdTimer);
-                                                            holdTimer = null;
-                                                            
-                // Only increment if it was a quick click (not a hold) and not shift-click
-                                                            const clickDuration = Date.now() - clickStartTime;
-                                                            if (clickDuration < 800 && !e.shiftKey && action.completedWeeks < action.duration) {
-                                                                incrementTaskProgress(actionId);
-                                                            }
-                                                        }
-                                                    };
-                                                    
-        // Mouse events
-                                                    bar.addEventListener('mousedown', startHold);
-                                                    bar.addEventListener('mouseup', endHold);
-                                                    bar.addEventListener('mouseleave', endHold);
-                                                    
-        // Touch events for mobile
-                                                    bar.addEventListener('touchstart', startHold);
-                                                    bar.addEventListener('touchend', endHold);
-                                                    bar.addEventListener('touchcancel', endHold);
-                                                    
-        // Add visual feedback for shift-hover
-                                                    bar.addEventListener('mouseenter', (e) => {
-                                                        if (e.shiftKey && action.completedWeeks > 0) {
-                                                            bar.style.cursor = 'pointer';
-                                                            bar.style.filter = 'brightness(0.8) saturate(0.8)';
-                                                        }
-                                                    });
-                                                    
-                                                    bar.addEventListener('mouseleave', () => {
-                                                        bar.style.cursor = '';
-                                                        bar.style.filter = '';
-                                                    });
-                                                    
-        // Update cursor based on shift key state
-                                                    document.addEventListener('keydown', (e) => {
-                                                        if (e.shiftKey && bar.matches(':hover') && action.completedWeeks > 0) {
-                                                            bar.style.cursor = 'pointer';
-                                                            bar.style.filter = 'brightness(0.8) saturate(0.8)';
-                                                        }
-                                                    });
-                                                    
-                                                    document.addEventListener('keyup', (e) => {
-                                                        if (!e.shiftKey) {
-                                                            bar.style.cursor = '';
-                                                            bar.style.filter = '';
-                                                        }
-                                                    });
+                                                }, 800);
+                                            };
+
+                                            const endHold = (e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+
+                                                if (!isHolding) return;
+
+                                                isHolding = false;
+                                                bar.classList.remove('charging');
+
+                                                if (holdTimer) {
+                                                    clearTimeout(holdTimer);
+                                                    holdTimer = null;
+
+                                                    if (action.completedWeeks < action.duration) {
+                                                        incrementTaskProgress(actionId);
+                                                    }
                                                 }
-                                            }
+                                            };
 
                             // Mouse events
                                             bar.addEventListener('mousedown', startHold);
@@ -2476,118 +2406,6 @@ function renderLeftPhaseRow(phase) {
                                     });
 
                     // Close dropdown when clicking outside
-                                    const closeDropdown = (e) => {
-                                        if (!dropdown.contains(e.target) && e.target !== button) {
-                                            if (document.body.contains(dropdown)) {
-                                                document.body.removeChild(dropdown);
-                                            }
-                                            document.removeEventListener('click', closeDropdown);
-                                        }
-                                    };
-
-                                    setTimeout(() => {
-                                        document.addEventListener('click', closeDropdown);
-                                    }, 100);
-
-                                    document.body.appendChild(dropdown);
-                                }
-
-                                function openEndDateSelector() {
-                                    const button = event.currentTarget;
-                                    const rect = button.getBoundingClientRect();
-
-                    // Create dropdown
-                                    const dropdown = document.createElement('div');
-                                    dropdown.className = 'month-dropdown';
-                                    dropdown.style.position = 'fixed';
-                                    dropdown.style.left = rect.left + 'px';
-                                    dropdown.style.top = rect.bottom + 5 + 'px';
-                                    dropdown.style.zIndex = '1000';
-                                    dropdown.style.background = 'white';
-                                    dropdown.style.border = '2px solid var(--primary-sky)';
-                                    dropdown.style.borderRadius = '8px';
-                                    dropdown.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.15)';
-                                    dropdown.style.padding = '8px';
-                                    dropdown.style.minWidth = rect.width + 'px';
-                                    dropdown.style.maxHeight = '300px';
-                                    dropdown.style.overflowY = 'auto';
-
-                                    const currentYear = new Date().getFullYear();
-                                    const nextYear = currentYear + 1;
-
-                    // Create year sections
-                                    [currentYear, nextYear].forEach(year => {
-                        // Year header
-                                        const yearHeader = document.createElement('div');
-                                        yearHeader.textContent = year.toString();
-                                        yearHeader.style.padding = '4px 12px';
-                                        yearHeader.style.fontSize = '12px';
-                                        yearHeader.style.fontWeight = '700';
-                                        yearHeader.style.color = 'var(--text-secondary)';
-                                        yearHeader.style.borderBottom = '1px solid var(--surface-secondary)';
-                                        yearHeader.style.marginBottom = '4px';
-                                        dropdown.appendChild(yearHeader);
-
-                        // Month options for this year
-                                        monthNames.forEach((monthName, monthIndex) => {
-                                            const option = document.createElement('div');
-                                            const displayName = year === currentYear ? monthName : `${monthName}${year.toString().slice(-2)}`;
-                                            option.textContent = displayName;
-                                            option.style.padding = '8px 12px';
-                                            option.style.cursor = 'pointer';
-                                            option.style.borderRadius = '4px';
-                                            option.style.fontSize = '14px';
-                                            option.style.fontWeight = '600';
-                                            option.style.color = 'var(--text-primary)';
-                                            option.style.transition = 'all 0.2s ease';
-                                            option.style.marginLeft = '8px';
-
-                            // Check if this option is before the start date
-                                            const isBeforeStart = year < projectData.startYear || 
-                                            (year === projectData.startYear && monthIndex < projectData.startMonth);
-
-                                            if (isBeforeStart) {
-                                                option.style.opacity = '0.4';
-                                                option.style.cursor = 'not-allowed';
-                                                option.style.color = 'var(--text-secondary)';
-                                            } else {
-                                                if (year === projectData.endYear && monthIndex === projectData.endMonth) {
-                                                    option.style.background = 'var(--primary-sky)';
-                                                    option.style.color = 'white';
-                                                }
-
-                                                option.addEventListener('mouseenter', () => {
-                                                    if (!(year === projectData.endYear && monthIndex === projectData.endMonth)) {
-                                                        option.style.background = 'var(--surface-secondary)';
-                                                    }
-                                                });
-
-                                                option.addEventListener('mouseleave', () => {
-                                                    if (!(year === projectData.endYear && monthIndex === projectData.endMonth)) {
-                                                        option.style.background = 'transparent';
-                                                    }
-                                                });
-
-                                                option.addEventListener('click', () => {
-                                                    if (!isBeforeStart) {
-                                                        setEndMonth(monthIndex, year);
-                                                        document.body.removeChild(dropdown);
-                                                    }
-                                                });
-                                            }
-
-                                            dropdown.appendChild(option);
-                                        });
-
-                        // Add spacing between years
-                                        if (year === currentYear) {
-                                            const spacer = document.createElement('div');
-                                            spacer.style.height = '8px';
-                                            dropdown.appendChild(spacer);
-                                        }
-                                    });
-
-                    // Close dropdown when clicking outside
 const closeDropdown = (e) => {
     if (!dropdown.contains(e.target) && e.target !== button) {
         if (document.body.contains(dropdown)) {
@@ -2602,6 +2420,118 @@ setTimeout(() => {
 }, 100);
 
 document.body.appendChild(dropdown);
+}
+
+function openEndDateSelector() {
+    const button = event.currentTarget;
+    const rect = button.getBoundingClientRect();
+
+                    // Create dropdown
+    const dropdown = document.createElement('div');
+    dropdown.className = 'month-dropdown';
+    dropdown.style.position = 'fixed';
+    dropdown.style.left = rect.left + 'px';
+    dropdown.style.top = rect.bottom + 5 + 'px';
+    dropdown.style.zIndex = '1000';
+    dropdown.style.background = 'white';
+    dropdown.style.border = '2px solid var(--primary-sky)';
+    dropdown.style.borderRadius = '8px';
+    dropdown.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.15)';
+    dropdown.style.padding = '8px';
+    dropdown.style.minWidth = rect.width + 'px';
+    dropdown.style.maxHeight = '300px';
+    dropdown.style.overflowY = 'auto';
+
+    const currentYear = new Date().getFullYear();
+    const nextYear = currentYear + 1;
+
+                    // Create year sections
+    [currentYear, nextYear].forEach(year => {
+                        // Year header
+        const yearHeader = document.createElement('div');
+        yearHeader.textContent = year.toString();
+        yearHeader.style.padding = '4px 12px';
+        yearHeader.style.fontSize = '12px';
+        yearHeader.style.fontWeight = '700';
+        yearHeader.style.color = 'var(--text-secondary)';
+        yearHeader.style.borderBottom = '1px solid var(--surface-secondary)';
+        yearHeader.style.marginBottom = '4px';
+        dropdown.appendChild(yearHeader);
+
+                        // Month options for this year
+        monthNames.forEach((monthName, monthIndex) => {
+            const option = document.createElement('div');
+            const displayName = year === currentYear ? monthName : `${monthName}${year.toString().slice(-2)}`;
+            option.textContent = displayName;
+            option.style.padding = '8px 12px';
+            option.style.cursor = 'pointer';
+            option.style.borderRadius = '4px';
+            option.style.fontSize = '14px';
+            option.style.fontWeight = '600';
+            option.style.color = 'var(--text-primary)';
+            option.style.transition = 'all 0.2s ease';
+            option.style.marginLeft = '8px';
+
+                            // Check if this option is before the start date
+            const isBeforeStart = year < projectData.startYear || 
+            (year === projectData.startYear && monthIndex < projectData.startMonth);
+
+            if (isBeforeStart) {
+                option.style.opacity = '0.4';
+                option.style.cursor = 'not-allowed';
+                option.style.color = 'var(--text-secondary)';
+            } else {
+                if (year === projectData.endYear && monthIndex === projectData.endMonth) {
+                    option.style.background = 'var(--primary-sky)';
+                    option.style.color = 'white';
+                }
+
+                option.addEventListener('mouseenter', () => {
+                    if (!(year === projectData.endYear && monthIndex === projectData.endMonth)) {
+                        option.style.background = 'var(--surface-secondary)';
+                    }
+                });
+
+                option.addEventListener('mouseleave', () => {
+                    if (!(year === projectData.endYear && monthIndex === projectData.endMonth)) {
+                        option.style.background = 'transparent';
+                    }
+                });
+
+                option.addEventListener('click', () => {
+                    if (!isBeforeStart) {
+                        setEndMonth(monthIndex, year);
+                        document.body.removeChild(dropdown);
+                    }
+                });
+            }
+
+            dropdown.appendChild(option);
+        });
+
+                        // Add spacing between years
+        if (year === currentYear) {
+            const spacer = document.createElement('div');
+            spacer.style.height = '8px';
+            dropdown.appendChild(spacer);
+        }
+    });
+
+                    // Close dropdown when clicking outside
+    const closeDropdown = (e) => {
+        if (!dropdown.contains(e.target) && e.target !== button) {
+            if (document.body.contains(dropdown)) {
+                document.body.removeChild(dropdown);
+            }
+            document.removeEventListener('click', closeDropdown);
+        }
+    };
+
+    setTimeout(() => {
+        document.addEventListener('click', closeDropdown);
+    }, 100);
+
+    document.body.appendChild(dropdown);
 }
 
 function setStartMonth(monthIndex, year) {
@@ -3175,32 +3105,12 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-console.log('🛠️ Debug: projectDebug.exportData(), projectDebug.clearData(), projectDebug.checkStorage()');
-console.log('📝 JSON Editor: Press Shift+Tab to toggle between planner and JSON editor modes!');
-console.log('📋 LLM Workflow: Click "Copy Format" → Ask LLM to generate project → Paste into JSON editor!');
-console.log('💾 File Management: Duplicate HTML file and rename for different projects (localStorage saves per filename)');
-    // Add this new function for decrementing progress
-function decrementTaskProgress(actionId) {
-    const action = findActionById(actionId);
-    if (!action || action.completedWeeks <= 0) return;
-    
-    action.completedWeeks--;
-    
-        // Re-render gantt bars to update progress
-    renderGanttBars();
-    autoSaveToStorage();
-    
-        // Add a subtle animation feedback
-    const actionBar = document.querySelector(`.gantt-bar.action-bar[data-action-id="${  actionId}"]`);
-    if (actionBar) {
-        actionBar.classList.add('ker-chunk');
-        setTimeout(() => actionBar.classList.remove('ker-chunk'), 500);
-    }
-}    
-
-</script>
-
-<!-- JSON Editor Modal -->
+        console.log('🛠️ Debug: projectDebug.exportData(), projectDebug.clearData(), projectDebug.checkStorage()');
+        console.log('📝 JSON Editor: Press Shift+Tab to toggle between planner and JSON editor modes!');
+        console.log('📋 LLM Workflow: Click "Copy Format" → Ask LLM to generate project → Paste into JSON editor!');
+        console.log('💾 File Management: Duplicate HTML file and rename for different projects (localStorage saves per filename)');
+    </script>
+    <!-- JSON Editor Modal -->
 <div id="jsonEditorOverlay" class="json-editor-overlay">
     <div class="json-editor-modal">
         <div class="json-editor-header">
@@ -3210,10 +3120,10 @@ function decrementTaskProgress(actionId) {
         
         <div class="json-editor-content">
             <textarea 
-            id="jsonEditorTextarea" 
-            class="json-editor-textarea" 
-            placeholder="Project JSON data will appear here..."
-            spellcheck="false"
+                id="jsonEditorTextarea" 
+                class="json-editor-textarea" 
+                placeholder="Project JSON data will appear here..."
+                spellcheck="false"
             ></textarea>
         </div>
         
